@@ -1,0 +1,82 @@
+.header {
+  display: flex;
+  position: fixed;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #646C74; /* Primary color */
+  color: white;
+  border-radius: 13px;
+  position: relative; /* Ensure it doesn’t interfere with other elements */
+  z-index: 100; /* Keeps the header above other elements */
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.logo img {
+  width: 40px; /* Adjust size as needed */
+  height: 40px; /* Adjust size as needed */
+  margin-right: 10px;
+  border-radius: 13px;
+}
+
+.logo h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  margin: 0 15px;
+  font-size: 16px;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #FF7043; /* Accent color */
+}
+
+.auth-buttons .login-btn, .auth-buttons .signup-btn  {
+  background-color: #34A853; /* Secondary color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-left: 10px;
+}
+
+.logout-btn{
+  background-color: #34A853; /* Secondary color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-left: 10px;
+}
+
+.auth-buttons .login-btn:hover, .auth-buttons .signup-btn:hover {
+  background-color: #2a8543;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none; /* Hide navigation links on smaller screens */
+  }
+
+  .header {
+    justify-content: space-between;
+  }
+}

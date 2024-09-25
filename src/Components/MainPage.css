@@ -1,0 +1,36 @@
+.main-page {
+    position: relative;
+    text-align: center;
+    color: white;
+    height: auto;
+    overflow: hidden; /* Ensure no scrollbars */
+  }
+  
+  .background-image {
+    width: auto;
+    height: auto; /* Adjust as needed */
+    object-fit: cover; /* Ensure the image covers the entire area */
+    filter: blur(8px); /* Adjust the blur radius as needed */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1; /* Ensure the image is behind the text */
+}
+
+.content {
+    position: relative; /* Allows text to be placed on top of the blurred image */
+    z-index: 1; /* Ensures content is above the blurred image */
+}
+  
+  .card-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Space between cards */
+    padding: 20px;
+    flex-wrap: wrap; /* Allow cards to wrap on smaller screens */
+  }
+  
+  /* Card styles */
+
+  
+   

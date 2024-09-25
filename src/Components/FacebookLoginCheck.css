@@ -1,0 +1,85 @@
+.facebook-container {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #4267B2;
+}
+
+.page-list {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.page-list button {
+    background-color: #4267B2;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin: 5px 0;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.page-list button:hover {
+    background-color: #365899;
+}
+
+.post-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+input[type="file"] {
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #4267B2;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #365899;
+}
+
+.logout-button {
+    background-color: #FF6347;
+    margin-bottom: 20px;
+}
+
+.logout-button:hover {
+    background-color: #E5533D;
+}
+
+.engagement-section {
+    margin-top: 20px;
+}
+
+.engagement-section p {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}

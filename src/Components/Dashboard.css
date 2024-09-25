@@ -1,0 +1,101 @@
+.dashboard {
+    display: flex;
+    height: 100vh;
+    margin-top: 60px; /* Offset for fixed header */
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #1A73E8;
+    color: white;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.menu-icon {
+    cursor: pointer;
+    font-size: 24px;
+    margin-right: 20px;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #2C3E50;
+    color: white;
+    padding: 16px;
+     /* Fix position to stay in view */
+    top: 60px; /* Below header */
+    left: -250px; /* Initially hidden off-screen */
+    /* height: calc(100vh - 60px);  */
+    transition: left 0.3s ease;
+    z-index: 1000;
+    margin-top: -57px;
+    height: auto;
+}
+
+.sidebar.open {
+    left: 0; /* Slide in when open */
+}
+
+.sidebar h3 {
+    margin-bottom: 20px;
+}
+
+.sidebar p {
+    margin: 10px 0;
+}
+
+.sidebar hr {
+    border: 1px solid #34495E;
+    margin: 20px 0;
+}
+
+.sidebar-link {
+    text-decoration: none;
+}
+
+.sidebar-btn {
+    width: 100%;
+    background-color: #34A853;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    transition: background-color 0.3s;
+}
+
+.sidebar-btn:hover {
+    background-color: #45a049;
+}
+
+.content {
+    padding: 20px;
+    margin-left: 250px; /* Offset for sidebar width */
+    margin-top: 60px; /* Offset for header height */
+    flex: 1;
+    transition: margin-left 0.3s ease;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+        left: -200px; /* Initially hidden off-screen */
+    }
+
+    .sidebar.open {
+        left: 10svb; /* Slide in when open */
+    }
+
+    .content {
+        margin-left: 0; /* No sidebar margin on smaller screens */
+    }
+}
