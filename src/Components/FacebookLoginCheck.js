@@ -198,6 +198,8 @@ const FacebookLoginCheck = () => {
                             ))}
                         </div>
                     )}
+                    <a href="https://example.com" target="_blank" rel="noreferrer">Example Link</a>
+
 
                     {/* Post Likes */}
                     {likes.length > 0 && (
