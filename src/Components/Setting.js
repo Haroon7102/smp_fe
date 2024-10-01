@@ -6,7 +6,7 @@ const Settings = () => {
     const [password, setPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
 
-    const baseURL = 'http://localhost:5000'; // Replace with your backend's base URL
+    const baseURL = 'https://main--smpbe.netlify.app'; // Replace with your backend's base URL
 
     const handleUpdateEmail = async () => {
         try {

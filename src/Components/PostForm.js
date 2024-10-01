@@ -11,7 +11,7 @@ const PostForm = () => {
 
     const handleFacebookPost = async () => {
         try {
-            await axios.post('http://localhost:5000/post/post/facebook',
+            await axios.post('https://main--smpbe.netlify.app/post/post/facebook',
                 { message },
                 {
                     headers: {
@@ -28,7 +28,7 @@ const PostForm = () => {
 
     const handleInstagramPost = async () => {
         try {
-            await axios.post('http://localhost:5000/post/post/instagram',
+            await axios.post('https://main--smpbe.netlify.app/post/post/instagram',
                 { imageUrl, caption },
                 {
                     headers: {
