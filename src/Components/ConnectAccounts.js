@@ -3,7 +3,7 @@ import React from 'react';
 // Function to redirect to Facebook OAuth
 const connectFacebook = () => {
     const appId = '1181556439761653'; // Replace with your Facebook App ID
-    const redirectUri = 'https://main--smpbe.netlify.app/auth/callback'; // Updated with your deployed backend URL
+    const redirectUri = 'http://localhost:3000/auth/callback'; // Replace with your redirect URI
     const stateParam = 'some-random-string'; // Optional state parameter for security
     const scope = 'pages_manage_posts,publish_to_groups,publish_pages'; // Add required permissions
 
@@ -17,7 +17,7 @@ const connectFacebook = () => {
 // Function to redirect to Instagram OAuth
 const connectInstagram = () => {
     const clientId = '481691351358779'; // Replace with your Instagram Client ID
-    const redirectUri = 'https://main--smpbe.netlify.app/auth/callback'; // Updated with your deployed backend URL
+    const redirectUri = 'http://localhost:3000/auth/callback'; // Replace with your redirect URI
     const stateParam = 'some-random-string'; // Optional state parameter for security
     const scope = 'user_profile,user_media'; // Adjust scopes as per your requirements
 

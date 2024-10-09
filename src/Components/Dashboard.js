@@ -16,7 +16,7 @@ const Dashboard = () => {
         // Fetch user information from your API
         const fetchUserData = async () => {
             try {
-                const response = await fetch('https://main--smpbe.netlify.app/auth/user', { // Updated backend URL
+                const response = await fetch('http://localhost:5000/auth/user', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -48,8 +48,8 @@ const Dashboard = () => {
                 <h3>Personal Info</h3>
                 {userInfo ? (
                     <>
-                        <p>{userInfo.name}</p>
-                        <p>{userInfo.email}</p>
+                        <p>      {userInfo.name}</p>
+                        <p>        {userInfo.email}</p>
                     </>
                 ) : (
                     <p>Loading...</p>

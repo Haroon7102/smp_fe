@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import './FacebookLoginCheck.css'; // Import CSS styles
 
 const FacebookLoginCheck = () => {
@@ -11,22 +11,10 @@ const FacebookLoginCheck = () => {
     const [postImage, setPostImage] = useState(null);
     const [likes, setLikes] = useState([]);
 
-    // Memoize fetchUserPages using useCallback
-    const fetchUserPages = useCallback(() => {
-        const accessToken = localStorage.getItem('facebookAccessToken');
-        if (accessToken) {
-            window.FB.api('/me/accounts', 'GET', { access_token: accessToken }, (response) => {
-                if (response && !response.error) {
-                    setPages(response.data);
-                }
-            });
-        }
-    }, []);
-
-    // Memoize statusChangeCallback and include fetchUserPages as a dependency
-    const statusChangeCallback = useCallback((response) => {
+    const statusChangeCallback = (response) => {
         if (response.status === 'connected') {
-            localStorage.setItem('facebookAccessToken', response.authResponse.accessToken);
+            const { accessToken } = response.authResponse;
+            localStorage.setItem('facebookAccessToken', accessToken);
             setLoginStatus('connected');
             fetchUserPages();
         } else if (response.status === 'not_authorized') {
@@ -35,7 +23,18 @@ const FacebookLoginCheck = () => {
             setLoginStatus('not_logged_in');
         }
         setLoading(false);
-    }, [fetchUserPages]);
+    };
+
+    const fetchUserPages = () => {
+        const accessToken = localStorage.getItem('facebookAccessToken');
+        if (accessToken) {
+            window.FB.api('/me/accounts', 'GET', { access_token: accessToken }, (response) => {
+                if (response && !response.error) {
+                    setPages(response.data);
+                }
+            });
+        }
+    };
 
     const handlePostOnFacebook = async () => {
         if (!selectedPage) {
@@ -68,7 +67,9 @@ const FacebookLoginCheck = () => {
         }
     };
 
-    const fetchPostEngagement = useCallback((postId) => {
+    const fetchPostEngagement = (postId) => {
+        const accessToken = localStorage.getItem('facebookAccessToken');
+
         // Simulate engagement with mock data until permission is granted
         const mockComments = [
             { user: 'John Doe', message: 'Great post!' },
@@ -82,6 +83,7 @@ const FacebookLoginCheck = () => {
             { user: 'Alex Johnson' }
         ];
 
+        // Simulating the engagement with mock data
         setPostEngagements(mockComments);
         setLikes(mockLikes);
 
@@ -98,9 +100,9 @@ const FacebookLoginCheck = () => {
             }
         });
         */
-    }, []);
+    };
 
-    const handleLogout = useCallback(() => {
+    const handleLogout = () => {
         window.FB.logout((response) => {
             console.log('Logged out from Facebook:', response);
             setLoginStatus('not_logged_in');
@@ -112,7 +114,7 @@ const FacebookLoginCheck = () => {
             setPostEngagements([]);
             setLikes([]);
         });
-    }, []);
+    };
 
     useEffect(() => {
         const loadFacebookSDK = () => {
@@ -140,7 +142,7 @@ const FacebookLoginCheck = () => {
         };
 
         loadFacebookSDK();
-    }, [statusChangeCallback]);
+    }, []);
 
     const handleLogin = () => {
         window.FB.login((response) => {
@@ -198,8 +200,6 @@ const FacebookLoginCheck = () => {
                             ))}
                         </div>
                     )}
-                    <a href="https://example.com" target="_blank" rel="noreferrer">Example Link</a>
-
 
                     {/* Post Likes */}
                     {likes.length > 0 && (
