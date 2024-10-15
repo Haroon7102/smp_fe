@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './FacebookLoginCheck.css'; // Import CSS styles
 
 const FacebookLoginCheck = () => {
@@ -11,7 +11,8 @@ const FacebookLoginCheck = () => {
     const [postImage, setPostImage] = useState(null);
     const [likes, setLikes] = useState([]);
 
-    const statusChangeCallback = (response) => {
+    // Wrap the statusChangeCallback function with useCallback
+    const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
             const { accessToken } = response.authResponse;
             localStorage.setItem('facebookAccessToken', accessToken);
@@ -23,7 +24,7 @@ const FacebookLoginCheck = () => {
             setLoginStatus('not_logged_in');
         }
         setLoading(false);
-    };
+    }, []); // No dependencies for this callback
 
     const fetchUserPages = () => {
         const accessToken = localStorage.getItem('facebookAccessToken');
@@ -42,7 +43,7 @@ const FacebookLoginCheck = () => {
             return;
         }
 
-        const accessToken = localStorage.getItem('facebookAccessToken');
+        const accessToken = localStorage.getItem('facebookAccessToken'); // Use accessToken directly
         const formData = new FormData();
         formData.append('message', postMessage);
         if (postImage) {
@@ -68,7 +69,7 @@ const FacebookLoginCheck = () => {
     };
 
     const fetchPostEngagement = (postId) => {
-        const accessToken = localStorage.getItem('facebookAccessToken');
+        // const accessToken = localStorage.getItem('facebookAccessToken');
 
         // Simulate engagement with mock data until permission is granted
         const mockComments = [
@@ -142,7 +143,7 @@ const FacebookLoginCheck = () => {
         };
 
         loadFacebookSDK();
-    }, []);
+    }, [statusChangeCallback]); // Add statusChangeCallback to the dependency array
 
     const handleLogin = () => {
         window.FB.login((response) => {
