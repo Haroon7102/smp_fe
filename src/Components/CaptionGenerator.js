@@ -8,7 +8,7 @@ const CaptionGenerator = () => {
 
     const generateCaption = async () => {
         try {
-            const response = await axios.post('http://localhost:5000/generate-caption', { prompt });
+            const response = await axios.post('https://smp-be.netlify.app/generate-caption', { prompt }); // Updated URL
             setCaption(response.data.caption);
             setError('');
         } catch (error) {

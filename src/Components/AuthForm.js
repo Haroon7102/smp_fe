@@ -27,7 +27,7 @@ const AuthForm = ({ onClose, isSignUp: initialSignUp, setIsLoggedIn }) => {
 
             if (isResetPassword) {
                 // Password reset logic
-                url = 'http://localhost:5000/auth/update-password';
+                url = 'https://smp-be.netlify.app/auth/update-password'; // Updated URL
                 method = 'PUT'; // Change to PUT for password reset
                 const payload = { email, password, newPassword };
                 await axios({ method, url, data: payload });
@@ -40,7 +40,9 @@ const AuthForm = ({ onClose, isSignUp: initialSignUp, setIsLoggedIn }) => {
                 // Optionally, navigate to the login page or show a success message
             } else {
                 // Sign up or sign in logic
-                url = isSignUp ? 'http://localhost:5000/auth/signup' : 'http://localhost:5000/auth/signin';
+                url = isSignUp
+                    ? 'https://smp-be.netlify.app/auth/signup' // Updated URL for signup
+                    : 'https://smp-be.netlify.app/auth/signin'; // Updated URL for signin
                 const payload = { name, email, password };
                 const response = await axios.post(url, payload);
                 localStorage.setItem('token', response.data.token);
@@ -67,14 +69,13 @@ const AuthForm = ({ onClose, isSignUp: initialSignUp, setIsLoggedIn }) => {
         }
     };
 
-
     const toggleForm = () => {
         setIsSignUp(!isSignUp);
         setError('');
     };
 
     const handleGoogleSignIn = () => {
-        window.location.href = 'http://localhost:5000/auth/google';
+        window.location.href = 'https://smp-be.netlify.app/auth/google'; // Updated URL
     };
 
     const handleForgotPassword = () => {
