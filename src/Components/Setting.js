@@ -6,7 +6,7 @@ const Settings = () => {
     const [password, setPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
 
-    const baseURL = 'https://smpfe.netlify.app'; // Replace with your backend's base URL
+    const baseURL = 'https://smp-be-mysql.vercel.app'; // Replace with your backend's base URL
 
     const handleUpdateEmail = async () => {
         try {

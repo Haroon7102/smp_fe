@@ -16,7 +16,7 @@ const Dashboard = () => {
         // Fetch user information from your API
         const fetchUserData = async () => {
             try {
-                const response = await fetch('https://smp-be.netlify.app/auth/user', {
+                const response = await fetch('https://smp-be-mysql.vercel.app/auth/user', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

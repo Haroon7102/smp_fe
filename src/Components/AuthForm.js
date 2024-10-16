@@ -27,7 +27,7 @@ const AuthForm = ({ onClose, isSignUp: initialSignUp, setIsLoggedIn }) => {
 
             if (isResetPassword) {
                 // Password reset logic
-                url = 'https://smp-be.netlify.app/auth/update-password'; // Updated URL
+                url = 'https://smp-be-mysql.vercel.app/auth/update-password'; // Updated URL
                 method = 'PUT'; // Change to PUT for password reset
                 const payload = { email, password, newPassword };
                 await axios({ method, url, data: payload });
@@ -41,8 +41,8 @@ const AuthForm = ({ onClose, isSignUp: initialSignUp, setIsLoggedIn }) => {
             } else {
                 // Sign up or sign in logic
                 url = isSignUp
-                    ? 'https://smp-be.netlify.app/auth/signup' // Updated URL for signup
-                    : 'https://smp-be.netlify.app/auth/signin'; // Updated URL for signin
+                    ? 'https://smp-be-mysql.vercel.app/auth/signup' // Updated URL for signup
+                    : 'https://smp-be-mysql.vercel.app/auth/signin'; // Updated URL for signin
                 const payload = { name, email, password };
                 const response = await axios.post(url, payload);
                 localStorage.setItem('token', response.data.token);
@@ -75,7 +75,7 @@ const AuthForm = ({ onClose, isSignUp: initialSignUp, setIsLoggedIn }) => {
     };
 
     const handleGoogleSignIn = () => {
-        window.location.href = 'https://smp-be.netlify.app/auth/google'; // Updated URL
+        window.location.href = 'https://smp-be-mysql.vercel.app/auth/google'; // Updated URL
     };
 
     const handleForgotPassword = () => {
