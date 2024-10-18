@@ -43,7 +43,7 @@ const FacebookLoginCheck = () => {
             return;
         }
 
-        const accessToken = localStorage.getItem('facebookAccessToken'); // Use accessToken directly
+        const accessToken = localStorage.getItem('facebookAccessToken');
         const formData = new FormData();
         formData.append('message', postMessage);
         if (postImage) {
@@ -69,8 +69,6 @@ const FacebookLoginCheck = () => {
     };
 
     const fetchPostEngagement = (postId) => {
-        // const accessToken = localStorage.getItem('facebookAccessToken');
-
         // Simulate engagement with mock data until permission is granted
         const mockComments = [
             { user: 'John Doe', message: 'Great post!' },
@@ -148,7 +146,9 @@ const FacebookLoginCheck = () => {
     const handleLogin = () => {
         window.FB.login((response) => {
             statusChangeCallback(response);
-        }, { scope: 'pages_manage_posts,pages_read_engagement,pages_show_list' });
+        }, {
+            scope: 'email,public_profile,pages_manage_posts,pages_read_engagement,pages_show_list' // Add the necessary scopes here
+        });
     };
 
     return (
