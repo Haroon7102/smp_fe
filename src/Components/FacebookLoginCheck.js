@@ -447,216 +447,216 @@
 
 
 
-import React, { useEffect, useState, useCallback } from 'react';
-import './FacebookLoginCheck.css'; // Import CSS styles
+// import React, { useEffect, useState, useCallback } from 'react';
+// import './FacebookLoginCheck.css'; // Import CSS styles
 
-const FacebookLoginCheck = () => {
-    const [loginStatus, setLoginStatus] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [pages, setPages] = useState([]);
-    const [postEngagements, setPostEngagements] = useState([]);
-    const [selectedPage, setSelectedPage] = useState(null);
-    const [postMessage, setPostMessage] = useState('');
-    const [postImage, setPostImage] = useState(null);
-    const [likes, setLikes] = useState([]);
+// const FacebookLoginCheck = () => {
+//     const [loginStatus, setLoginStatus] = useState(null);
+//     const [loading, setLoading] = useState(true);
+//     const [pages, setPages] = useState([]);
+//     const [postEngagements, setPostEngagements] = useState([]);
+//     const [selectedPage, setSelectedPage] = useState(null);
+//     const [postMessage, setPostMessage] = useState('');
+//     const [postImage, setPostImage] = useState(null);
+//     const [likes, setLikes] = useState([]);
 
-    const statusChangeCallback = useCallback((response) => {
-        if (response.status === 'connected') {
-            const { accessToken } = response.authResponse;
-            localStorage.setItem('facebookAccessToken', accessToken);
-            setLoginStatus('connected');
-            fetchUserPages();
-        } else {
-            setLoginStatus('not_logged_in'); // Set to 'not_logged_in' instead of checking 'not_authorized'
-        }
-        setLoading(false);
-    }, []);
+//     const statusChangeCallback = useCallback((response) => {
+//         if (response.status === 'connected') {
+//             const { accessToken } = response.authResponse;
+//             localStorage.setItem('facebookAccessToken', accessToken);
+//             setLoginStatus('connected');
+//             fetchUserPages();
+//         } else {
+//             setLoginStatus('not_logged_in'); // Set to 'not_logged_in' instead of checking 'not_authorized'
+//         }
+//         setLoading(false);
+//     }, []);
 
-    const fetchUserPages = () => {
-        const accessToken = localStorage.getItem('facebookAccessToken');
-        if (accessToken) {
-            window.FB.api('/me/accounts', 'GET', { access_token: accessToken }, (response) => {
-                if (response && !response.error) {
-                    setPages(response.data);
-                }
-            });
-        }
-    };
+//     const fetchUserPages = () => {
+//         const accessToken = localStorage.getItem('facebookAccessToken');
+//         if (accessToken) {
+//             window.FB.api('/me/accounts', 'GET', { access_token: accessToken }, (response) => {
+//                 if (response && !response.error) {
+//                     setPages(response.data);
+//                 }
+//             });
+//         }
+//     };
 
-    const handlePostOnFacebook = async () => {
-        if (!selectedPage) {
-            console.error('No page selected.');
-            return;
-        }
+//     const handlePostOnFacebook = async () => {
+//         if (!selectedPage) {
+//             console.error('No page selected.');
+//             return;
+//         }
 
-        const accessToken = localStorage.getItem('facebookAccessToken');
-        const formData = new FormData();
-        formData.append('message', postMessage);
-        if (postImage) {
-            formData.append('source', postImage);
-        }
+//         const accessToken = localStorage.getItem('facebookAccessToken');
+//         const formData = new FormData();
+//         formData.append('message', postMessage);
+//         if (postImage) {
+//             formData.append('source', postImage);
+//         }
 
-        try {
-            const response = await fetch(
-                `https://graph.facebook.com/${selectedPage.id}/photos?access_token=${accessToken}`,
-                {
-                    method: 'POST',
-                    body: formData,
-                }
-            );
+//         try {
+//             const response = await fetch(
+//                 `https://graph.facebook.com/${selectedPage.id}/photos?access_token=${accessToken}`,
+//                 {
+//                     method: 'POST',
+//                     body: formData,
+//                 }
+//             );
 
-            const result = await response.json();
-            if (result.id) {
-                fetchPostEngagement(result.id);
-            }
-        } catch (error) {
-            console.error('Error posting on Facebook:', error);
-        }
-    };
+//             const result = await response.json();
+//             if (result.id) {
+//                 fetchPostEngagement(result.id);
+//             }
+//         } catch (error) {
+//             console.error('Error posting on Facebook:', error);
+//         }
+//     };
 
-    const fetchPostEngagement = (postId) => {
-        // Simulated engagement with mock data until permission is granted
-        const mockComments = [
-            { user: 'John Doe', message: 'Great post!' },
-            { user: 'Jane Smith', message: 'I love this content!' },
-            { user: 'Alex Johnson', message: 'Keep it up!' }
-        ];
+//     const fetchPostEngagement = (postId) => {
+//         // Simulated engagement with mock data until permission is granted
+//         const mockComments = [
+//             { user: 'John Doe', message: 'Great post!' },
+//             { user: 'Jane Smith', message: 'I love this content!' },
+//             { user: 'Alex Johnson', message: 'Keep it up!' }
+//         ];
 
-        const mockLikes = [
-            { user: 'John Doe' },
-            { user: 'Jane Smith' },
-            { user: 'Alex Johnson' }
-        ];
+//         const mockLikes = [
+//             { user: 'John Doe' },
+//             { user: 'Jane Smith' },
+//             { user: 'Alex Johnson' }
+//         ];
 
-        // Simulating the engagement with mock data
-        setPostEngagements(mockComments);
-        setLikes(mockLikes);
-    };
+//         // Simulating the engagement with mock data
+//         setPostEngagements(mockComments);
+//         setLikes(mockLikes);
+//     };
 
-    const handleLogout = () => {
-        window.FB.logout((response) => {
-            console.log('Logged out from Facebook:', response);
-            setLoginStatus('not_logged_in');
-            localStorage.removeItem('facebookAccessToken');
-            setPages([]);
-            setSelectedPage(null);
-            setPostMessage('');
-            setPostImage(null);
-            setPostEngagements([]);
-            setLikes([]);
-        });
-    };
+//     const handleLogout = () => {
+//         window.FB.logout((response) => {
+//             console.log('Logged out from Facebook:', response);
+//             setLoginStatus('not_logged_in');
+//             localStorage.removeItem('facebookAccessToken');
+//             setPages([]);
+//             setSelectedPage(null);
+//             setPostMessage('');
+//             setPostImage(null);
+//             setPostEngagements([]);
+//             setLikes([]);
+//         });
+//     };
 
-    useEffect(() => {
-        const loadFacebookSDK = () => {
-            if (window.FB) {
-                window.FB.getLoginStatus((response) => {
-                    statusChangeCallback(response);
-                });
-            } else {
-                const script = document.createElement('script');
-                script.src = "https://connect.facebook.net/en_US/sdk.js";
-                script.async = true;
-                script.onload = () => {
-                    window.FB.init({
-                        appId: '1332019044439778',
-                        cookie: true,
-                        xfbml: true,
-                        version: 'v17.0',
-                    });
-                    window.FB.getLoginStatus((response) => {
-                        statusChangeCallback(response);
-                    });
-                };
-                document.body.appendChild(script);
-            }
-        };
+//     useEffect(() => {
+//         const loadFacebookSDK = () => {
+//             if (window.FB) {
+//                 window.FB.getLoginStatus((response) => {
+//                     statusChangeCallback(response);
+//                 });
+//             } else {
+//                 const script = document.createElement('script');
+//                 script.src = "https://connect.facebook.net/en_US/sdk.js";
+//                 script.async = true;
+//                 script.onload = () => {
+//                     window.FB.init({
+//                         appId: '1332019044439778',
+//                         cookie: true,
+//                         xfbml: true,
+//                         version: 'v17.0',
+//                     });
+//                     window.FB.getLoginStatus((response) => {
+//                         statusChangeCallback(response);
+//                     });
+//                 };
+//                 document.body.appendChild(script);
+//             }
+//         };
 
-        loadFacebookSDK();
-    }, [statusChangeCallback]);
+//         loadFacebookSDK();
+//     }, [statusChangeCallback]);
 
-    const handleLogin = () => {
-        const configId = '2931675596973062'; // Your configuration ID
-        const loginUrl = `https://www.facebook.com/v17.0/dialog/oauth?client_id=1332019044439778&redirect_uri=https://smp-be-mysql.vercel.app/auth/facebook/callback&state=some_string&config_id=${configId}`;
+//     const handleLogin = () => {
+//         const configId = '2931675596973062'; // Your configuration ID
+//         const loginUrl = `https://www.facebook.com/v17.0/dialog/oauth?client_id=1332019044439778&redirect_uri=https://smp-be-mysql.vercel.app/auth/facebook/callback&state=some_string&config_id=${configId}`;
 
-        // Redirect to the Facebook login URL
-        window.location.href = loginUrl;
-    };
+//         // Redirect to the Facebook login URL
+//         window.location.href = loginUrl;
+//     };
 
-    return (
-        <div className="facebook-container">
-            <h2>Facebook Integration</h2>
-            {loading ? (
-                <p>Loading...</p>
-            ) : (
-                <div>
-                    {loginStatus === 'connected' ? (
-                        <div>
-                            <p>Logged in with Facebook.</p>
+//     return (
+//         <div className="facebook-container">
+//             <h2>Facebook Integration</h2>
+//             {loading ? (
+//                 <p>Loading...</p>
+//             ) : (
+//                 <div>
+//                     {loginStatus === 'connected' ? (
+//                         <div>
+//                             <p>Logged in with Facebook.</p>
 
-                            {/* Logout Button */}
-                            <button onClick={handleLogout} className="logout-button">Log Out</button>
+//                             {/* Logout Button */}
+//                             <button onClick={handleLogout} className="logout-button">Log Out</button>
 
-                            {/* Select Page */}
-                            {pages.length > 0 && (
-                                <div className="page-list">
-                                    <h3>Select a Page</h3>
-                                    {pages.map((page) => (
-                                        <button key={page.id} onClick={() => setSelectedPage(page)}>
-                                            {page.name}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
+//                             {/* Select Page */}
+//                             {pages.length > 0 && (
+//                                 <div className="page-list">
+//                                     <h3>Select a Page</h3>
+//                                     {pages.map((page) => (
+//                                         <button key={page.id} onClick={() => setSelectedPage(page)}>
+//                                             {page.name}
+//                                         </button>
+//                                     ))}
+//                                 </div>
+//                             )}
 
-                            {/* Post Input */}
-                            {selectedPage && (
-                                <div className="post-section">
-                                    <p>Selected Page: {selectedPage.name}</p>
-                                    <textarea
-                                        placeholder="Write your post..."
-                                        value={postMessage}
-                                        onChange={(e) => setPostMessage(e.target.value)}
-                                    ></textarea>
-                                    <input
-                                        type="file"
-                                        onChange={(e) => setPostImage(e.target.files[0])}
-                                    />
-                                    <button onClick={handlePostOnFacebook}>Post on Facebook</button>
-                                </div>
-                            )}
+//                             {/* Post Input */}
+//                             {selectedPage && (
+//                                 <div className="post-section">
+//                                     <p>Selected Page: {selectedPage.name}</p>
+//                                     <textarea
+//                                         placeholder="Write your post..."
+//                                         value={postMessage}
+//                                         onChange={(e) => setPostMessage(e.target.value)}
+//                                     ></textarea>
+//                                     <input
+//                                         type="file"
+//                                         onChange={(e) => setPostImage(e.target.files[0])}
+//                                     />
+//                                     <button onClick={handlePostOnFacebook}>Post on Facebook</button>
+//                                 </div>
+//                             )}
 
-                            {/* Post Engagements */}
-                            {postEngagements.length > 0 && (
-                                <div className="engagement-section">
-                                    <h3>Comments</h3>
-                                    {postEngagements.map((comment, index) => (
-                                        <p key={index}><strong>{comment.user}:</strong> {comment.message}</p>
-                                    ))}
-                                </div>
-                            )}
+//                             {/* Post Engagements */}
+//                             {postEngagements.length > 0 && (
+//                                 <div className="engagement-section">
+//                                     <h3>Comments</h3>
+//                                     {postEngagements.map((comment, index) => (
+//                                         <p key={index}><strong>{comment.user}:</strong> {comment.message}</p>
+//                                     ))}
+//                                 </div>
+//                             )}
 
-                            {/* Post Likes */}
-                            {likes.length > 0 && (
-                                <div className="engagement-section">
-                                    <h3>Likes</h3>
-                                    <p>{likes.length} Likes</p>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div>
-                            <p>Not logged in with Facebook.</p>
-                            <button onClick={handleLogin}>Login with Facebook</button>
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
-    );
-};
+//                             {/* Post Likes */}
+//                             {likes.length > 0 && (
+//                                 <div className="engagement-section">
+//                                     <h3>Likes</h3>
+//                                     <p>{likes.length} Likes</p>
+//                                 </div>
+//                             )}
+//                         </div>
+//                     ) : (
+//                         <div>
+//                             <p>Not logged in with Facebook.</p>
+//                             <button onClick={handleLogin}>Login with Facebook</button>
+//                         </div>
+//                     )}
+//                 </div>
+//             )}
+//         </div>
+//     );
+// };
 
-export default FacebookLoginCheck;
+// export default FacebookLoginCheck;
 
 
 // import React, { useEffect, useState, useCallback } from 'react';
@@ -880,3 +880,123 @@ export default FacebookLoginCheck;
 // };
 
 // export default FacebookLoginCheck;
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+
+const FacebookLoginCheck = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [pages, setPages] = useState([]);
+    const [selectedPageId, setSelectedPageId] = useState(null);
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        window.fbAsyncInit = function () {
+            window.FB.init({
+                appId: '1332019044439778', // Replace with your actual Facebook App ID
+                cookie: true,
+                xfbml: true,
+                version: 'v20.0'
+            });
+
+            // Check if the user is already logged in
+            window.FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+        };
+    },);
+
+    // Handle status change
+    const statusChangeCallback = (response) => {
+        if (response.status === 'connected') {
+            setIsLoggedIn(true);
+            fetchPages(response.authResponse.accessToken);
+        } else {
+            setIsLoggedIn(false);
+        }
+    };
+
+    // Login to Facebook
+    const loginWithFacebook = () => {
+        window.FB.login(function (response) {
+            if (response.status === 'connected') {
+                setIsLoggedIn(true);
+                fetchPages(response.authResponse.accessToken);
+            }
+        }, { scope: 'email, public_profile, pages_show_list, pages_manage_posts' });
+    };
+
+    // Fetch pages after login
+    const fetchPages = (accessToken) => {
+        window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+            setPages(response.data);
+        });
+    };
+
+    // Handle post submission
+    const postToPage = (pageId, accessToken, message) => {
+        window.FB.api(
+            `/${pageId}/feed`,
+            'POST',
+            { message, access_token: accessToken },
+            function (response) {
+                if (!response || response.error) {
+                    console.error('Error posting:', response.error);
+                    alert('Error posting to the page');
+                } else {
+                    alert('Post published successfully!');
+                }
+            }
+        );
+    };
+
+    // Handle page selection and post submission
+    const handlePost = () => {
+        const selectedPage = pages.find(page => page.id === selectedPageId);
+        if (selectedPage) {
+            postToPage(selectedPageId, selectedPage.access_token, message);
+        }
+    };
+
+    return (
+        <div>
+            <h1>Facebook Page Manager</h1>
+
+            {!isLoggedIn && (
+                <button onClick={loginWithFacebook}>Login with Facebook</button>
+            )}
+
+            {isLoggedIn && pages.length > 0 && (
+                <div>
+                    <h2>Select a Page to Post</h2>
+                    <select
+                        onChange={(e) => setSelectedPageId(e.target.value)}
+                        value={selectedPageId}
+                    >
+                        <option value="">Select Page</option>
+                        {pages.map((page) => (
+                            <option key={page.id} value={page.id}>
+                                {page.name}
+                            </option>
+                        ))}
+                    </select>
+
+                    <textarea
+                        placeholder="Write your post"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                    ></textarea>
+
+                    <button onClick={handlePost}>Post to Page</button>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default FacebookLoginCheck;
