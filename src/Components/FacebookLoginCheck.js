@@ -674,7 +674,7 @@ const FacebookLoginCheck = () => {
 
     const FACEBOOK_CLIENT_ID = '1332019044439778'; // Your appId
     const FACEBOOK_CONFIG_ID = '2931675596973062'; // Your config_id
-    const FACEBOOK_CLIENT_SECRET = 'your-facebook-client-secret'; // Replace this with your actual secret
+    const FACEBOOK_CLIENT_SECRET = '84b1a81f8b8129f43983db4e9692a39a'; // Replace this with your actual secret
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
