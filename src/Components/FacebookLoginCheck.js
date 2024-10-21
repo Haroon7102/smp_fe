@@ -885,9 +885,7 @@
 
 
 
-
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const FacebookLoginCheck = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -895,30 +893,25 @@ const FacebookLoginCheck = () => {
     const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
 
-    useEffect(() => {
-        window.fbAsyncInit = function () {
-            window.FB.init({
-                appId: '1332019044439778', // Replace with your actual Facebook App ID
-                cookie: true,
-                xfbml: true,
-                version: 'v20.0'
-            });
-
-            // Check if the user is already logged in
-            window.FB.getLoginStatus(function (response) {
-                statusChangeCallback(response);
-            });
-        };
-    },);
-
-    // Handle status change
-    const statusChangeCallback = (response) => {
+    // Function to handle status change
+    const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
             setIsLoggedIn(true);
             fetchPages(response.authResponse.accessToken);
         } else {
             setIsLoggedIn(false);
         }
+    }, []);
+
+    // Fetch pages after login
+    const fetchPages = (accessToken) => {
+        window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+            if (response && !response.error) {
+                setPages(response.data);
+            } else {
+                console.error('Error fetching pages:', response.error);
+            }
+        });
     };
 
     // Login to Facebook
@@ -927,18 +920,13 @@ const FacebookLoginCheck = () => {
             if (response.status === 'connected') {
                 setIsLoggedIn(true);
                 fetchPages(response.authResponse.accessToken);
+            } else {
+                console.error('Facebook login failed:', response);
             }
         }, { scope: 'email, public_profile, pages_show_list, pages_manage_posts' });
     };
 
-    // Fetch pages after login
-    const fetchPages = (accessToken) => {
-        window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
-            setPages(response.data);
-        });
-    };
-
-    // Handle post submission
+    // Handle post submission to the selected page
     const postToPage = (pageId, accessToken, message) => {
         window.FB.api(
             `/${pageId}/feed`,
@@ -955,13 +943,41 @@ const FacebookLoginCheck = () => {
         );
     };
 
-    // Handle page selection and post submission
+    // Handle the post button click
     const handlePost = () => {
         const selectedPage = pages.find(page => page.id === selectedPageId);
         if (selectedPage) {
             postToPage(selectedPageId, selectedPage.access_token, message);
+        } else {
+            alert('Please select a page to post to.');
         }
     };
+
+    // Initialize Facebook SDK and check login status
+    useEffect(() => {
+        window.fbAsyncInit = function () {
+            window.FB.init({
+                appId: '1332019044439778', // Replace with your actual Facebook App ID
+                cookie: true,
+                xfbml: true,
+                version: 'v20.0'
+            });
+
+            // Check login status
+            window.FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+        };
+
+        // Load the SDK asynchronously
+        (function (d, s, id) {
+            const js = d.createElement(s);
+            js.id = id;
+            js.src = 'https://connect.facebook.net/en_US/sdk.js';
+            const fjs = d.getElementsByTagName(s)[0];
+            fjs.parentNode.insertBefore(js, fjs);
+        })(document, 'script', 'facebook-jssdk');
+    }, [statusChangeCallback]); // Added statusChangeCallback as a dependency to avoid eslint warning
 
     return (
         <div>
