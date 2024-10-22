@@ -1421,9 +1421,30 @@ const FacebookLoginCheck = () => {
     };
 
     // Function to save the post to the database
+    // const savePostToDatabase = async (pageId, message) => {
+    //     const currentUserId = userId;
+    //     console.log("Saving post to database:", { userId: currentUserId, pageId, message });
+    //     try {
+    //         const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ userId: currentUserId, pageId, message }),
+    //         });
+    //         if (!response.ok) {
+    //             const errorData = await response.json();
+    //             throw new Error(`Failed to save post to database: ${errorData.message}`);
+    //         }
+    //         const result = await response.json();
+    //         console.log('Post saved to database:', result);
+    //     } catch (error) {
+    //         console.error('Error saving post to database:', error);
+    //     }
+    // };
+
     const savePostToDatabase = async (pageId, message) => {
         const currentUserId = userId;
-        console.log("Saving post to database:", { userId: currentUserId, pageId, message });
         try {
             const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
                 method: 'POST',
@@ -1432,10 +1453,12 @@ const FacebookLoginCheck = () => {
                 },
                 body: JSON.stringify({ userId: currentUserId, pageId, message }),
             });
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Failed to save post to database: ${errorData.message}`);
+                const errorData = await response.json(); // Get more info about the error
+                throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
             }
+
             const result = await response.json();
             console.log('Post saved to database:', result);
         } catch (error) {
