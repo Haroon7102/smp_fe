@@ -1255,7 +1255,7 @@ const FacebookLoginCheck = () => {
     const savePostToDatabase = async (pageId, message) => {
         const currentUserId = userId; // Use a different variable name here
         try {
-            const response = await fetch('/api/posts', {
+            const response = await fetch('/posts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
