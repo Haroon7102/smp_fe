@@ -1021,6 +1021,168 @@
 
 
 
+// import './FacebookLoginCheck.css';
+
+// import React, { useState, useEffect, useCallback } from 'react';
+
+// const FacebookLoginCheck = () => {
+//     const [isLoggedIn, setIsLoggedIn] = useState(false);
+//     const [pages, setPages] = useState([]);
+//     const [selectedPageId, setSelectedPageId] = useState(null);
+//     const [message, setMessage] = useState('');
+
+//     // Function to handle status change
+//     const statusChangeCallback = useCallback((response) => {
+//         if (response.status === 'connected') {
+//             setIsLoggedIn(true);
+//             fetchPages(response.authResponse.accessToken);
+//         } else {
+//             setIsLoggedIn(false);
+//         }
+//     }, []);
+
+//     // Fetch pages after login
+//     const fetchPages = (accessToken) => {
+//         window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+//             if (response && !response.error) {
+//                 setPages(response.data);
+//             } else {
+//                 console.error('Error fetching pages:', response.error);
+//             }
+//         });
+//     };
+
+//     // Login to Facebook
+//     const loginWithFacebook = () => {
+//         window.FB.login(function (response) {
+//             if (response.status === 'connected') {
+//                 setIsLoggedIn(true);
+//                 fetchPages(response.authResponse.accessToken);
+//             } else {
+//                 console.error('Facebook login failed:', response);
+//             }
+//         }, { scope: 'email, public_profile, pages_show_list, pages_manage_posts' });
+//     };
+
+//     // Handle post submission to the selected page
+//     const postToPage = async (pageId, accessToken, message) => {
+//         window.FB.api(
+//             `/${pageId}/feed`,
+//             'POST',
+//             { message, access_token: accessToken },
+//             async function (response) {
+//                 if (!response || response.error) {
+//                     console.error('Error posting:', response.error);
+//                     alert('Error posting to the page');
+//                 } else {
+//                     alert('Post published successfully!');
+//                     // After posting to Facebook, save the post to your database
+//                     await savePostToDatabase(pageId, message);
+//                 }
+//             }
+//         );
+//     };
+
+//     // Function to save the post to the database
+//     const savePostToDatabase = async (pageId, message) => {
+//         const userId = 'YOUR_USER_ID'; // Replace with the actual user ID
+//         try {
+//             const response = await fetch('/api/posts', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                 },
+//                 body: JSON.stringify({ userId, pageId, message }),
+//             });
+//             if (!response.ok) {
+//                 throw new Error('Failed to save post to database');
+//             }
+//         } catch (error) {
+//             console.error('Error saving post to database:', error);
+//         }
+//     };
+
+//     // Handle the post button click
+//     const handlePost = () => {
+//         const selectedPage = pages.find(page => page.id === selectedPageId);
+//         if (selectedPage) {
+//             postToPage(selectedPageId, selectedPage.access_token, message);
+//         } else {
+//             alert('Please select a page to post to.');
+//         }
+//     };
+
+//     // Initialize Facebook SDK and check login status
+//     useEffect(() => {
+//         window.fbAsyncInit = function () {
+//             window.FB.init({
+//                 appId: '1332019044439778', // Replace with your actual Facebook App ID
+//                 cookie: true,
+//                 xfbml: true,
+//                 version: 'v20.0'
+//             });
+
+//             // Check login status
+//             window.FB.getLoginStatus(function (response) {
+//                 statusChangeCallback(response);
+//             });
+//         };
+
+//         // Load the SDK asynchronously
+//         (function (d, s, id) {
+//             const js = d.createElement(s);
+//             js.id = id;
+//             js.src = 'https://connect.facebook.net/en_US/sdk.js';
+//             const fjs = d.getElementsByTagName(s)[0];
+//             fjs.parentNode.insertBefore(js, fjs);
+//         })(document, 'script', 'facebook-jssdk');
+//     }, [statusChangeCallback]); // Added statusChangeCallback as a dependency to avoid eslint warning
+
+//     return (
+//         <div>
+//             <h1>Facebook Page Manager</h1>
+
+//             {!isLoggedIn && (
+//                 <button onClick={loginWithFacebook}>Login with Facebook</button>
+//             )}
+
+//             {isLoggedIn && pages.length > 0 && (
+//                 <div>
+//                     <h2>Select a Page to Post</h2>
+//                     <select
+//                         onChange={(e) => setSelectedPageId(e.target.value)}
+//                         value={selectedPageId}
+//                     >
+//                         <option value="">Select Page</option>
+//                         {pages.map((page) => (
+//                             <option key={page.id} value={page.id}>
+//                                 {page.name}
+//                             </option>
+//                         ))}
+//                     </select>
+
+//                     <textarea
+//                         placeholder="Write your post"
+//                         value={message}
+//                         onChange={(e) => setMessage(e.target.value)}
+//                     ></textarea>
+
+//                     <button onClick={handlePost}>Post to Page</button>
+//                 </div>
+//             )}
+//         </div>
+//     );
+// };
+
+// export default FacebookLoginCheck;
+
+
+
+
+
+
+
+
 import './FacebookLoginCheck.css';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -1030,16 +1192,24 @@ const FacebookLoginCheck = () => {
     const [pages, setPages] = useState([]);
     const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
-
+    const [userId, setUserId] = useState(null);
     // Function to handle status change
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
             setIsLoggedIn(true);
+            fetchUserData(response.authResponse.userID); // Fetch the user ID from response
             fetchPages(response.authResponse.accessToken);
         } else {
             setIsLoggedIn(false);
         }
     }, []);
+
+    const fetchUserData = (userId) => {
+        // Store the user ID in a state variable or context
+        // For example, using a state variable:
+        setUserId(userId);
+    };
+
 
     // Fetch pages after login
     const fetchPages = (accessToken) => {
@@ -1085,7 +1255,7 @@ const FacebookLoginCheck = () => {
 
     // Function to save the post to the database
     const savePostToDatabase = async (pageId, message) => {
-        const userId = 'YOUR_USER_ID'; // Replace with the actual user ID
+        const userId = userId; // Replace with actual user ID
         try {
             const response = await fetch('/api/posts', {
                 method: 'POST',
@@ -1097,6 +1267,8 @@ const FacebookLoginCheck = () => {
             if (!response.ok) {
                 throw new Error('Failed to save post to database');
             }
+            const result = await response.json(); // Handle the response data if needed
+            console.log('Post saved to database:', result); // Log the saved post
         } catch (error) {
             console.error('Error saving post to database:', error);
         }
@@ -1106,6 +1278,10 @@ const FacebookLoginCheck = () => {
     const handlePost = () => {
         const selectedPage = pages.find(page => page.id === selectedPageId);
         if (selectedPage) {
+            if (!userId) {
+                alert('User ID is missing. Please log in again.');
+                return;
+            }
             postToPage(selectedPageId, selectedPage.access_token, message);
         } else {
             alert('Please select a page to post to.');
