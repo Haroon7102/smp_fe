@@ -1425,7 +1425,7 @@ const FacebookLoginCheck = () => {
         const currentUserId = userId;
         console.log("Saving post to database:", { userId: currentUserId, pageId, message });
         try {
-            const response = await fetch('/post/save', {
+            const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
