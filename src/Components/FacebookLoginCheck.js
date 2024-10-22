@@ -1183,8 +1183,7 @@
 
 
 
-import './FacebookLoginCheck.css';
-
+// import './FacebookLoginCheck.css';
 import React, { useState, useEffect, useCallback } from 'react';
 
 const FacebookLoginCheck = () => {
@@ -1193,6 +1192,7 @@ const FacebookLoginCheck = () => {
     const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
+
     // Function to handle status change
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -1204,12 +1204,10 @@ const FacebookLoginCheck = () => {
         }
     }, []);
 
-    const fetchUserData = (userId) => {
-        // Store the user ID in a state variable or context
-        // For example, using a state variable:
-        setUserId(userId);
+    const fetchUserData = (id) => {
+        // Store the user ID in a state variable
+        setUserId(id);
     };
-
 
     // Fetch pages after login
     const fetchPages = (accessToken) => {
@@ -1255,14 +1253,14 @@ const FacebookLoginCheck = () => {
 
     // Function to save the post to the database
     const savePostToDatabase = async (pageId, message) => {
-        const userId = userId; // Replace with actual user ID
+        const currentUserId = userId; // Use a different variable name here
         try {
             const response = await fetch('/api/posts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userId, pageId, message }),
+                body: JSON.stringify({ userId: currentUserId, pageId, message }), // Use currentUserId instead
             });
             if (!response.ok) {
                 throw new Error('Failed to save post to database');
