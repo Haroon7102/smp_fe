@@ -1,31 +1,18 @@
-<!-- index.html -->
-<!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
-<!-- Add this script tag to your public/index.html -->
-<!-- <script>
-    window.fbAsyncInit = function() {
-        FB.init({
-            appId      : '804095925131560', // Replace with your actual App ID
-            cookie     : true,
-            xfbml      : true,
-            version    : 'v17.0' // Replace with your current API version
-        });
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1332019044439778', // Replace 'YOUR_APP_ID' with your actual Facebook App ID
+      cookie     : true,  // Enable cookies to allow the server to access the session.
+      xfbml      : true,  // Parse social plugins on this webpage.
+      version    : 'v16.0' // Use the latest version of Facebook Graph API
+    });
 
-        // Check login status
-        FB.getLoginStatus(function(response) {
-            statusChangeCallback(response);
-        });
-    };
-
-    (function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) { return; }
-        js = d.createElement(s); js.id = id;
-        js.src = "https://connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
+    FB.AppEvents.logPageView();
+  };
 </script>
- -->
- <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+ <!-- <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script> -->
 
 <!DOCTYPE html>
 <html lang="en">
