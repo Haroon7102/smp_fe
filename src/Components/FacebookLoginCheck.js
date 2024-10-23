@@ -1444,7 +1444,8 @@ const FacebookLoginCheck = () => {
     // };
 
     const savePostToDatabase = async (pageId, message) => {
-        const currentUserId = userId;
+        const currentUserId = userId; // Ensure userId is correct
+        console.log("Saving post with data:", { userId: currentUserId, pageId, message }); // Debug the payload
         try {
             const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
                 method: 'POST',
@@ -1465,6 +1466,7 @@ const FacebookLoginCheck = () => {
             console.error('Error saving post to database:', error);
         }
     };
+
 
     // Handle the post button click
     const handlePost = () => {
