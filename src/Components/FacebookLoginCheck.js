@@ -1352,199 +1352,199 @@
 
 
 
-// import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-// const FacebookLoginCheck = () => {
-//     const [isLoggedIn, setIsLoggedIn] = useState(false);
-//     const [pages, setPages] = useState([]);
-//     const [selectedPageId, setSelectedPageId] = useState(null);
-//     const [message, setMessage] = useState('');
-//     const [userId, setUserId] = useState(null);
+const FacebookLoginCheck = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [pages, setPages] = useState([]);
+    const [selectedPageId, setSelectedPageId] = useState(null);
+    const [message, setMessage] = useState('');
+    const [userId, setUserId] = useState(null);
 
-//     // Function to handle status change
-//     const statusChangeCallback = useCallback((response) => {
-//         if (response.status === 'connected') {
-//             setIsLoggedIn(true);
-//             fetchUserData(response.authResponse.userID);
-//             fetchPages(response.authResponse.accessToken);
-//         } else {
-//             setIsLoggedIn(false);
-//         }
-//     }, []);
+    // Function to handle status change
+    const statusChangeCallback = useCallback((response) => {
+        if (response.status === 'connected') {
+            setIsLoggedIn(true);
+            fetchUserData(response.authResponse.userID);
+            fetchPages(response.authResponse.accessToken);
+        } else {
+            setIsLoggedIn(false);
+        }
+    }, []);
 
-//     const fetchUserData = (id) => {
-//         console.log("Fetched User ID:", id); // Log the ID
-//         setUserId(id);
-//     };
+    const fetchUserData = (id) => {
+        console.log("Fetched User ID:", id); // Log the ID
+        setUserId(id);
+    };
 
-//     // Fetch pages after login
-//     const fetchPages = (accessToken) => {
-//         window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
-//             if (response && !response.error) {
-//                 setPages(response.data);
-//             } else {
-//                 console.error('Error fetching pages:', response.error);
-//             }
-//         });
-//     };
+    // Fetch pages after login
+    const fetchPages = (accessToken) => {
+        window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+            if (response && !response.error) {
+                setPages(response.data);
+            } else {
+                console.error('Error fetching pages:', response.error);
+            }
+        });
+    };
 
-//     // Login to Facebook
-//     const loginWithFacebook = () => {
-//         window.FB.login(function (response) {
-//             if (response.status === 'connected') {
-//                 setIsLoggedIn(true);
-//                 fetchPages(response.authResponse.accessToken);
-//             } else {
-//                 console.error('Facebook login failed:', response);
-//             }
-//         }, { scope: 'email, public_profile, pages_show_list, pages_manage_posts' });
-//     };
+    // Login to Facebook
+    const loginWithFacebook = () => {
+        window.FB.login(function (response) {
+            if (response.status === 'connected') {
+                setIsLoggedIn(true);
+                fetchPages(response.authResponse.accessToken);
+            } else {
+                console.error('Facebook login failed:', response);
+            }
+        }, { scope: 'email, public_profile, pages_show_list, pages_manage_posts' });
+    };
 
-//     // Handle post submission to the selected page
-//     const postToPage = async (pageId, accessToken, message) => {
-//         console.log("Posting to page:", { pageId, accessToken, message });
-//         window.FB.api(
-//             `/${pageId}/feed`,
-//             'POST',
-//             { message, access_token: accessToken },
-//             async function (response) {
-//                 if (!response || response.error) {
-//                     console.error('Error posting:', response.error);
-//                     alert('Error posting to the page');
-//                 } else {
-//                     alert('Post published successfully!');
-//                     // After posting to Facebook, save the post to your database
-//                     await savePostToDatabase(pageId, message);
-//                 }
-//             }
-//         );
-//     };
+    // Handle post submission to the selected page
+    const postToPage = async (pageId, accessToken, message) => {
+        console.log("Posting to page:", { pageId, accessToken, message });
+        window.FB.api(
+            `/${pageId}/feed`,
+            'POST',
+            { message, access_token: accessToken },
+            async function (response) {
+                if (!response || response.error) {
+                    console.error('Error posting:', response.error);
+                    alert('Error posting to the page');
+                } else {
+                    alert('Post published successfully!');
+                    // After posting to Facebook, save the post to your database
+                    await savePostToDatabase(pageId, message);
+                }
+            }
+        );
+    };
 
-//     // Function to save the post to the database
-//     // const savePostToDatabase = async (pageId, message) => {
-//     //     const currentUserId = userId;
-//     //     console.log("Saving post to database:", { userId: currentUserId, pageId, message });
-//     //     try {
-//     //         const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
-//     //             method: 'POST',
-//     //             headers: {
-//     //                 'Content-Type': 'application/json',
-//     //             },
-//     //             body: JSON.stringify({ userId: currentUserId, pageId, message }),
-//     //         });
-//     //         if (!response.ok) {
-//     //             const errorData = await response.json();
-//     //             throw new Error(`Failed to save post to database: ${errorData.message}`);
-//     //         }
-//     //         const result = await response.json();
-//     //         console.log('Post saved to database:', result);
-//     //     } catch (error) {
-//     //         console.error('Error saving post to database:', error);
-//     //     }
-//     // };
+    // Function to save the post to the database
+    // const savePostToDatabase = async (pageId, message) => {
+    //     const currentUserId = userId;
+    //     console.log("Saving post to database:", { userId: currentUserId, pageId, message });
+    //     try {
+    //         const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ userId: currentUserId, pageId, message }),
+    //         });
+    //         if (!response.ok) {
+    //             const errorData = await response.json();
+    //             throw new Error(`Failed to save post to database: ${errorData.message}`);
+    //         }
+    //         const result = await response.json();
+    //         console.log('Post saved to database:', result);
+    //     } catch (error) {
+    //         console.error('Error saving post to database:', error);
+    //     }
+    // };
 
-//     const savePostToDatabase = async (pageId, message) => {
-//         const currentUserId = userId; // Ensure userId is correct
-//         console.log("Saving post with data:", { userId: currentUserId, pageId, message }); // Debug the payload
-//         try {
-//             const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({ userId: currentUserId, pageId, message }),
-//             });
+    const savePostToDatabase = async (pageId, message) => {
+        const currentUserId = userId; // Ensure userId is correct
+        console.log("Saving post with data:", { userId: currentUserId, pageId, message }); // Debug the payload
+        try {
+            const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: currentUserId, pageId, message }),
+            });
 
-//             if (!response.ok) {
-//                 const errorData = await response.json(); // Get more info about the error
-//                 throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
-//             }
+            if (!response.ok) {
+                const errorData = await response.json(); // Get more info about the error
+                throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
+            }
 
-//             const result = await response.json();
-//             console.log('Post saved to database:', result);
-//         } catch (error) {
-//             console.error('Error saving post to database:', error);
-//         }
-//     };
+            const result = await response.json();
+            console.log('Post saved to database:', result);
+        } catch (error) {
+            console.error('Error saving post to database:', error);
+        }
+    };
 
 
-//     // Handle the post button click
-//     const handlePost = () => {
-//         const selectedPage = pages.find(page => page.id === selectedPageId);
-//         if (selectedPage) {
-//             if (!userId) {
-//                 alert('User ID is missing. Please log in again.');
-//                 return;
-//             }
-//             postToPage(selectedPageId, selectedPage.access_token, message);
-//         } else {
-//             alert('Please select a page to post to.');
-//         }
-//     };
+    // Handle the post button click
+    const handlePost = () => {
+        const selectedPage = pages.find(page => page.id === selectedPageId);
+        if (selectedPage) {
+            if (!userId) {
+                alert('User ID is missing. Please log in again.');
+                return;
+            }
+            postToPage(selectedPageId, selectedPage.access_token, message);
+        } else {
+            alert('Please select a page to post to.');
+        }
+    };
 
-//     // Initialize Facebook SDK and check login status
-//     useEffect(() => {
-//         window.fbAsyncInit = function () {
-//             window.FB.init({
-//                 appId: '1332019044439778', // Replace with your actual Facebook App ID
-//                 cookie: true,
-//                 xfbml: true,
-//                 version: 'v20.0'
-//             });
+    // Initialize Facebook SDK and check login status
+    useEffect(() => {
+        window.fbAsyncInit = function () {
+            window.FB.init({
+                appId: '1332019044439778', // Replace with your actual Facebook App ID
+                cookie: true,
+                xfbml: true,
+                version: 'v20.0'
+            });
 
-//             // Check login status
-//             window.FB.getLoginStatus(function (response) {
-//                 statusChangeCallback(response);
-//             });
-//         };
+            // Check login status
+            window.FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+        };
 
-//         // Load the SDK asynchronously
-//         (function (d, s, id) {
-//             const js = d.createElement(s);
-//             js.id = id;
-//             js.src = 'https://connect.facebook.net/en_US/sdk.js';
-//             const fjs = d.getElementsByTagName(s)[0];
-//             fjs.parentNode.insertBefore(js, fjs);
-//         })(document, 'script', 'facebook-jssdk');
-//     }, [statusChangeCallback]);
+        // Load the SDK asynchronously
+        (function (d, s, id) {
+            const js = d.createElement(s);
+            js.id = id;
+            js.src = 'https://connect.facebook.net/en_US/sdk.js';
+            const fjs = d.getElementsByTagName(s)[0];
+            fjs.parentNode.insertBefore(js, fjs);
+        })(document, 'script', 'facebook-jssdk');
+    }, [statusChangeCallback]);
 
-//     return (
-//         <div>
-//             <h1>Facebook Page Manager</h1>
+    return (
+        <div>
+            <h1>Facebook Page Manager</h1>
 
-//             {!isLoggedIn && (
-//                 <button onClick={loginWithFacebook}>Login with Facebook</button>
-//             )}
+            {!isLoggedIn && (
+                <button onClick={loginWithFacebook}>Login with Facebook</button>
+            )}
 
-//             {isLoggedIn && pages.length > 0 && (
-//                 <div>
-//                     <h2>Select a Page to Post</h2>
-//                     <select
-//                         onChange={(e) => setSelectedPageId(e.target.value)}
-//                         value={selectedPageId}
-//                     >
-//                         <option value="">Select Page</option>
-//                         {pages.map((page) => (
-//                             <option key={page.id} value={page.id}>
-//                                 {page.name}
-//                             </option>
-//                         ))}
-//                     </select>
+            {isLoggedIn && pages.length > 0 && (
+                <div>
+                    <h2>Select a Page to Post</h2>
+                    <select
+                        onChange={(e) => setSelectedPageId(e.target.value)}
+                        value={selectedPageId}
+                    >
+                        <option value="">Select Page</option>
+                        {pages.map((page) => (
+                            <option key={page.id} value={page.id}>
+                                {page.name}
+                            </option>
+                        ))}
+                    </select>
 
-//                     <textarea
-//                         placeholder="Write your post"
-//                         value={message}
-//                         onChange={(e) => setMessage(e.target.value)}
-//                     ></textarea>
+                    <textarea
+                        placeholder="Write your post"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                    ></textarea>
 
-//                     <button onClick={handlePost}>Post to Page</button>
-//                 </div>
-//             )}
-//         </div>
-//     );
-// };
+                    <button onClick={handlePost}>Post to Page</button>
+                </div>
+            )}
+        </div>
+    );
+};
 
-// export default FacebookLoginCheck;
+export default FacebookLoginCheck;
 
 // import React, { useState, useEffect, useCallback } from 'react';
 
@@ -1646,103 +1646,103 @@
 // export default FacebookLoginCheck;
 
 
-import React, { useState, useEffect, useCallback } from 'react';
+// import React, { useState, useEffect, useCallback } from 'react';
 
-const FacebookLoginCheck = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userData, setUserData] = useState(null);
+// const FacebookLoginCheck = () => {
+//     const [isLoggedIn, setIsLoggedIn] = useState(false);
+//     const [userData, setUserData] = useState(null);
 
-    // Define the status change callback within useCallback
-    const statusChangeCallback = useCallback((response) => {
-        if (response.status === 'connected') {
-            setIsLoggedIn(true);
-            const { accessToken } = response.authResponse;
-            // Fetch user data
-            window.FB.api('/me', { fields: 'name,email', access_token: accessToken }, async (userResponse) => {
-                if (userResponse && !userResponse.error) {
-                    const userInfo = {
-                        userId: userResponse.id,
-                        name: userResponse.name,
-                        email: userResponse.email,
-                        accessToken: accessToken
-                    };
-                    setUserData(userInfo);
-                    await saveFacebookUser(userInfo); // Save user data to your backend
-                } else {
-                    console.error('Error fetching user data:', userResponse.error);
-                }
-            });
-        } else {
-            setIsLoggedIn(false);
-        }
-    }, []);
+//     // Define the status change callback within useCallback
+//     const statusChangeCallback = useCallback((response) => {
+//         if (response.status === 'connected') {
+//             setIsLoggedIn(true);
+//             const { accessToken } = response.authResponse;
+//             // Fetch user data
+//             window.FB.api('/me', { fields: 'name,email', access_token: accessToken }, async (userResponse) => {
+//                 if (userResponse && !userResponse.error) {
+//                     const userInfo = {
+//                         userId: userResponse.id,
+//                         name: userResponse.name,
+//                         email: userResponse.email,
+//                         accessToken: accessToken
+//                     };
+//                     setUserData(userInfo);
+//                     await saveFacebookUser(userInfo); // Save user data to your backend
+//                 } else {
+//                     console.error('Error fetching user data:', userResponse.error);
+//                 }
+//             });
+//         } else {
+//             setIsLoggedIn(false);
+//         }
+//     }, []);
 
-    const saveFacebookUser = async (userInfo) => {
-        try {
-            const response = await fetch('https://smp-be-mysql.vercel.app/facebook/save-user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(userInfo),
-            });
-            if (!response.ok) {
-                throw new Error('Failed to save Facebook user');
-            }
-            console.log('Facebook user saved to database');
-        } catch (error) {
-            console.error('Error saving user to database:', error);
-        }
-    };
+//     const saveFacebookUser = async (userInfo) => {
+//         try {
+//             const response = await fetch('https://smp-be-mysql.vercel.app/facebook/save-user', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                 },
+//                 body: JSON.stringify(userInfo),
+//             });
+//             if (!response.ok) {
+//                 throw new Error('Failed to save Facebook user');
+//             }
+//             console.log('Facebook user saved to database');
+//         } catch (error) {
+//             console.error('Error saving user to database:', error);
+//         }
+//     };
 
-    // Function to log in with Facebook
-    const loginWithFacebook = () => {
-        window.FB.login((response) => {
-            if (response.status === 'connected') {
-                statusChangeCallback(response);
-            } else {
-                console.error('Facebook login failed:', response);
-            }
-        }, { scope: 'public_profile,email,pages_show_list,pages_manage_posts' });
-    };
+//     // Function to log in with Facebook
+//     const loginWithFacebook = () => {
+//         window.FB.login((response) => {
+//             if (response.status === 'connected') {
+//                 statusChangeCallback(response);
+//             } else {
+//                 console.error('Facebook login failed:', response);
+//             }
+//         }, { scope: 'public_profile,email,pages_show_list,pages_manage_posts' });
+//     };
 
-    useEffect(() => {
-        window.fbAsyncInit = function () {
-            window.FB.init({
-                appId: '1332019044439778', // Replace with your Facebook App ID
-                cookie: true,
-                xfbml: true,
-                version: 'v20.0',
-                config_id: '1273277580768760',
-                // response_type: 'code'
-            });
-            window.FB.getLoginStatus((response) => {
-                statusChangeCallback(response);
-            });
-        };
+//     useEffect(() => {
+//         window.fbAsyncInit = function () {
+//             window.FB.init({
+//                 appId: '1332019044439778', // Replace with your Facebook App ID
+//                 cookie: true,
+//                 xfbml: true,
+//                 version: 'v20.0',
+//                 config_id: '1273277580768760',
+//                 // response_type: 'code'
+//             });
+//             window.FB.getLoginStatus((response) => {
+//                 statusChangeCallback(response);
+//             });
+//         };
 
-        (function (d, s, id) {
-            const js = d.createElement(s);
-            js.id = id;
-            js.src = 'https://connect.facebook.net/en_US/sdk.js';
-            const fjs = d.getElementsByTagName(s)[0];
-            fjs.parentNode.insertBefore(js, fjs);
-        })(document, 'script', 'facebook-jssdk');
-    }, [statusChangeCallback]);
+//         (function (d, s, id) {
+//             const js = d.createElement(s);
+//             js.id = id;
+//             js.src = 'https://connect.facebook.net/en_US/sdk.js';
+//             const fjs = d.getElementsByTagName(s)[0];
+//             fjs.parentNode.insertBefore(js, fjs);
+//         })(document, 'script', 'facebook-jssdk');
+//     }, [statusChangeCallback]);
 
-    return (
-        <div>
-            <h1>Facebook Login</h1>
-            {!isLoggedIn ? (
-                <button onClick={loginWithFacebook}>Login with Facebook</button>
-            ) : (
-                <div>
-                    <h2>Welcome, {userData?.name}</h2>
-                    <p>Email: {userData?.email}</p>
-                </div>
-            )}
-        </div>
-    );
-};
+//     return (
+//         <div>
+//             <h1>Facebook Login</h1>
+//             {!isLoggedIn ? (
+//                 <button onClick={loginWithFacebook}>Login with Facebook</button>
+//             ) : (
+//                 <div>
+//                     <h2>Welcome, {userData?.name}</h2>
+//                     <p>Email: {userData?.email}</p>
+//                 </div>
+//             )}
+//         </div>
+//     );
+// };
 
-export default FacebookLoginCheck;
+// export default FacebookLoginCheck;
