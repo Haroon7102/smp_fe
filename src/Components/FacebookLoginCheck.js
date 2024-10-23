@@ -1713,7 +1713,7 @@ const FacebookLoginCheck = () => {
                 cookie: true,
                 xfbml: true,
                 version: 'v20.0',
-                config_id: '2931675596973062',
+                config_id: '1273277580768760',
                 // response_type: 'code'
             });
             window.FB.getLoginStatus((response) => {
