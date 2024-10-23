@@ -1397,7 +1397,10 @@ const FacebookLoginCheck = () => {
             } else {
                 console.error('Facebook login failed:', response);
             }
-        }, { scope: 'email, public_profile, pages_show_list, pages_manage_posts' });
+        }, {
+            // scope: 'email, public_profile, pages_show_list, pages_manage_posts' });
+            config_id: '1273277580768760' // Use your Configuration ID here
+        });
     };
 
     // Handle post submission to the selected page
