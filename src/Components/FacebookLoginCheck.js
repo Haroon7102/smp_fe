@@ -1703,7 +1703,7 @@ const FacebookLoginCheck = () => {
             } else {
                 console.error('Facebook login failed:', response);
             }
-        }, { scope: 'public_profile,email' });
+        }, { scope: 'public_profile,email,pages_show_list,pages_manage_posts' });
     };
 
     useEffect(() => {
@@ -1713,6 +1713,8 @@ const FacebookLoginCheck = () => {
                 cookie: true,
                 xfbml: true,
                 version: 'v20.0',
+                config_id: '2931675596973062',
+                // response_type: 'code'
             });
             window.FB.getLoginStatus((response) => {
                 statusChangeCallback(response);
