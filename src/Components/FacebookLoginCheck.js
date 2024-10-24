@@ -1394,11 +1394,17 @@ const FacebookLoginCheck = () => {
             if (response.status === 'connected') {
                 setIsLoggedIn(true);
                 fetchPages(response.authResponse.accessToken);
+            } else if (response.status === 'not_authorized') {
+                // User logged in to Facebook, but not authorized the app
+                console.error('App not authorized by the user:', response);
+                alert('You need to authorize the app to manage your Facebook pages.');
             } else {
+                // User is not logged in to Facebook at all
                 console.error('Facebook login failed:', response);
+                alert('Facebook login failed. Please try again.');
             }
         }, {
-            // scope: 'email, public_profile, pages_show_list, pages_manage_posts' });
+            scope: 'email, public_profile, pages_show_list, pages_manage_posts', // Re-enable this line
             config_id: '1273277580768760' // Use your Configuration ID here
         });
     };
