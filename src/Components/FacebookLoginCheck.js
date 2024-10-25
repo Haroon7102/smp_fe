@@ -2017,9 +2017,68 @@ const FacebookLoginCheck = () => {
         );
     };
 
+    // const savePostToDatabase = async (pageId, message) => {
+    //     const currentUserId = userId;
+    //     console.log("Saving post with data:", { userId: currentUserId, pageId, message });
+    //     try {
+    //         console.log("Saving post with data:", { userId: currentUserId, pageId, message });
+    //         const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ userId: currentUserId, pageId, message }),
+    //         });
+
+    //         if (!response.ok) {
+    //             const errorData = await response.json();
+    //             throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
+    //         }
+
+    //         const result = await response.json();
+    //         console.log('Post saved to database:', result);
+    //     } catch (error) {
+    //         console.error('Error saving post to database:', error);
+    //     }
+    // };
+
+    // const handlePost = () => {
+    //     const selectedPage = pages.find(page => page.id === selectedPageId);
+    //     if (selectedPage) {
+    //         if (!userId) {
+    //             alert('User ID is missing. Please log in again.');
+    //             return;
+    //         }
+    //         postToPage(selectedPageId, selectedPage.access_token, message);
+    //     } else {
+    //         alert('Please select a page to post to.');
+    //     }
+    // };
+    const handlePost = () => {
+        const selectedPage = pages.find(page => page.id === selectedPageId);
+        if (selectedPage) {
+            if (!userId) {
+                alert('User ID is missing. Please log in again.');
+                return;
+            }
+
+            // Call postToPage first to post on Facebook
+            postToPage(selectedPageId, selectedPage.access_token, message)
+                .then(() => {
+                    // After successful Facebook post, save post to the database
+                    savePostToDatabase(selectedPageId, message);
+                })
+                .catch((error) => {
+                    console.error('Error posting to Facebook:', error);
+                });
+        } else {
+            alert('Please select a page to post to.');
+        }
+    };
+
     const savePostToDatabase = async (pageId, message) => {
         const currentUserId = userId;
-        console.log("Saving post with data:", { userId: currentUserId, pageId, message });
+        console.log("Initiating save with data:", { userId: currentUserId, pageId, message });
         try {
             const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
                 method: 'POST',
@@ -2029,30 +2088,20 @@ const FacebookLoginCheck = () => {
                 body: JSON.stringify({ userId: currentUserId, pageId, message }),
             });
 
+            console.log('Database save response status:', response.status);
             if (!response.ok) {
                 const errorData = await response.json();
+                console.error('Backend response error:', errorData);
                 throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
             }
 
             const result = await response.json();
-            console.log('Post saved to database:', result);
+            console.log('Post successfully saved to database:', result);
         } catch (error) {
             console.error('Error saving post to database:', error);
         }
     };
 
-    const handlePost = () => {
-        const selectedPage = pages.find(page => page.id === selectedPageId);
-        if (selectedPage) {
-            if (!userId) {
-                alert('User ID is missing. Please log in again.');
-                return;
-            }
-            postToPage(selectedPageId, selectedPage.access_token, message);
-        } else {
-            alert('Please select a page to post to.');
-        }
-    };
 
     useEffect(() => {
         window.fbAsyncInit = function () {
