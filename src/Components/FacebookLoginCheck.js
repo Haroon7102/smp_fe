@@ -2166,7 +2166,6 @@
 
 
 
-
 import React, { useState, useEffect, useCallback } from 'react';
 
 const FacebookLoginCheck = () => {
@@ -2175,7 +2174,7 @@ const FacebookLoginCheck = () => {
     const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
-    const [file, setFile] = useState(null); // New state for storing file
+    const [file, setFile] = useState(null);
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -2213,7 +2212,7 @@ const FacebookLoginCheck = () => {
             }
         }, {
             scope: 'email, public_profile, pages_show_list, pages_manage_posts',
-            config_id: '1273277580768760' // Replace with your Configuration ID
+            config_id: '1273277580768760'
         });
     };
 
@@ -2221,11 +2220,21 @@ const FacebookLoginCheck = () => {
         const formData = new FormData();
         let apiUrl = `/${pageId}`;
 
+        // Check if a file is selected
         if (file) {
-            formData.append('source', file);
-            apiUrl += '/photos'; // Use /photos for images or /videos for videos
+            const fileType = file.type.split('/')[0];
+            if (fileType === 'image') {
+                formData.append('source', file);
+                apiUrl += '/photos'; // Use '/photos' for images
+            } else if (fileType === 'video') {
+                formData.append('source', file);
+                apiUrl += '/videos'; // Use '/videos' for videos
+            } else {
+                alert('Only images and videos are supported.');
+                return;
+            }
         } else {
-            apiUrl += '/feed';
+            apiUrl += '/feed'; // Use '/feed' for text-only posts
         }
 
         formData.append('message', message);
@@ -2237,34 +2246,9 @@ const FacebookLoginCheck = () => {
                 alert('Error posting to the page: ' + (response.error.message || 'Unknown error'));
             } else {
                 alert('Post published successfully!');
-                // Save the post to your database, if needed
             }
         });
     };
-
-
-    // const savePostToDatabase = async (pageId, message, file) => {
-    //     const currentUserId = userId;
-    //     try {
-    //         const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({ userId: currentUserId, pageId, message, media: file ? file.name : null }),
-    //         });
-
-    //         if (!response.ok) {
-    //             const errorData = await response.json();
-    //             throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
-    //         }
-
-    //         const result = await response.json();
-    //         console.log('Post saved to database:', result);
-    //     } catch (error) {
-    //         console.error('Error saving post to database:', error);
-    //     }
-    // };
 
     const handlePost = () => {
         const selectedPage = pages.find(page => page.id === selectedPageId);
@@ -2345,5 +2329,6 @@ const FacebookLoginCheck = () => {
 };
 
 export default FacebookLoginCheck;
+
 
 
