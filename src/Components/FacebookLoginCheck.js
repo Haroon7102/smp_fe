@@ -2175,7 +2175,7 @@ const FacebookLoginCheck = () => {
     const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
-    const [mediaFile, setMediaFile] = useState(null);
+    const [file, setFile] = useState(null); // New state for storing file
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -2213,36 +2213,33 @@ const FacebookLoginCheck = () => {
             }
         }, {
             scope: 'email, public_profile, pages_show_list, pages_manage_posts',
-            config_id: '1273277580768760' // Use your Configuration ID here
+            config_id: '1273277580768760' // Replace with your Configuration ID
         });
     };
 
-    const handleFileChange = (event) => {
-        setMediaFile(event.target.files[0]);
-    };
-
-    const postToPage = async (pageId, accessToken, message) => {
+    const postToPage = async (pageId, accessToken, message, file) => {
+        let apiUrl = `/${pageId}/feed`;
         const formData = new FormData();
-        formData.append('access_token', accessToken);
-        if (message) formData.append('message', message);
-        if (mediaFile) formData.append('source', mediaFile);
 
-        let postEndpoint = mediaFile ? `/${pageId}/photos` : `/${pageId}/feed`;
-        if (mediaFile && mediaFile.type.startsWith('video')) {
-            postEndpoint = `/${pageId}/videos`;
+        if (file) {
+            formData.append('source', file);
+            apiUrl = `/${pageId}/photos`; // For photo uploads
         }
+        formData.append('message', message);
+        formData.append('access_token', accessToken);
 
-        window.FB.api(postEndpoint, 'POST', formData, async function (response) {
+        window.FB.api(apiUrl, 'POST', formData, async function (response) {
             if (!response || response.error) {
+                console.error('Error posting:', response.error);
                 alert('Error posting to the page: ' + (response.error.message || 'Unknown error'));
             } else {
                 alert('Post published successfully!');
-                await savePostToDatabase(pageId, message, mediaFile ? mediaFile.name : null);
+                await savePostToDatabase(pageId, message, file);
             }
         });
     };
 
-    const savePostToDatabase = async (pageId, message, mediaFileName) => {
+    const savePostToDatabase = async (pageId, message, file) => {
         const currentUserId = userId;
         try {
             const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
@@ -2250,7 +2247,7 @@ const FacebookLoginCheck = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userId: currentUserId, pageId, message, media: mediaFileName }),
+                body: JSON.stringify({ userId: currentUserId, pageId, message, media: file ? file.name : null }),
             });
 
             if (!response.ok) {
@@ -2272,10 +2269,7 @@ const FacebookLoginCheck = () => {
                 alert('User ID is missing. Please log in again.');
                 return;
             }
-
-            postToPage(selectedPageId, selectedPage.access_token, message)
-                .then(() => savePostToDatabase(selectedPageId, message, mediaFile ? mediaFile.name : null))
-                .catch((error) => console.error('Error posting to Facebook:', error));
+            postToPage(selectedPageId, selectedPage.access_token, message, file);
         } else {
             alert('Please select a page to post to.');
         }
@@ -2335,8 +2329,8 @@ const FacebookLoginCheck = () => {
 
                     <input
                         type="file"
-                        accept="image/*, video/*"
-                        onChange={handleFileChange}
+                        accept="image/*,video/*"
+                        onChange={(e) => setFile(e.target.files[0])}
                     />
 
                     <button onClick={handlePost}>Post to Page</button>
@@ -2347,3 +2341,5 @@ const FacebookLoginCheck = () => {
 };
 
 export default FacebookLoginCheck;
+
+
