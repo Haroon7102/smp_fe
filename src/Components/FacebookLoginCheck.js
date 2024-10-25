@@ -1947,6 +1947,226 @@
 
 
 
+// import React, { useState, useEffect, useCallback } from 'react';
+
+// const FacebookLoginCheck = () => {
+//     const [isLoggedIn, setIsLoggedIn] = useState(false);
+//     const [pages, setPages] = useState([]);
+//     const [selectedPageId, setSelectedPageId] = useState(null);
+//     const [message, setMessage] = useState('');
+//     const [userId, setUserId] = useState(null);
+
+//     const statusChangeCallback = useCallback((response) => {
+//         if (response.status === 'connected') {
+//             setIsLoggedIn(true);
+//             fetchUserData(response.authResponse.userID);
+//             fetchPages(response.authResponse.accessToken);
+//         } else {
+//             setIsLoggedIn(false);
+//         }
+//     }, []);
+
+//     const fetchUserData = (id) => {
+//         console.log("Fetched User ID:", id);
+//         setUserId(id);
+//     };
+
+//     const fetchPages = (accessToken) => {
+//         window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+//             if (response && !response.error) {
+//                 setPages(response.data);
+//             } else {
+//                 console.error('Error fetching pages:', response.error);
+//             }
+//         });
+//     };
+
+//     const loginWithFacebook = () => {
+//         window.FB.login(function (response) {
+//             if (response.status === 'connected') {
+//                 setIsLoggedIn(true);
+//                 fetchPages(response.authResponse.accessToken);
+//             } else if (response.status === 'not_authorized') {
+//                 console.error('App not authorized by the user:', response);
+//                 alert('You need to authorize the app to manage your Facebook pages.');
+//             } else {
+//                 console.error('Facebook login failed:', response);
+//                 alert('Facebook login failed. Please try again.');
+//             }
+//         }, {
+//             scope: 'email, public_profile, pages_show_list, pages_manage_posts',
+//             config_id: '1273277580768760' // Use your Configuration ID here
+//         });
+//     };
+
+//     const postToPage = async (pageId, accessToken, message) => {
+//         console.log("Posting to page:", { pageId, accessToken, message });
+//         window.FB.api(
+//             `/${pageId}/feed`,
+//             'POST',
+//             { message, access_token: accessToken },
+//             async function (response) {
+//                 if (!response || response.error) {
+//                     console.error('Error posting:', response.error);
+//                     alert('Error posting to the page: ' + (response.error.message || 'Unknown error'));
+//                 } else {
+//                     alert('Post published successfully!');
+//                     await savePostToDatabase(pageId, message);
+//                 }
+//             }
+//         );
+//     };
+
+//     // const savePostToDatabase = async (pageId, message) => {
+//     //     const currentUserId = userId;
+//     //     console.log("Saving post with data:", { userId: currentUserId, pageId, message });
+//     //     try {
+//     //         console.log("Saving post with data:", { userId: currentUserId, pageId, message });
+//     //         const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
+//     //             method: 'POST',
+//     //             headers: {
+//     //                 'Content-Type': 'application/json',
+//     //             },
+//     //             body: JSON.stringify({ userId: currentUserId, pageId, message }),
+//     //         });
+
+//     //         if (!response.ok) {
+//     //             const errorData = await response.json();
+//     //             throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
+//     //         }
+
+//     //         const result = await response.json();
+//     //         console.log('Post saved to database:', result);
+//     //     } catch (error) {
+//     //         console.error('Error saving post to database:', error);
+//     //     }
+//     // };
+
+//     // const handlePost = () => {
+//     //     const selectedPage = pages.find(page => page.id === selectedPageId);
+//     //     if (selectedPage) {
+//     //         if (!userId) {
+//     //             alert('User ID is missing. Please log in again.');
+//     //             return;
+//     //         }
+//     //         postToPage(selectedPageId, selectedPage.access_token, message);
+//     //     } else {
+//     //         alert('Please select a page to post to.');
+//     //     }
+//     // };
+//     const handlePost = () => {
+//         const selectedPage = pages.find(page => page.id === selectedPageId);
+//         if (selectedPage) {
+//             if (!userId) {
+//                 alert('User ID is missing. Please log in again.');
+//                 return;
+//             }
+
+//             // Call postToPage first to post on Facebook
+//             postToPage(selectedPageId, selectedPage.access_token, message)
+//                 .then(() => {
+//                     // After successful Facebook post, save post to the database
+//                     savePostToDatabase(selectedPageId, message);
+//                 })
+//                 .catch((error) => {
+//                     console.error('Error posting to Facebook:', error);
+//                 });
+//         } else {
+//             alert('Please select a page to post to.');
+//         }
+//     };
+
+//     const savePostToDatabase = async (pageId, message) => {
+//         const currentUserId = userId;
+//         console.log("Initiating save with data:", { userId: currentUserId, pageId, message });
+//         try {
+//             const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                 },
+//                 body: JSON.stringify({ userId: currentUserId, pageId, message }),
+//             });
+
+//             console.log('Database save response status:', response.status);
+//             if (!response.ok) {
+//                 const errorData = await response.json();
+//                 console.error('Backend response error:', errorData);
+//                 throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
+//             }
+
+//             const result = await response.json();
+//             console.log('Post successfully saved to database:', result);
+//         } catch (error) {
+//             console.error('Error saving post to database:', error);
+//         }
+//     };
+
+
+//     useEffect(() => {
+//         window.fbAsyncInit = function () {
+//             window.FB.init({
+//                 appId: '1332019044439778',
+//                 cookie: true,
+//                 xfbml: true,
+//                 version: 'v20.0'
+//             });
+
+//             window.FB.getLoginStatus(function (response) {
+//                 statusChangeCallback(response);
+//             });
+//         };
+
+//         (function (d, s, id) {
+//             const js = d.createElement(s);
+//             js.id = id;
+//             js.src = 'https://connect.facebook.net/en_US/sdk.js';
+//             const fjs = d.getElementsByTagName(s)[0];
+//             fjs.parentNode.insertBefore(js, fjs);
+//         })(document, 'script', 'facebook-jssdk');
+//     }, [statusChangeCallback]);
+
+//     return (
+//         <div>
+//             <h1>Facebook Page Manager</h1>
+
+//             {!isLoggedIn && (
+//                 <button onClick={loginWithFacebook}>Login with Facebook</button>
+//             )}
+
+//             {isLoggedIn && pages.length > 0 && (
+//                 <div>
+//                     <h2>Select a Page to Post</h2>
+//                     <select
+//                         onChange={(e) => setSelectedPageId(e.target.value)}
+//                         value={selectedPageId}
+//                     >
+//                         <option value="">Select Page</option>
+//                         {pages.map((page) => (
+//                             <option key={page.id} value={page.id}>
+//                                 {page.name}
+//                             </option>
+//                         ))}
+//                     </select>
+
+//                     <textarea
+//                         placeholder="Write your post"
+//                         value={message}
+//                         onChange={(e) => setMessage(e.target.value)}
+//                     ></textarea>
+
+//                     <button onClick={handlePost}>Post to Page</button>
+//                 </div>
+//             )}
+//         </div>
+//     );
+// };
+
+// export default FacebookLoginCheck;
+
+
+
+
 import React, { useState, useEffect, useCallback } from 'react';
 
 const FacebookLoginCheck = () => {
@@ -1955,6 +2175,7 @@ const FacebookLoginCheck = () => {
     const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
+    const [mediaFile, setMediaFile] = useState(null);
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -1967,7 +2188,6 @@ const FacebookLoginCheck = () => {
     }, []);
 
     const fetchUserData = (id) => {
-        console.log("Fetched User ID:", id);
         setUserId(id);
     };
 
@@ -1987,10 +2207,8 @@ const FacebookLoginCheck = () => {
                 setIsLoggedIn(true);
                 fetchPages(response.authResponse.accessToken);
             } else if (response.status === 'not_authorized') {
-                console.error('App not authorized by the user:', response);
                 alert('You need to authorize the app to manage your Facebook pages.');
             } else {
-                console.error('Facebook login failed:', response);
                 alert('Facebook login failed. Please try again.');
             }
         }, {
@@ -1999,61 +2217,54 @@ const FacebookLoginCheck = () => {
         });
     };
 
-    const postToPage = async (pageId, accessToken, message) => {
-        console.log("Posting to page:", { pageId, accessToken, message });
-        window.FB.api(
-            `/${pageId}/feed`,
-            'POST',
-            { message, access_token: accessToken },
-            async function (response) {
-                if (!response || response.error) {
-                    console.error('Error posting:', response.error);
-                    alert('Error posting to the page: ' + (response.error.message || 'Unknown error'));
-                } else {
-                    alert('Post published successfully!');
-                    await savePostToDatabase(pageId, message);
-                }
-            }
-        );
+    const handleFileChange = (event) => {
+        setMediaFile(event.target.files[0]);
     };
 
-    // const savePostToDatabase = async (pageId, message) => {
-    //     const currentUserId = userId;
-    //     console.log("Saving post with data:", { userId: currentUserId, pageId, message });
-    //     try {
-    //         console.log("Saving post with data:", { userId: currentUserId, pageId, message });
-    //         const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({ userId: currentUserId, pageId, message }),
-    //         });
+    const postToPage = async (pageId, accessToken, message) => {
+        const formData = new FormData();
+        formData.append('access_token', accessToken);
+        if (message) formData.append('message', message);
+        if (mediaFile) formData.append('source', mediaFile);
 
-    //         if (!response.ok) {
-    //             const errorData = await response.json();
-    //             throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
-    //         }
+        let postEndpoint = mediaFile ? `/${pageId}/photos` : `/${pageId}/feed`;
+        if (mediaFile && mediaFile.type.startsWith('video')) {
+            postEndpoint = `/${pageId}/videos`;
+        }
 
-    //         const result = await response.json();
-    //         console.log('Post saved to database:', result);
-    //     } catch (error) {
-    //         console.error('Error saving post to database:', error);
-    //     }
-    // };
+        window.FB.api(postEndpoint, 'POST', formData, async function (response) {
+            if (!response || response.error) {
+                alert('Error posting to the page: ' + (response.error.message || 'Unknown error'));
+            } else {
+                alert('Post published successfully!');
+                await savePostToDatabase(pageId, message, mediaFile ? mediaFile.name : null);
+            }
+        });
+    };
 
-    // const handlePost = () => {
-    //     const selectedPage = pages.find(page => page.id === selectedPageId);
-    //     if (selectedPage) {
-    //         if (!userId) {
-    //             alert('User ID is missing. Please log in again.');
-    //             return;
-    //         }
-    //         postToPage(selectedPageId, selectedPage.access_token, message);
-    //     } else {
-    //         alert('Please select a page to post to.');
-    //     }
-    // };
+    const savePostToDatabase = async (pageId, message, mediaFileName) => {
+        const currentUserId = userId;
+        try {
+            const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: currentUserId, pageId, message, media: mediaFileName }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log('Post saved to database:', result);
+        } catch (error) {
+            console.error('Error saving post to database:', error);
+        }
+    };
+
     const handlePost = () => {
         const selectedPage = pages.find(page => page.id === selectedPageId);
         if (selectedPage) {
@@ -2062,46 +2273,13 @@ const FacebookLoginCheck = () => {
                 return;
             }
 
-            // Call postToPage first to post on Facebook
             postToPage(selectedPageId, selectedPage.access_token, message)
-                .then(() => {
-                    // After successful Facebook post, save post to the database
-                    savePostToDatabase(selectedPageId, message);
-                })
-                .catch((error) => {
-                    console.error('Error posting to Facebook:', error);
-                });
+                .then(() => savePostToDatabase(selectedPageId, message, mediaFile ? mediaFile.name : null))
+                .catch((error) => console.error('Error posting to Facebook:', error));
         } else {
             alert('Please select a page to post to.');
         }
     };
-
-    const savePostToDatabase = async (pageId, message) => {
-        const currentUserId = userId;
-        console.log("Initiating save with data:", { userId: currentUserId, pageId, message });
-        try {
-            const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userId: currentUserId, pageId, message }),
-            });
-
-            console.log('Database save response status:', response.status);
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error('Backend response error:', errorData);
-                throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
-            }
-
-            const result = await response.json();
-            console.log('Post successfully saved to database:', result);
-        } catch (error) {
-            console.error('Error saving post to database:', error);
-        }
-    };
-
 
     useEffect(() => {
         window.fbAsyncInit = function () {
@@ -2154,6 +2332,12 @@ const FacebookLoginCheck = () => {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     ></textarea>
+
+                    <input
+                        type="file"
+                        accept="image/*, video/*"
+                        onChange={handleFileChange}
+                    />
 
                     <button onClick={handlePost}>Post to Page</button>
                 </div>
