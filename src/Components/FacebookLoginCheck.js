@@ -2243,28 +2243,28 @@ const FacebookLoginCheck = () => {
     };
 
 
-    const savePostToDatabase = async (pageId, message, file) => {
-        const currentUserId = userId;
-        try {
-            const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userId: currentUserId, pageId, message, media: file ? file.name : null }),
-            });
+    // const savePostToDatabase = async (pageId, message, file) => {
+    //     const currentUserId = userId;
+    //     try {
+    //         const response = await fetch('https://smp-be-mysql.vercel.app/post/save', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({ userId: currentUserId, pageId, message, media: file ? file.name : null }),
+    //         });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
-            }
+    //         if (!response.ok) {
+    //             const errorData = await response.json();
+    //             throw new Error(`Failed to save post to database: ${errorData.error || response.statusText}`);
+    //         }
 
-            const result = await response.json();
-            console.log('Post saved to database:', result);
-        } catch (error) {
-            console.error('Error saving post to database:', error);
-        }
-    };
+    //         const result = await response.json();
+    //         console.log('Post saved to database:', result);
+    //     } catch (error) {
+    //         console.error('Error saving post to database:', error);
+    //     }
+    // };
 
     const handlePost = () => {
         const selectedPage = pages.find(page => page.id === selectedPageId);
