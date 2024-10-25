@@ -2218,26 +2218,30 @@ const FacebookLoginCheck = () => {
     };
 
     const postToPage = async (pageId, accessToken, message, file) => {
-        let apiUrl = `/${pageId}/feed`;
         const formData = new FormData();
+        let apiUrl = `/${pageId}`;
 
         if (file) {
             formData.append('source', file);
-            apiUrl = `/${pageId}/photos`; // For photo uploads
+            apiUrl += '/photos'; // Use /photos for images or /videos for videos
+        } else {
+            apiUrl += '/feed';
         }
+
         formData.append('message', message);
         formData.append('access_token', accessToken);
 
-        window.FB.api(apiUrl, 'POST', formData, async function (response) {
+        window.FB.api(apiUrl, 'POST', formData, function (response) {
             if (!response || response.error) {
                 console.error('Error posting:', response.error);
                 alert('Error posting to the page: ' + (response.error.message || 'Unknown error'));
             } else {
                 alert('Post published successfully!');
-                await savePostToDatabase(pageId, message, file);
+                // Save the post to your database, if needed
             }
         });
     };
+
 
     const savePostToDatabase = async (pageId, message, file) => {
         const currentUserId = userId;
