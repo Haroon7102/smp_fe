@@ -2381,9 +2381,10 @@ const FacebookLoginCheck = () => {
             }
 
             const formData = new FormData();
+
             // Append each file to FormData
             files.forEach((file) => {
-                formData.append('files', file); // 'files' should match the backend's expected field name
+                formData.append('files', file); // Ensure 'files' matches what your backend expects
             });
 
             if (message) {
@@ -2397,17 +2398,27 @@ const FacebookLoginCheck = () => {
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                     method: 'POST',
                     body: formData,
+                    // Ensure credentials are included if necessary (optional)
+                    // credentials: 'include' // Uncomment if needed
                 });
+
+                // Check if the response is ok
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const result = await response.json();
                 console.log('Upload result:', result);
+                // Optionally handle the result (e.g., display a success message)
             } catch (error) {
                 console.error('Error uploading to backend:', error);
+                alert(`Error uploading: ${error.message}`);
             }
         } else {
             alert('Please select a page to post to.');
         }
     };
+
 
     useEffect(() => {
         window.fbAsyncInit = function () {
