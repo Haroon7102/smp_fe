@@ -2164,7 +2164,6 @@
 
 // export default FacebookLoginCheck;
 
-
 import React, { useState, useEffect, useCallback } from 'react';
 
 const FacebookLoginCheck = () => {
@@ -2215,106 +2214,6 @@ const FacebookLoginCheck = () => {
         });
     };
 
-    // Functions for Facebook upload session, chunk upload, resume, and publishing
-    const startUploadSession = async (appId, accessToken, file) => {
-        const url = `https://graph.facebook.com/v21.0/${appId}/uploads?access_token=${accessToken}`;
-        const metadata = {
-            file_name: file.name,
-            file_length: file.size,
-            file_type: file.type,
-        };
-
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(metadata),
-            });
-            if (!response.ok) throw new Error(`Failed to start upload session: ${response.statusText}`);
-            const result = await response.json();
-            return result.id;
-        } catch (error) {
-            console.error('Error starting upload session:', error);
-        }
-    };
-
-    const uploadFileChunk = async (uploadSessionId, accessToken, file, offset = 0) => {
-        const url = `https://graph.facebook.com/v21.0/upload:${uploadSessionId}`;
-        const fileChunk = file.slice(offset);
-
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `OAuth ${accessToken}`,
-                    'file_offset': offset.toString(),
-                },
-                body: fileChunk,
-            });
-            if (!response.ok) throw new Error(`Failed to upload file chunk: ${response.statusText}`);
-            const result = await response.json();
-            return result.h;
-        } catch (error) {
-            console.error('Error uploading file chunk:', error);
-        }
-    };
-
-    const publishFileHandle = async (pageId, accessToken, fileHandle) => {
-        const url = `https://graph.facebook.com/v21.0/${pageId}/photos`;
-        const formData = new FormData();
-        formData.append('access_token', accessToken);
-        formData.append('file_handle', fileHandle);
-
-        try {
-            const response = await fetch(url, { method: 'POST', body: formData });
-            if (!response.ok) throw new Error(`Failed to publish file: ${response.statusText}`);
-            const result = await response.json();
-            console.log('File published successfully:', result);
-            return result;
-        } catch (error) {
-            console.error('Error publishing file:', error);
-        }
-    };
-
-    const uploadAndPublishFile = async (appId, pageId, accessToken, file) => {
-        try {
-            const uploadSessionId = await startUploadSession(appId, accessToken, file);
-            const fileHandle = await uploadFileChunk(uploadSessionId, accessToken, file, 0);
-            if (fileHandle) {
-                const publishResult = await publishFileHandle(pageId, accessToken, fileHandle);
-                console.log('File handle published successfully:', publishResult);
-            } else {
-                console.log('No file handle retrieved for publishing');
-            }
-        } catch (error) {
-            console.error('Error in upload and publish process:', error);
-        }
-    };
-
-    // Define the postToPage function to handle posting a message
-    const postToPage = async (pageId, accessToken, message) => {
-        const url = `https://graph.facebook.com/v21.0/${pageId}/feed`;
-        const params = {
-            message: message,
-            access_token: accessToken
-        };
-
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(params)
-            });
-            if (!response.ok) throw new Error(`Failed to post message: ${response.statusText}`);
-            const result = await response.json();
-            console.log('Message posted successfully:', result);
-        } catch (error) {
-            console.error('Error posting message:', error);
-        }
-    };
-
     const handlePost = async () => {
         const selectedPage = pages.find(page => page.id === selectedPageId);
         if (selectedPage) {
@@ -2322,13 +2221,22 @@ const FacebookLoginCheck = () => {
                 alert('User ID is missing. Please log in again.');
                 return;
             }
-            const appId = '1332019044439778'; // Hardcode your App ID here
 
-            if (file) {
-                // Initiate upload and publishing for file
-                await uploadAndPublishFile(appId, selectedPageId, selectedPage.access_token, file);
-            } else {
-                await postToPage(selectedPageId, selectedPage.access_token, message); // Make sure to await the function
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('accessToken', selectedPage.access_token);
+            formData.append('pageId', selectedPageId);
+
+            try {
+                const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+                console.log('Upload result:', result);
+            } catch (error) {
+                console.error('Error uploading to backend:', error);
             }
         } else {
             alert('Please select a page to post to.');
