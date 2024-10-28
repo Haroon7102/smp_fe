@@ -2330,7 +2330,7 @@ const FacebookLoginCheck = () => {
     const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
-    const [files, setFiles] = useState([]); // Updated to handle multiple files
+    const [files, setFiles] = useState([]); // Handle multiple files
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -2381,12 +2381,15 @@ const FacebookLoginCheck = () => {
             }
 
             const formData = new FormData();
+            // Append each file to FormData
             files.forEach((file) => {
-                formData.append('files', file); // Append each file to FormData
+                formData.append('files', file); // 'files' should match the backend's expected field name
             });
+
             if (message) {
                 formData.append('caption', message); // Add message as caption
             }
+
             formData.append('accessToken', selectedPage.access_token);
             formData.append('pageId', selectedPageId);
 
@@ -2462,7 +2465,7 @@ const FacebookLoginCheck = () => {
                         type="file"
                         accept="image/*,video/*"
                         multiple
-                        onChange={(e) => setFiles(Array.from(e.target.files))} // Update to handle multiple files
+                        onChange={(e) => setFiles(Array.from(e.target.files))} // Store all selected files
                     />
 
                     <button onClick={handlePost}>Post to Page</button>
