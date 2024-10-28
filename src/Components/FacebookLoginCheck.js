@@ -2223,7 +2223,12 @@ const FacebookLoginCheck = () => {
             }
 
             const formData = new FormData();
-            formData.append('file', file);
+            if (file) {
+                formData.append('file', file);
+            }
+            if (message) {
+                formData.append('caption', message); // Add message as caption
+            }
             formData.append('accessToken', selectedPage.access_token);
             formData.append('pageId', selectedPageId);
 
@@ -2242,6 +2247,7 @@ const FacebookLoginCheck = () => {
             alert('Please select a page to post to.');
         }
     };
+
 
     useEffect(() => {
         window.fbAsyncInit = function () {
