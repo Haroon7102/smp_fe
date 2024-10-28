@@ -2303,7 +2303,7 @@ const FacebookLoginCheck = () => {
 
                     <input
                         type="file"
-                        accept="image/*,video/*"
+                        accept=".pdf, .doc, .docx, .xls, .xlsx, .jpg, .jpeg, .png, .gif, .mp4"
                         onChange={(e) => setFile(e.target.files[0])}
                     />
 
