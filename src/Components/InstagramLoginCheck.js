@@ -77,7 +77,7 @@ const InstagramLoginCheck = () => {
     useEffect(() => {
         window.fbAsyncInit = function () {
             window.FB.init({
-                appId: '1199616704485910',
+                appId: '1332019044439778',
                 cookie: true,
                 xfbml: true,
                 version: 'v20.0'
