@@ -6,7 +6,9 @@ const InstagramLoginCheck = () => {
     const [selectedInstagramId, setSelectedInstagramId] = useState(null);
     const [message, setMessage] = useState('');
 
+    // Status change callback
     const statusChangeCallback = useCallback((response) => {
+        console.log('FB Login Status Response:', response); // Log response for debugging
         if (response.status === 'connected') {
             setIsLoggedIn(true);
             fetchInstagramAccounts(response.authResponse.accessToken);
@@ -15,24 +17,31 @@ const InstagramLoginCheck = () => {
         }
     }, []);
 
+    // Fetch Instagram accounts associated with the user's Facebook pages
     const fetchInstagramAccounts = (accessToken) => {
-        // Fetch Facebook pages and corresponding Instagram business accounts
         window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+            console.log('Fetching pages response:', response); // Log the response
             if (response && !response.error) {
-                // Get pages with linked Instagram accounts
+                // Filter pages that have linked Instagram accounts
                 const pagesWithInstagram = response.data.filter(page => page.instagram_business_account);
+                if (pagesWithInstagram.length === 0) {
+                    console.warn('No Instagram accounts found linked to Facebook pages');
+                }
                 setInstagramAccounts(pagesWithInstagram.map(page => ({
                     id: page.instagram_business_account.id,
                     name: page.name
                 })));
             } else {
                 console.error('Error fetching Instagram accounts:', response.error);
+                alert('Error fetching Instagram accounts. Check console for details.');
             }
         });
     };
 
+    // Handle Facebook login
     const loginWithInstagram = () => {
-        window.FB.login(function (response) {
+        window.FB.login((response) => {
+            console.log('FB Login Response:', response); // Log response for debugging
             if (response.status === 'connected') {
                 setIsLoggedIn(true);
                 fetchInstagramAccounts(response.authResponse.accessToken);
@@ -41,16 +50,16 @@ const InstagramLoginCheck = () => {
             }
         }, {
             scope: 'instagram_basic, pages_show_list, instagram_content_publish',
-            config_id: '1273277580768760'
+            auth_type: 'rerequest' // Ensures that it re-asks for permissions if declined before
         });
     };
 
+    // Handle posting to Instagram
     const handlePostToInstagram = async () => {
         const selectedAccount = instagramAccounts.find(account => account.id === selectedInstagramId);
         if (selectedAccount) {
             const formData = new FormData();
             formData.append('caption', message);
-            formData.append('accessToken', selectedAccount.access_token);
             formData.append('instagramAccountId', selectedInstagramId);
 
             try {
@@ -65,6 +74,7 @@ const InstagramLoginCheck = () => {
 
                 const result = await response.json();
                 console.log('Upload result:', result);
+                alert(`Post successful! Post ID: ${result.postId}`);
             } catch (error) {
                 console.error('Error posting to Instagram:', error);
                 alert(`Error posting: ${error.message}`);
@@ -74,23 +84,26 @@ const InstagramLoginCheck = () => {
         }
     };
 
+    // Initialize Facebook SDK
     useEffect(() => {
         window.fbAsyncInit = function () {
             window.FB.init({
-                appId: '1332019044439778',
+                appId: '1332019044439778', // Replace with your Facebook App ID
                 cookie: true,
                 xfbml: true,
                 version: 'v20.0'
             });
 
-            window.FB.getLoginStatus(function (response) {
+            window.FB.getLoginStatus((response) => {
+                console.log('Initial login status check:', response);
                 statusChangeCallback(response);
             });
         };
 
+        // Load the SDK
         (function (d, s, id) {
-            const js = d.createElement(s);
-            js.id = id;
+            if (d.getElementById(id)) return;
+            const js = d.createElement(s); js.id = id;
             js.src = 'https://connect.facebook.net/en_US/sdk.js';
             const fjs = d.getElementsByTagName(s)[0];
             fjs.parentNode.insertBefore(js, fjs);
@@ -129,6 +142,10 @@ const InstagramLoginCheck = () => {
                     <button onClick={handlePostToInstagram}>Post to Instagram</button>
                 </div>
             )}
+
+            <button onClick={() => window.FB.getLoginStatus(statusChangeCallback)}>
+                Re-check Login Status
+            </button>
         </div>
     );
 };
