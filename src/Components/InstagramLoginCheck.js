@@ -6,7 +6,6 @@ const InstagramLoginButton = () => {
     return (
         <a href={instagramAuthURL} className="btn btn-primary">
             Log in with Instagram
-            <button onClick={instagramAuthURL}>login with instagram</button>
         </a>
     );
 };
