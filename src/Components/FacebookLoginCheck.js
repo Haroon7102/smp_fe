@@ -179,23 +179,17 @@ const FacebookLoginCheck = () => {
     const [pages, setPages] = useState([]);
     const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
-    const [userId, setUserId] = useState(null);
     const [files, setFiles] = useState([]);
     const [instagramAccount, setInstagramAccount] = useState(null);
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
             setIsLoggedIn(true);
-            fetchUserData(response.authResponse.userID);
             fetchPages(response.authResponse.accessToken);
         } else {
             setIsLoggedIn(false);
         }
     }, []);
-
-    const fetchUserData = (id) => {
-        setUserId(id);
-    };
 
     const fetchPages = (accessToken) => {
         window.FB.api('/me/accounts', { access_token: accessToken }, (response) => {
