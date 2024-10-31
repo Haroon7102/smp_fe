@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import './Dashboard.css';
 import FacebookLoginCheck from './FacebookLoginCheck';
 import InstagramLoginCheck from './InstagramLoginCheck';
-
 // import CaptionGenerator from './CaptionGenerator';
 
 const Dashboard = () => {
@@ -68,7 +67,6 @@ const Dashboard = () => {
                 <FacebookLoginCheck />
                 {/* <CaptionGenerator /> */}
                 <InstagramLoginCheck />
-
             </div>
         </div>
     );
