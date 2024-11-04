@@ -192,11 +192,13 @@ const FacebookLoginCheck = () => {
 
     const fetchInstagramAccount = useCallback(async (accessToken) => {
         window.FB.api('/me/accounts', { access_token: accessToken }, async function (response) {
+            console.log('Response from /me/accounts:', response); // Log the response to see its structure
             if (response && !response.error) {
                 const page = response.data.find(page => page.id === selectedPageId);
                 if (page) {
                     const igAccountResponse = await fetch(`https://graph.facebook.com/v13.0/${page.id}?fields=instagram_business_account&access_token=${accessToken}`);
                     const igAccountData = await igAccountResponse.json();
+                    console.log('Instagram Account API Response:', igAccountData); // Log the Instagram account data
                     if (igAccountData.instagram_business_account) {
                         const instagramId = igAccountData.instagram_business_account.id;
                         setInstagramAccountId(instagramId);
@@ -213,6 +215,7 @@ const FacebookLoginCheck = () => {
             }
         });
     }, [selectedPageId]);
+
 
 
     const statusChangeCallback = useCallback((response) => {
