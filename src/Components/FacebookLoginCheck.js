@@ -291,19 +291,27 @@ const FacebookLoginCheck = () => {
         }
 
         try {
+            const imageUrl = mediaFiles[0]; // Make sure this is a valid, publicly accessible URL
+
             const mediaUploadResponse = await fetch(`https://graph.facebook.com/v13.0/${instagramAccountId}/media`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    image_url: mediaFiles[0], // Ensure this is a valid URL for the media
+                    image_url: imageUrl,
                     caption: caption,
                     access_token: instagramAccessToken,
                 }),
             });
 
             const mediaUploadResult = await mediaUploadResponse.json();
+
+            if (mediaUploadResult.error) {
+                console.error('Error uploading media to Instagram:', mediaUploadResult.error);
+                return;
+            }
+
             if (mediaUploadResult.id) {
                 const publishResponse = await fetch(`https://graph.facebook.com/v13.0/${instagramAccountId}/media_publish`, {
                     method: 'POST',
@@ -317,14 +325,20 @@ const FacebookLoginCheck = () => {
                 });
 
                 const publishResult = await publishResponse.json();
-                console.log('Instagram Post Result:', publishResult);
+
+                if (publishResult.error) {
+                    console.error('Error publishing media to Instagram:', publishResult.error);
+                } else {
+                    console.log('Instagram Post Result:', publishResult);
+                }
             } else {
-                console.error('Error uploading media to Instagram:', mediaUploadResult);
+                console.error('Media upload failed:', mediaUploadResult);
             }
         } catch (error) {
             console.error('Error posting to Instagram:', error);
         }
     };
+
 
     useEffect(() => {
         window.fbAsyncInit = function () {
