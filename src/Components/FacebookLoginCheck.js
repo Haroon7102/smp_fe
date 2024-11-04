@@ -164,9 +164,6 @@
 // };
 
 // export default FacebookLoginCheck;
-
-
-
 import React, { useState, useEffect, useCallback } from 'react';
 
 const FacebookLoginCheck = () => {
@@ -176,18 +173,8 @@ const FacebookLoginCheck = () => {
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
     const [files, setFiles] = useState([]);
-    const [instagramAccount, setInstagramAccount] = useState(null);
-
-    const statusChangeCallback = useCallback((response) => {
-        if (response.status === 'connected') {
-            setIsLoggedIn(true);
-            fetchUserData(response.authResponse.userID);
-            fetchPages(response.authResponse.accessToken);
-            fetchInstagramAccount(response.authResponse.accessToken);
-        } else {
-            setIsLoggedIn(false);
-        }
-    }, []);
+    const [instagramAccountId, setInstagramAccountId] = useState(null);
+    const [instagramAccessToken, setInstagramAccessToken] = useState('');
 
     const fetchUserData = (id) => {
         setUserId(id);
@@ -203,18 +190,34 @@ const FacebookLoginCheck = () => {
         });
     };
 
-    const fetchInstagramAccount = (accessToken) => {
-        window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+    const fetchInstagramAccount = useCallback(async (accessToken) => {
+        window.FB.api('/me/accounts', { access_token: accessToken }, async function (response) {
             if (response && !response.error) {
-                const instagramAccount = response.data.find(page => page.instagram_business_account);
-                if (instagramAccount) {
-                    setInstagramAccount(instagramAccount.instagram_business_account);
+                const page = response.data.find(page => page.id === selectedPageId);
+                if (page) {
+                    const igAccountResponse = await fetch(`https://graph.facebook.com/v13.0/${page.id}?fields=instagram_business_account&access_token=${accessToken}`);
+                    const igAccountData = await igAccountResponse.json();
+                    if (igAccountData.instagram_business_account) {
+                        setInstagramAccountId(igAccountData.instagram_business_account.id);
+                        setInstagramAccessToken(accessToken); // Set Instagram access token here
+                    } else {
+                        console.error('No linked Instagram account found.');
+                    }
                 }
-            } else {
-                console.error('Error fetching Instagram account:', response.error);
             }
         });
-    };
+    }, [selectedPageId]);
+
+    const statusChangeCallback = useCallback((response) => {
+        if (response.status === 'connected') {
+            setIsLoggedIn(true);
+            fetchUserData(response.authResponse.userID);
+            fetchPages(response.authResponse.accessToken);
+            fetchInstagramAccount(response.authResponse.accessToken);
+        } else {
+            setIsLoggedIn(false);
+        }
+    }, [fetchInstagramAccount]);
 
     const loginWithFacebook = () => {
         window.FB.login(function (response) {
@@ -242,8 +245,6 @@ const FacebookLoginCheck = () => {
             }
 
             const formData = new FormData();
-
-            // Append each file to FormData
             files.forEach((file) => {
                 formData.append('files', file);
             });
@@ -252,7 +253,6 @@ const FacebookLoginCheck = () => {
                 formData.append('caption', message);
             }
 
-            // Posting to Facebook
             formData.append('accessToken', selectedPage.access_token);
             formData.append('pageId', selectedPageId);
 
@@ -267,35 +267,53 @@ const FacebookLoginCheck = () => {
                 }
 
                 const result = await response.json();
-                console.log('Facebook upload result:', result);
+                console.log('Upload result:', result);
 
-                // Check if we have an Instagram account to post to
-                if (instagramAccount) {
-                    const instagramFormData = new FormData();
-                    files.forEach((file) => {
-                        instagramFormData.append('files', file);
-                    });
-                    instagramFormData.append('caption', message);
-                    instagramFormData.append('instagramAccountId', instagramAccount.id);
-
-                    const instagramResponse = await fetch('https://smp-be-mysql.vercel.app/instagram-upload/upload', {
-                        method: 'POST',
-                        body: instagramFormData,
-                    });
-
-                    if (!instagramResponse.ok) {
-                        throw new Error(`Instagram upload error! status: ${instagramResponse.status}`);
-                    }
-
-                    const instagramResult = await instagramResponse.json();
-                    console.log('Instagram upload result:', instagramResult);
-                }
+                // Post to Instagram after successful upload
+                await handleInstagramPost(files, message, instagramAccessToken);
             } catch (error) {
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
             }
         } else {
             alert('Please select a page to post to.');
+        }
+    };
+
+    const handleInstagramPost = async (mediaFiles, caption, instagramAccessToken) => {
+        try {
+            const mediaUploadResponse = await fetch(`https://graph.facebook.com/v13.0/${instagramAccountId}/media`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    image_url: mediaFiles[0],
+                    caption: caption,
+                    access_token: instagramAccessToken,
+                }),
+            });
+
+            const mediaUploadResult = await mediaUploadResponse.json();
+            if (mediaUploadResult.id) {
+                const publishResponse = await fetch(`https://graph.facebook.com/v13.0/${instagramAccountId}/media_publish`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        creation_id: mediaUploadResult.id,
+                        access_token: instagramAccessToken,
+                    }),
+                });
+
+                const publishResult = await publishResponse.json();
+                console.log('Instagram Post Result:', publishResult);
+            } else {
+                console.error('Error uploading media to Instagram:', mediaUploadResult);
+            }
+        } catch (error) {
+            console.error('Error posting to Instagram:', error);
         }
     };
 
