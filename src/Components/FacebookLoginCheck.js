@@ -198,15 +198,22 @@ const FacebookLoginCheck = () => {
                     const igAccountResponse = await fetch(`https://graph.facebook.com/v13.0/${page.id}?fields=instagram_business_account&access_token=${accessToken}`);
                     const igAccountData = await igAccountResponse.json();
                     if (igAccountData.instagram_business_account) {
-                        setInstagramAccountId(igAccountData.instagram_business_account.id);
+                        const instagramId = igAccountData.instagram_business_account.id;
+                        setInstagramAccountId(instagramId);
                         setInstagramAccessToken(accessToken); // Set Instagram access token here
+                        console.log('Instagram Account ID:', instagramId); // Log the Instagram account ID
                     } else {
                         console.error('No linked Instagram account found.');
                     }
+                } else {
+                    console.error('Selected page not found.');
                 }
+            } else {
+                console.error('Error fetching pages:', response.error);
             }
         });
     }, [selectedPageId]);
+
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -281,14 +288,21 @@ const FacebookLoginCheck = () => {
     };
 
     const handleInstagramPost = async (mediaFiles, caption, instagramAccessToken) => {
+        if (!instagramAccountId) {
+            console.error('Instagram Account ID is null. Cannot upload media.');
+            return;
+        }
+
         try {
+            console.log('Uploading to Instagram Account ID:', instagramAccountId); // Log to verify ID
+
             const mediaUploadResponse = await fetch(`https://graph.facebook.com/v13.0/${instagramAccountId}/media`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    image_url: mediaFiles[0],
+                    image_url: mediaFiles[0], // Ensure this is a valid URL for the media
                     caption: caption,
                     access_token: instagramAccessToken,
                 }),
@@ -316,6 +330,7 @@ const FacebookLoginCheck = () => {
             console.error('Error posting to Instagram:', error);
         }
     };
+
 
     useEffect(() => {
         window.fbAsyncInit = function () {
