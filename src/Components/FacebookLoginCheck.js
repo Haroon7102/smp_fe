@@ -196,8 +196,11 @@ const FacebookLoginCheck = () => {
             return;
         }
 
+        console.log('Fetching Instagram account for selected page:', selectedPageId);
+
         window.FB.api(`/${selectedPageId}?fields=instagram_business_account`, { access_token: accessToken }, (response) => {
             if (response && !response.error) {
+                console.log('Response from Instagram account fetch:', response);
                 if (response.instagram_business_account) {
                     const instagramId = response.instagram_business_account.id;
                     setInstagramAccountId(instagramId);
@@ -211,6 +214,7 @@ const FacebookLoginCheck = () => {
             }
         });
     }, [selectedPageId]);
+
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
