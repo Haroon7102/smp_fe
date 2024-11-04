@@ -228,7 +228,7 @@ const SocialMediaManager = () => {
             } else {
                 alert('Facebook login failed.');
             }
-        }, { scope: 'email, public_profile, pages_show_list, pages_manage_posts, instagram_basic, instagram_content_publish, instagram_business_content_publish, instagram_business_basic' });
+        }, { scope: 'email, public_profile, pages_show_list, pages_manage_posts, instagram_basic, instagram_content_publish' });
     };
 
     const handleFacebookPost = async () => {
