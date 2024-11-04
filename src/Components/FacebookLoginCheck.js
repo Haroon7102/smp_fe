@@ -190,17 +190,15 @@ const FacebookLoginCheck = () => {
         });
     };
 
-    const fetchInstagramAccount = useCallback(async (accessToken) => {
+    const fetchInstagramAccount = useCallback((accessToken) => {
         if (!selectedPageId) {
             console.error('Selected page ID is not set.');
             return;
         }
 
-        console.log('Fetching Instagram account for selected page:', selectedPageId);
-
+        // Fetching the Instagram account for the selected page
         window.FB.api(`/${selectedPageId}?fields=instagram_business_account`, { access_token: accessToken }, (response) => {
             if (response && !response.error) {
-                console.log('Response from Instagram account fetch:', response);
                 if (response.instagram_business_account) {
                     const instagramId = response.instagram_business_account.id;
                     setInstagramAccountId(instagramId);
@@ -215,25 +213,21 @@ const FacebookLoginCheck = () => {
         });
     }, [selectedPageId]);
 
-
-
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
             setIsLoggedIn(true);
             fetchUserData(response.authResponse.userID);
             fetchPages(response.authResponse.accessToken);
-            fetchInstagramAccount(response.authResponse.accessToken);
         } else {
             setIsLoggedIn(false);
         }
-    }, [fetchInstagramAccount]);
+    }, []);
 
     const loginWithFacebook = () => {
         window.FB.login((response) => {
             if (response.status === 'connected') {
                 setIsLoggedIn(true);
                 fetchPages(response.authResponse.accessToken);
-                fetchInstagramAccount(response.authResponse.accessToken);
             } else if (response.status === 'not_authorized') {
                 alert('You need to authorize the app to manage your Facebook pages.');
             } else {
@@ -297,8 +291,6 @@ const FacebookLoginCheck = () => {
         }
 
         try {
-            console.log('Uploading to Instagram Account ID:', instagramAccountId);
-
             const mediaUploadResponse = await fetch(`https://graph.facebook.com/v13.0/${instagramAccountId}/media`, {
                 method: 'POST',
                 headers: {
@@ -369,7 +361,10 @@ const FacebookLoginCheck = () => {
                 <div>
                     <h2>Select a Page to Post</h2>
                     <select
-                        onChange={(e) => setSelectedPageId(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedPageId(e.target.value);
+                            fetchInstagramAccount(instagramAccessToken);
+                        }}
                         value={selectedPageId}
                     >
                         <option value="">Select Page</option>
