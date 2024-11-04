@@ -176,7 +176,7 @@ const SocialMediaManager = () => {
     const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
     const [files, setFiles] = useState([]);
-    const [instagramAccount, setInstagramAccount] = useState(null);
+    // const [instagramAccount, setInstagramAccount] = useState(null);
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -190,23 +190,35 @@ const SocialMediaManager = () => {
     const fetchPages = (accessToken) => {
         window.FB.api('/me/accounts', { access_token: accessToken }, (response) => {
             if (response && !response.error) {
-                setPages(response.data);
-                response.data.forEach((page) => {
-                    window.FB.api(
-                        `/${page.id}?fields=instagram_business_account`,
-                        { access_token: accessToken },
-                        (igResponse) => {
-                            if (igResponse.instagram_business_account) {
-                                setInstagramAccount(igResponse.instagram_business_account);
+                const pagesWithInstagram = response.data.map((page) =>
+                    new Promise((resolve) => {
+                        window.FB.api(
+                            `/${page.id}?fields=instagram_business_account`,
+                            { access_token: accessToken },
+                            (igResponse) => {
+                                if (igResponse && !igResponse.error) {
+                                    resolve({
+                                        ...page,
+                                        instagramAccount: igResponse.instagram_business_account,
+                                    });
+                                } else {
+                                    resolve({ ...page, instagramAccount: null });
+                                }
                             }
-                        }
-                    );
+                        );
+                    })
+                );
+
+                // Wait for all pages' Instagram account info to be fetched
+                Promise.all(pagesWithInstagram).then((pagesWithIG) => {
+                    setPages(pagesWithIG);
                 });
             } else {
                 console.error('Error fetching pages:', response.error);
             }
         });
     };
+
 
     const loginWithFacebook = () => {
         window.FB.login((response) => {
@@ -244,28 +256,41 @@ const SocialMediaManager = () => {
     };
 
     const handleInstagramPost = async () => {
-        if (!instagramAccount) {
+        const selectedPage = pages.find((page) => page.id === selectedPageId);
+
+        if (!selectedPage) {
+            alert('Please select a page to post to.');
+            return;
+        }
+
+        if (!selectedPage.instagramAccount) {
             alert('No Instagram account linked with the selected page.');
             return;
         }
 
         const formData = new FormData();
-        formData.append('instagramAccountId', instagramAccount.id);
-        formData.append('accessToken', pages.find(page => page.id === selectedPageId).access_token);
+        formData.append('instagramAccountId', selectedPage.instagramAccount.id);
+        formData.append('accessToken', selectedPage.access_token);
         formData.append('caption', message);
-        if (files[0]) formData.append('mediaUrl', URL.createObjectURL(files[0]));
+
+        if (files[0]) {
+            formData.append('mediaUrl', URL.createObjectURL(files[0]));
+        }
 
         try {
             const response = await fetch('https://smp-be-mysql.vercel.app/instagram-upload/upload', {
                 method: 'POST',
-                body: formData
+                body: formData,
             });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const result = await response.json();
             console.log('Instagram post result:', result);
         } catch (error) {
             console.error('Instagram upload error:', error);
         }
     };
+
 
     useEffect(() => {
         window.fbAsyncInit = () => {
