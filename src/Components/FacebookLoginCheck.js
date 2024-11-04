@@ -169,7 +169,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 const FacebookLoginCheck = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [pages, setPages] = useState([]);
-    const [selectedPageId, setSelectedPageId] = useState('');
+    const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
     const [files, setFiles] = useState([]);
@@ -181,7 +181,7 @@ const FacebookLoginCheck = () => {
     };
 
     const fetchPages = (accessToken) => {
-        window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+        window.FB.api('/me/accounts', { access_token: accessToken }, (response) => {
             if (response && !response.error) {
                 setPages(response.data);
             } else {
@@ -191,27 +191,23 @@ const FacebookLoginCheck = () => {
     };
 
     const fetchInstagramAccount = useCallback(async (accessToken) => {
-        window.FB.api('/me/accounts', { access_token: accessToken }, async function (response) {
+        if (!selectedPageId) {
+            console.error('Selected page ID is not set.');
+            return;
+        }
+
+        window.FB.api(`/${selectedPageId}?fields=instagram_business_account`, { access_token: accessToken }, (response) => {
             if (response && !response.error) {
-                const page = response.data.find(page => page.id === selectedPageId);
-                if (page) {
-                    try {
-                        const igAccountResponse = await fetch(`https://graph.facebook.com/v13.0/${page.id}?fields=instagram_business_account&access_token=${accessToken}`);
-                        const igAccountData = await igAccountResponse.json();
-                        if (igAccountData.instagram_business_account) {
-                            setInstagramAccountId(igAccountData.instagram_business_account.id);
-                            setInstagramAccessToken(accessToken);
-                        } else {
-                            console.error('No linked Instagram account found.');
-                        }
-                    } catch (error) {
-                        console.error('Error fetching Instagram account:', error);
-                    }
+                if (response.instagram_business_account) {
+                    const instagramId = response.instagram_business_account.id;
+                    setInstagramAccountId(instagramId);
+                    setInstagramAccessToken(accessToken);
+                    console.log('Instagram Account ID:', instagramId);
                 } else {
-                    console.error('Selected page not found.');
+                    console.error('No linked Instagram account found for this page.');
                 }
             } else {
-                console.error('Error fetching pages:', response.error);
+                console.error('Error fetching Instagram account:', response.error);
             }
         });
     }, [selectedPageId]);
@@ -228,11 +224,13 @@ const FacebookLoginCheck = () => {
     }, [fetchInstagramAccount]);
 
     const loginWithFacebook = () => {
-        window.FB.login(function (response) {
+        window.FB.login((response) => {
             if (response.status === 'connected') {
                 setIsLoggedIn(true);
                 fetchPages(response.authResponse.accessToken);
                 fetchInstagramAccount(response.authResponse.accessToken);
+            } else if (response.status === 'not_authorized') {
+                alert('You need to authorize the app to manage your Facebook pages.');
             } else {
                 alert('Facebook login failed. Please try again.');
             }
@@ -245,7 +243,7 @@ const FacebookLoginCheck = () => {
     const handlePost = async () => {
         const selectedPage = pages.find(page => page.id === selectedPageId);
         if (!selectedPage) {
-            alert('Please select a page to post to.');
+            alert('Please select a valid page to post to.');
             return;
         }
 
@@ -293,13 +291,9 @@ const FacebookLoginCheck = () => {
             return;
         }
 
-        if (!mediaFiles.length) {
-            console.error('No media files to upload.');
-            return;
-        }
-
         try {
-            // Upload media to Instagram
+            console.log('Uploading to Instagram Account ID:', instagramAccountId);
+
             const mediaUploadResponse = await fetch(`https://graph.facebook.com/v13.0/${instagramAccountId}/media`, {
                 method: 'POST',
                 headers: {
@@ -327,7 +321,6 @@ const FacebookLoginCheck = () => {
 
                 const publishResult = await publishResponse.json();
                 console.log('Instagram Post Result:', publishResult);
-                alert('Post successfully published on Instagram!');
             } else {
                 console.error('Error uploading media to Instagram:', mediaUploadResult);
             }
