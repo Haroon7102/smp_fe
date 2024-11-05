@@ -80,8 +80,8 @@ const InstagramLoginButton = () => {
             // Send the code to the backend for token exchange
             fetch('https://smp-be-mysql.vercel.app/instagram-upload/token', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ code }).toString()
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code }) // Send as JSON
             })
                 .then(response => response.json())
                 .then(data => {
