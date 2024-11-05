@@ -1,43 +1,50 @@
-// import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-// const InstagramLoginButton = () => {
-//     const instagramAuthURL = "https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=1199616704485910&redirect_uri=https://smpfe.netlify.app/instagram-upload/callback&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish";
+const InstagramLoginButton = () => {
+    const clientId = '1199616704485910';
+    const redirectUri = 'https://smpfe.netlify.app/dashboard';
+    const scope = 'instagram_business_basic,instagram_business_content_publish';
+    const navigate = useNavigate();
+    const location = useLocation();
 
-//     return (
-//         <a href={instagramAuthURL} className="btn btn-primary">
-//             Log in with Instagram
-//         </a>
-//     );
-// };
+    // Handle the redirection and code exchange after Instagram login
+    useEffect(() => {
+        const urlParams = new URLSearchParams(location.search);
+        const code = urlParams.get('code');
 
-// export default InstagramLoginButton;
+        if (code) {
+            // Send the code to the backend for token exchange and post
+            fetch('https://smp-be-mysql.vercel.app/instagram-upload/upload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code, redirect_uri: redirectUri })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Instagram post successful!');
+                    } else {
+                        alert('Error in posting to Instagram.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error in processing the Instagram login.');
+                });
+        }
+    }, [location.search]);
 
-// import React, { useState } from 'react';
+    const handleLogin = () => {
+        const authUrl = `https://www.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+        window.location.href = authUrl;
+    };
 
-// const InstagramLoginButton = () => {
-//     const [isThrottled, setIsThrottled] = useState(false);
+    return (
+        <button onClick={handleLogin}>
+            Login with Instagram
+        </button>
+    );
+};
 
-//     const instagramAuthURL = "https://www.instagram.com/oauth/authorize?enable_fb_login=0&client_id=1199616704485910&redirect_uri=https://smpfe.netlify.app/instagram-upload/callback&response_type=code&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish";
-
-//     const handleLoginClick = () => {
-//         if (!isThrottled) {
-//             setIsThrottled(true);
-//             window.location.href = instagramAuthURL;
-
-//             // Set a timer to reset throttling after 30 seconds
-//             setTimeout(() => {
-//                 setIsThrottled(false);
-//             }, 30000); // 30 seconds
-//         } else {
-//             alert("Please wait before trying again.");
-//         }
-//     };
-
-//     return (
-//         <button className="btn btn-primary" onClick={handleLoginClick} disabled={isThrottled}>
-//             Log in with Instagram
-//         </button>
-//     );
-// };
-
-// export default InstagramLoginButton;
+export default InstagramLoginButton;
