@@ -76,7 +76,7 @@ const InstagramLoginButton = () => {
             setIsLoggedIn(true);
 
             // Send the code to the backend for token exchange
-            fetch('https://smp-be-mysql.vercel.app/instagram-upload/upload', {
+            fetch('https://smp-be-mysql.vercel.app/instagram-upload/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ code, redirect_uri: redirectUri })
