@@ -182,7 +182,7 @@ const InstagramLoginButton = () => {
         const retrievedCode = urlParams.get('code');
 
         if (retrievedCode) {
-            setCode(retrievedCode);  // Store the code
+            setCode(retrievedCode); // Store the code
             fetch('https://smp-be-mysql.vercel.app/instagram-upload/upload', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -194,12 +194,13 @@ const InstagramLoginButton = () => {
                         setIsLoggedIn(true);
                         alert('Successfully logged in with Instagram!');
                     } else {
-                        alert('Error in token exchange.');
+                        console.error('Error in token exchange:', data.error); // Log specific error
+                        alert('Error in token exchange: ' + data.message);
                     }
                 })
                 .catch(error => {
                     console.error('Token Exchange Error:', error);
-                    alert('Error in processing the Instagram login.');
+                    alert('Error in processing the Instagram login: ' + error.message);
                 });
         }
     }, [location.search]);
@@ -210,15 +211,15 @@ const InstagramLoginButton = () => {
     };
 
     const handlePost = () => {
-        if (!image) {
-            alert('Please select an image.');
+        if (!image || !caption) {
+            alert('Please enter a caption and select an image.');
             return;
         }
 
         const formData = new FormData();
         formData.append('caption', caption);
         formData.append('image', image);
-        formData.append('code', code);  // Add the code
+        formData.append('code', code); // Add the code
 
         fetch('https://smp-be-mysql.vercel.app/instagram-upload/upload', {
             method: 'POST',
@@ -229,12 +230,13 @@ const InstagramLoginButton = () => {
                 if (data.success) {
                     alert('Instagram post successful!');
                 } else {
-                    alert('Error in posting to Instagram.');
+                    console.error('Error in posting to Instagram:', data.error); // Log specific error
+                    alert('Error in posting to Instagram: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Post Error:', error);
-                alert('Error in posting to Instagram.');
+                alert('Error in posting to Instagram: ' + error.message);
             });
     };
 
@@ -260,7 +262,9 @@ const InstagramLoginButton = () => {
                         accept="image/*"
                         onChange={handleImageChange}
                     />
-                    <button onClick={handlePost}>Post to Instagram</button>
+                    <button onClick={handlePost} disabled={!image || !caption}>
+                        Post to Instagram
+                    </button>
                 </div>
             )}
         </div>
