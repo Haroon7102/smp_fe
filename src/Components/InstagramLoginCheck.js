@@ -13,6 +13,8 @@ const InstagramLoginButton = () => {
         const code = urlParams.get('code');
 
         if (code) {
+            // Alert user of successful login before initiating post request
+            alert('Successfully logged in with Instagram!');
             // Send the code to the backend for token exchange and post
             fetch('https://smp-be-mysql.vercel.app/instagram-upload/upload', {
                 method: 'POST',
