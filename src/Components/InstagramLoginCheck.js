@@ -181,8 +181,11 @@ const InstagramLoginButton = () => {
         const urlParams = new URLSearchParams(location.search);
         const retrievedCode = urlParams.get('code');
 
+        // Check if there's a code in the URL
         if (retrievedCode) {
             setCode(retrievedCode); // Store the code
+
+            // Send the code to the backend for token exchange
             fetch('https://smp-be-mysql.vercel.app/instagram-upload/upload', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -192,7 +195,7 @@ const InstagramLoginButton = () => {
                 .then(data => {
                     if (data.success) {
                         setIsLoggedIn(true);
-                        alert('Successfully logged in with Instagram!');
+                        alert('Successfully logged in with Instagram!'); // Notify the user
                     } else {
                         console.error('Error in token exchange:', data.error); // Log specific error
                         alert('Error in token exchange: ' + data.message);
@@ -202,6 +205,13 @@ const InstagramLoginButton = () => {
                     console.error('Token Exchange Error:', error);
                     alert('Error in processing the Instagram login: ' + error.message);
                 });
+        } else {
+            // Check if user is already logged in (you may need to implement this based on your app logic)
+            // This could be through a session or stored token
+            const isUserLoggedIn = sessionStorage.getItem('instagramLoggedIn'); // Example of checking login status
+            if (isUserLoggedIn) {
+                setIsLoggedIn(true);
+            }
         }
     }, [location.search]);
 
