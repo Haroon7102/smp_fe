@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const InstagramLoginButton = () => {
     const clientId = '1199616704485910';
     const redirectUri = 'https://smpfe.netlify.app/dashboard';
     const scope = 'instagram_business_basic,instagram_business_content_publish';
-    const navigate = useNavigate();
     const location = useLocation();
 
     // Handle the redirection and code exchange after Instagram login
