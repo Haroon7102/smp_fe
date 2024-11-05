@@ -71,6 +71,8 @@ const InstagramLoginButton = () => {
         const code = urlParams.get('code');
 
         if (code) {
+            console.log('Authorization code received:', code);
+
             // Confirm successful login and hide login button
             alert('Successfully logged in with Instagram!');
             setIsLoggedIn(true);
@@ -83,12 +85,17 @@ const InstagramLoginButton = () => {
             })
                 .then(response => response.json())
                 .then(data => {
-                    if (!data.success) {
+                    console.log('Backend response for token exchange:', data);
+
+                    if (data.success) {
+                        console.log('Token exchange successful.');
+                    } else {
                         alert('Error in posting to Instagram.');
+                        console.error('Token exchange error:', data.message);
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Error in processing the Instagram login:', error);
                     alert('Error in processing the Instagram login.');
                 });
         }
@@ -96,6 +103,7 @@ const InstagramLoginButton = () => {
 
     const handleLogin = () => {
         const authUrl = `https://www.instagram.com/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+        console.log('Redirecting to Instagram auth URL:', authUrl);
         window.location.href = authUrl;
     };
 
@@ -110,26 +118,33 @@ const InstagramLoginButton = () => {
         formData.append('caption', caption);
         formData.append('image', image);
 
+        console.log('Sending post request with caption and image to backend.');
+
         fetch('https://smp-be-mysql.vercel.app/instagram-upload/upload', {
             method: 'POST',
             body: formData
         })
             .then(response => response.json())
             .then(data => {
+                console.log('Backend response for Instagram post:', data);
+
                 if (data.success) {
                     alert('Instagram post successful!');
                 } else {
                     alert('Error in posting to Instagram.');
+                    console.error('Post error:', data.message);
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Error in posting to Instagram:', error);
                 alert('Error in posting to Instagram.');
             });
     };
 
     const handleImageChange = (e) => {
-        setImage(e.target.files[0]);
+        const file = e.target.files[0];
+        console.log('Image selected:', file);
+        setImage(file);
     };
 
     return (
@@ -158,6 +173,7 @@ const InstagramLoginButton = () => {
 };
 
 export default InstagramLoginButton;
+
 
 
 
