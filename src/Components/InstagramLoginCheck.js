@@ -81,7 +81,7 @@ const InstagramLoginButton = () => {
             fetch('https://smp-be-mysql.vercel.app/instagram-upload/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ code, redirect_uri: redirectUri }).toString()
+                body: new URLSearchParams({ code }).toString()
             })
                 .then(response => response.json())
                 .then(data => {
