@@ -356,8 +356,7 @@ const FacebookLoginCheck = () => {
             setIsLoggedIn(false);
         }
     }, []);
-    console.log("Logged in user ID:", userId);
-
+    console.log('id:', userId);
     const fetchUserData = (id) => {
         setUserId(id);
     };
@@ -407,7 +406,9 @@ const FacebookLoginCheck = () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorText = await response.text();
+                    console.error(`HTTP error! Status: ${response.status}, Response: ${errorText}`);
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorText}`);
                 }
 
                 const result = await response.json();
