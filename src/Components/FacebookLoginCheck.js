@@ -245,6 +245,7 @@ const FacebookLoginCheck = () => {
 
             try {
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
+                    timeout: 600000,  // Timeout set to 600 seconds (60000 milliseconds)
                     method: 'POST',
                     body: formData,
                 });
