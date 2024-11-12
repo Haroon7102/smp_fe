@@ -534,9 +534,9 @@ const FacebookPostUploader = () => {
         setCaption(e.target.value);
     };
 
-    const handleFileChange = (e) => {
-        const selectedFiles = Array.from(e.target.files);
-        setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    const handleFileChange = (event) => {
+        const selectedFiles = Array.from(event.target.files); // Convert FileList to array
+        setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Append new files to existing ones
     };
 
     const handleSubmit = async (e) => {
@@ -555,7 +555,6 @@ const FacebookPostUploader = () => {
         setLoading(true);
         setMessage(null);
 
-        // Retrieve the selected page's access token
         const selectedPage = pages.find(page => page.id === selectedPageId);
         const accessToken = selectedPage ? selectedPage.access_token : null;
 
@@ -567,9 +566,9 @@ const FacebookPostUploader = () => {
 
         const formData = new FormData();
         formData.append('caption', caption);
-        files.forEach((file) => formData.append('files', file));
         formData.append('pageId', selectedPageId);
-        formData.append('accessToken', accessToken);  // Append the access token to form data
+        formData.append('accessToken', accessToken);
+        files.forEach(file => formData.append('files', file));
 
         try {
             const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
@@ -592,6 +591,7 @@ const FacebookPostUploader = () => {
             setLoading(false);
         }
     };
+
 
 
     useEffect(() => {
