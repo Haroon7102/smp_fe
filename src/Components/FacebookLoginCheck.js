@@ -561,7 +561,7 @@ const FacebookPostUploader = () => {
         formData.append('pageId', selectedPageId);
 
         try {
-            const response = await fetch('https://smp-be-mysql.vercel.app/upload', {
+            const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                 method: 'POST',
                 body: formData,
             });
