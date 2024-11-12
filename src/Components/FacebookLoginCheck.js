@@ -486,7 +486,6 @@
 
 
 
-
 import React, { useState, useEffect, useCallback } from 'react';
 
 const FacebookPostUploader = () => {
@@ -592,8 +591,6 @@ const FacebookPostUploader = () => {
         }
     };
 
-
-
     useEffect(() => {
         window.fbAsyncInit = function () {
             window.FB.init({
@@ -655,6 +652,34 @@ const FacebookPostUploader = () => {
                         style={{ display: 'block', margin: '10px 0' }}
                     />
 
+                    {/* File Preview */}
+                    {files.length > 0 && (
+                        <div>
+                            <h4>Selected Files:</h4>
+                            <ul>
+                                {files.map((file, index) => (
+                                    <li key={index}>
+                                        {file.type.startsWith('image/') && (
+                                            <img
+                                                src={URL.createObjectURL(file)}
+                                                alt={`Preview of ${file.name}`}
+                                                style={{ maxWidth: '100px', margin: '5px' }}
+                                            />
+                                        )}
+                                        {file.type.startsWith('video/') && (
+                                            <video
+                                                src={URL.createObjectURL(file)}
+                                                controls
+                                                style={{ maxWidth: '100px', margin: '5px' }}
+                                            />
+                                        )}
+                                        {file.name}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+
                     <button type="submit" disabled={loading}>
                         {loading ? 'Uploading...' : 'Post to Facebook'}
                     </button>
@@ -687,4 +712,3 @@ const FacebookPostUploader = () => {
 };
 
 export default FacebookPostUploader;
-
