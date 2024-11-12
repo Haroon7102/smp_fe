@@ -539,48 +539,43 @@ const FacebookPostUploader = () => {
         setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
+    const handleSubmit = async () => {
         if (!selectedPageId) {
-            setMessage({ type: 'error', text: 'Please select a page to post to.' });
+            alert('Please select a page to post to.');
             return;
         }
 
-        if (!files.length && !caption) {
-            setMessage({ type: 'error', text: 'Please add a caption or select at least one file.' });
-            return;
-        }
+        const selectedPage = pages.find(page => page.id === selectedPageId);
+        if (selectedPage) {
+            const formData = new FormData();
+            formData.append('accessToken', selectedPage.access_token);  // Add access token here
+            formData.append('pageId', selectedPageId);  // Add page ID here
 
-        setLoading(true);
-        setMessage(null);
+            files.forEach(file => formData.append('files', file));  // Attach files
+            if (message) formData.append('caption', message);  // Attach caption if provided
 
-        const formData = new FormData();
-        formData.append('caption', caption);
-        files.forEach((file) => formData.append('files', file));
-        formData.append('pageId', selectedPageId);
+            try {
+                const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
 
-        try {
-            const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
-                method: 'POST',
-                body: formData,
-            });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`HTTP error! Status: ${response.status}, Response: ${errorText}`);
+                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorText}`);
+                }
 
-            const result = await response.json();
-
-            if (response.ok) {
-                setMessage({ type: 'success', text: `Post uploaded successfully! Post ID: ${result.postId}` });
-                setCaption('');
-                setFiles([]);
-            } else {
-                throw new Error(result.error || 'Upload failed');
+                const result = await response.json();
+                console.log('Upload result:', result);
+                alert('Post uploaded successfully!');
+            } catch (error) {
+                console.error('Error uploading to backend:', error);
+                alert(`Error uploading: ${error.message}`);
             }
-        } catch (error) {
-            setMessage({ type: 'error', text: error.message });
-        } finally {
-            setLoading(false);
         }
     };
+
 
     useEffect(() => {
         window.fbAsyncInit = function () {
