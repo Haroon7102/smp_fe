@@ -337,147 +337,257 @@
 
 
 
-import React, { useState, useEffect, useCallback } from 'react';
+// import React, { useState, useEffect, useCallback } from 'react';
 
-const FacebookLoginCheck = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [pages, setPages] = useState([]);
-    const [selectedPageId, setSelectedPageId] = useState(null);
-    const [message, setMessage] = useState('');
-    const [userId, setUserId] = useState(null);
+// const FacebookLoginCheck = () => {
+//     const [isLoggedIn, setIsLoggedIn] = useState(false);
+//     const [pages, setPages] = useState([]);
+//     const [selectedPageId, setSelectedPageId] = useState(null);
+//     const [message, setMessage] = useState('');
+//     const [userId, setUserId] = useState(null);
+//     const [files, setFiles] = useState([]);
+
+//     const statusChangeCallback = useCallback((response) => {
+//         if (response.status === 'connected') {
+//             setIsLoggedIn(true);
+//             fetchUserData(response.authResponse.userID);
+//             fetchPages(response.authResponse.accessToken);
+//         } else {
+//             setIsLoggedIn(false);
+//         }
+//     }, []);
+//     console.log('id:', userId);
+//     const fetchUserData = (id) => {
+//         setUserId(id);
+//     };
+
+//     const fetchPages = (accessToken) => {
+//         window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+//             if (response && !response.error) {
+//                 setPages(response.data);
+//             } else {
+//                 console.error('Error fetching pages:', response.error);
+//             }
+//         });
+//     };
+
+//     const loginWithFacebook = () => {
+//         window.FB.login(function (response) {
+//             if (response.status === 'connected') {
+//                 setIsLoggedIn(true);
+//                 fetchPages(response.authResponse.accessToken);
+//             } else {
+//                 alert('Facebook login failed. Please try again.');
+//             }
+//         }, {
+//             scope: 'email, public_profile, pages_show_list, pages_manage_posts',
+//         });
+//     };
+
+//     const handlePost = async () => {
+//         if (!selectedPageId) {
+//             alert('Please select a page to post to.');
+//             return;
+//         }
+
+//         const selectedPage = pages.find(page => page.id === selectedPageId);
+//         if (selectedPage) {
+//             const formData = new FormData();
+//             files.forEach(file => formData.append('files', file));
+//             if (message) formData.append('caption', message);
+
+//             formData.append('accessToken', selectedPage.access_token);
+//             formData.append('pageId', selectedPageId);
+
+//             try {
+//                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
+//                     method: 'POST',
+//                     body: formData,
+//                 });
+
+//                 if (!response.ok) {
+//                     const errorText = await response.text();
+//                     console.error(`HTTP error! Status: ${response.status}, Response: ${errorText}`);
+//                     throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorText}`);
+//                 }
+
+//                 const result = await response.json();
+//                 console.log('Upload result:', result);
+//                 alert('Post uploaded successfully!');
+//             } catch (error) {
+//                 console.error('Error uploading to backend:', error);
+//                 alert(`Error uploading: ${error.message}`);
+//             }
+//         }
+//     };
+
+//     useEffect(() => {
+//         window.fbAsyncInit = function () {
+//             window.FB.init({
+//                 appId: '1332019044439778',
+//                 cookie: true,
+//                 xfbml: true,
+//                 version: 'v20.0'
+//             });
+
+//             window.FB.getLoginStatus(function (response) {
+//                 statusChangeCallback(response);
+//             });
+//         };
+
+//         (function (d, s, id) {
+//             const js = d.createElement(s);
+//             js.id = id;
+//             js.src = 'https://connect.facebook.net/en_US/sdk.js';
+//             const fjs = d.getElementsByTagName(s)[0];
+//             fjs.parentNode.insertBefore(js, fjs);
+//         })(document, 'script', 'facebook-jssdk');
+//     }, [statusChangeCallback]);
+
+//     return (
+//         <div>
+//             <h1>Facebook Page Manager</h1>
+
+//             {!isLoggedIn && <button onClick={loginWithFacebook}>Login with Facebook</button>}
+
+//             {isLoggedIn && pages.length > 0 && (
+//                 <div>
+//                     <h2>Select a Page to Post</h2>
+//                     <select onChange={(e) => setSelectedPageId(e.target.value)} value={selectedPageId}>
+//                         <option value="">Select Page</option>
+//                         {pages.map((page) => (
+//                             <option key={page.id} value={page.id}>{page.name}</option>
+//                         ))}
+//                     </select>
+
+//                     <textarea
+//                         placeholder="Write your post"
+//                         value={message}
+//                         onChange={(e) => setMessage(e.target.value)}
+//                     ></textarea>
+
+//                     <input
+//                         type="file"
+//                         accept="image/*,video/*"
+//                         multiple
+//                         onChange={(e) => setFiles(Array.from(e.target.files))}
+//                     />
+
+//                     <button onClick={handlePost}>Post to Page</button>
+//                 </div>
+//             )}
+//         </div>
+//     );
+// };
+
+// export default FacebookLoginCheck;
+
+
+
+
+
+
+import React, { useState } from 'react';
+
+function SocialPostUploader() {
+    const [caption, setCaption] = useState('');
     const [files, setFiles] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState(null);
 
-    const statusChangeCallback = useCallback((response) => {
-        if (response.status === 'connected') {
-            setIsLoggedIn(true);
-            fetchUserData(response.authResponse.userID);
-            fetchPages(response.authResponse.accessToken);
-        } else {
-            setIsLoggedIn(false);
-        }
-    }, []);
-    console.log('id:', userId);
-    const fetchUserData = (id) => {
-        setUserId(id);
+    const handleCaptionChange = (e) => {
+        setCaption(e.target.value);
     };
 
-    const fetchPages = (accessToken) => {
-        window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
-            if (response && !response.error) {
-                setPages(response.data);
-            } else {
-                console.error('Error fetching pages:', response.error);
-            }
-        });
+    const handleFileChange = (e) => {
+        setFiles(Array.from(e.target.files));
     };
 
-    const loginWithFacebook = () => {
-        window.FB.login(function (response) {
-            if (response.status === 'connected') {
-                setIsLoggedIn(true);
-                fetchPages(response.authResponse.accessToken);
-            } else {
-                alert('Facebook login failed. Please try again.');
-            }
-        }, {
-            scope: 'email, public_profile, pages_show_list, pages_manage_posts',
-        });
-    };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    const handlePost = async () => {
-        if (!selectedPageId) {
-            alert('Please select a page to post to.');
+        if (!files.length && !caption) {
+            setMessage({ type: 'error', text: 'Please add a caption or select at least one file.' });
             return;
         }
 
-        const selectedPage = pages.find(page => page.id === selectedPageId);
-        if (selectedPage) {
-            const formData = new FormData();
-            files.forEach(file => formData.append('files', file));
-            if (message) formData.append('caption', message);
+        setLoading(true);
+        setMessage(null);
 
-            formData.append('accessToken', selectedPage.access_token);
-            formData.append('pageId', selectedPageId);
+        const formData = new FormData();
+        formData.append('caption', caption);
+        files.forEach((file) => formData.append('files', file));
 
-            try {
-                const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
+        try {
+            const response = await fetch('https://smp-be-mysql.vercel.app/upload', {
+                method: 'POST',
+                body: formData,
+                headers: { 'Access-Control-Allow-Origin': 'https://smpfe.netlify.app' },
+            });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error(`HTTP error! Status: ${response.status}, Response: ${errorText}`);
-                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorText}`);
-                }
+            const result = await response.json();
 
-                const result = await response.json();
-                console.log('Upload result:', result);
-                alert('Post uploaded successfully!');
-            } catch (error) {
-                console.error('Error uploading to backend:', error);
-                alert(`Error uploading: ${error.message}`);
+            if (response.ok) {
+                setMessage({ type: 'success', text: `Post uploaded successfully! Post ID: ${result.postId}` });
+                setCaption('');
+                setFiles([]);
+            } else {
+                throw new Error(result.error || 'Upload failed');
             }
+        } catch (error) {
+            setMessage({ type: 'error', text: error.message });
+        } finally {
+            setLoading(false);
         }
     };
 
-    useEffect(() => {
-        window.fbAsyncInit = function () {
-            window.FB.init({
-                appId: '1332019044439778',
-                cookie: true,
-                xfbml: true,
-                version: 'v20.0'
-            });
-
-            window.FB.getLoginStatus(function (response) {
-                statusChangeCallback(response);
-            });
-        };
-
-        (function (d, s, id) {
-            const js = d.createElement(s);
-            js.id = id;
-            js.src = 'https://connect.facebook.net/en_US/sdk.js';
-            const fjs = d.getElementsByTagName(s)[0];
-            fjs.parentNode.insertBefore(js, fjs);
-        })(document, 'script', 'facebook-jssdk');
-    }, [statusChangeCallback]);
-
     return (
-        <div>
-            <h1>Facebook Page Manager</h1>
+        <div className="social-post-uploader">
+            <h2>Create a New Post</h2>
+            <form onSubmit={handleSubmit}>
+                <textarea
+                    value={caption}
+                    onChange={handleCaptionChange}
+                    placeholder="Write a caption..."
+                    rows="3"
+                    style={{ width: '100%' }}
+                />
+                <input
+                    type="file"
+                    multiple
+                    accept="image/*, video/*"
+                    onChange={handleFileChange}
+                    style={{ display: 'block', margin: '10px 0' }}
+                />
 
-            {!isLoggedIn && <button onClick={loginWithFacebook}>Login with Facebook</button>}
+                <button type="submit" disabled={loading}>
+                    {loading ? 'Uploading...' : 'Post'}
+                </button>
+            </form>
 
-            {isLoggedIn && pages.length > 0 && (
-                <div>
-                    <h2>Select a Page to Post</h2>
-                    <select onChange={(e) => setSelectedPageId(e.target.value)} value={selectedPageId}>
-                        <option value="">Select Page</option>
-                        {pages.map((page) => (
-                            <option key={page.id} value={page.id}>{page.name}</option>
-                        ))}
-                    </select>
-
-                    <textarea
-                        placeholder="Write your post"
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                    ></textarea>
-
-                    <input
-                        type="file"
-                        accept="image/*,video/*"
-                        multiple
-                        onChange={(e) => setFiles(Array.from(e.target.files))}
-                    />
-
-                    <button onClick={handlePost}>Post to Page</button>
+            {message && (
+                <div className={`message ${message.type}`}>
+                    {message.text}
                 </div>
             )}
+
+            <style>{`
+                .social-post-uploader {
+                    max-width: 500px;
+                    margin: 0 auto;
+                    padding: 20px;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                }
+                .message.success {
+                    color: green;
+                }
+                .message.error {
+                    color: red;
+                }
+            `}</style>
         </div>
     );
-};
+}
 
-export default FacebookLoginCheck;
+export default SocialPostUploader;
