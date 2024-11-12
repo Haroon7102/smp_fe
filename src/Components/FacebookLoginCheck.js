@@ -487,24 +487,65 @@
 
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-function SocialPostUploader() {
+const FacebookPostUploader = () => {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [pages, setPages] = useState([]);
+    const [selectedPageId, setSelectedPageId] = useState(null);
     const [caption, setCaption] = useState('');
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
+
+    const statusChangeCallback = useCallback((response) => {
+        if (response.status === 'connected') {
+            setIsLoggedIn(true);
+            fetchPages(response.authResponse.accessToken);
+        } else {
+            setIsLoggedIn(false);
+        }
+    }, []);
+
+    const fetchPages = (accessToken) => {
+        window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+            if (response && !response.error) {
+                setPages(response.data);
+            } else {
+                console.error('Error fetching pages:', response.error);
+            }
+        });
+    };
+
+    const loginWithFacebook = () => {
+        window.FB.login(function (response) {
+            if (response.status === 'connected') {
+                setIsLoggedIn(true);
+                fetchPages(response.authResponse.accessToken);
+            } else {
+                alert('Facebook login failed. Please try again.');
+            }
+        }, {
+            scope: 'email, public_profile, pages_show_list, pages_manage_posts',
+        });
+    };
 
     const handleCaptionChange = (e) => {
         setCaption(e.target.value);
     };
 
     const handleFileChange = (e) => {
-        setFiles(Array.from(e.target.files));
+        const selectedFiles = Array.from(e.target.files);
+        setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!selectedPageId) {
+            setMessage({ type: 'error', text: 'Please select a page to post to.' });
+            return;
+        }
 
         if (!files.length && !caption) {
             setMessage({ type: 'error', text: 'Please add a caption or select at least one file.' });
@@ -517,12 +558,12 @@ function SocialPostUploader() {
         const formData = new FormData();
         formData.append('caption', caption);
         files.forEach((file) => formData.append('files', file));
+        formData.append('pageId', selectedPageId);
 
         try {
             const response = await fetch('https://smp-be-mysql.vercel.app/upload', {
                 method: 'POST',
                 body: formData,
-                headers: { 'Access-Control-Allow-Origin': 'https://smpfe.netlify.app' },
             });
 
             const result = await response.json();
@@ -541,29 +582,72 @@ function SocialPostUploader() {
         }
     };
 
-    return (
-        <div className="social-post-uploader">
-            <h2>Create a New Post</h2>
-            <form onSubmit={handleSubmit}>
-                <textarea
-                    value={caption}
-                    onChange={handleCaptionChange}
-                    placeholder="Write a caption..."
-                    rows="3"
-                    style={{ width: '100%' }}
-                />
-                <input
-                    type="file"
-                    multiple
-                    accept="image/*, video/*"
-                    onChange={handleFileChange}
-                    style={{ display: 'block', margin: '10px 0' }}
-                />
+    useEffect(() => {
+        window.fbAsyncInit = function () {
+            window.FB.init({
+                appId: '1332019044439778',
+                cookie: true,
+                xfbml: true,
+                version: 'v20.0'
+            });
 
-                <button type="submit" disabled={loading}>
-                    {loading ? 'Uploading...' : 'Post'}
-                </button>
-            </form>
+            window.FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+        };
+
+        (function (d, s, id) {
+            const js = d.createElement(s);
+            js.id = id;
+            js.src = 'https://connect.facebook.net/en_US/sdk.js';
+            const fjs = d.getElementsByTagName(s)[0];
+            fjs.parentNode.insertBefore(js, fjs);
+        })(document, 'script', 'facebook-jssdk');
+    }, [statusChangeCallback]);
+
+    return (
+        <div className="facebook-post-uploader">
+            <h2>Facebook Page Post Manager</h2>
+
+            {!isLoggedIn && <button onClick={loginWithFacebook}>Login with Facebook</button>}
+
+            {isLoggedIn && pages.length > 0 && (
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <label htmlFor="pageSelect">Select a Page:</label>
+                        <select
+                            id="pageSelect"
+                            onChange={(e) => setSelectedPageId(e.target.value)}
+                            value={selectedPageId}
+                        >
+                            <option value="">-- Select Page --</option>
+                            {pages.map((page) => (
+                                <option key={page.id} value={page.id}>{page.name}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <textarea
+                        placeholder="Write your caption..."
+                        value={caption}
+                        onChange={handleCaptionChange}
+                        rows="3"
+                        style={{ width: '100%', margin: '10px 0' }}
+                    />
+
+                    <input
+                        type="file"
+                        accept="image/*,video/*"
+                        multiple
+                        onChange={handleFileChange}
+                        style={{ display: 'block', margin: '10px 0' }}
+                    />
+
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Uploading...' : 'Post to Facebook'}
+                    </button>
+                </form>
+            )}
 
             {message && (
                 <div className={`message ${message.type}`}>
@@ -572,8 +656,8 @@ function SocialPostUploader() {
             )}
 
             <style>{`
-                .social-post-uploader {
-                    max-width: 500px;
+                .facebook-post-uploader {
+                    max-width: 600px;
                     margin: 0 auto;
                     padding: 20px;
                     border: 1px solid #ddd;
@@ -588,6 +672,7 @@ function SocialPostUploader() {
             `}</style>
         </div>
     );
-}
+};
 
-export default SocialPostUploader;
+export default FacebookPostUploader;
+
