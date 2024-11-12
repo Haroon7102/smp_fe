@@ -539,40 +539,57 @@ const FacebookPostUploader = () => {
         setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
         if (!selectedPageId) {
-            alert('Please select a page to post to.');
+            setMessage({ type: 'error', text: 'Please select a page to post to.' });
             return;
         }
 
+        if (!files.length && !caption) {
+            setMessage({ type: 'error', text: 'Please add a caption or select at least one file.' });
+            return;
+        }
+
+        setLoading(true);
+        setMessage(null);
+
+        // Retrieve the selected page's access token
         const selectedPage = pages.find(page => page.id === selectedPageId);
-        if (selectedPage) {
-            const formData = new FormData();
-            formData.append('accessToken', selectedPage.access_token);  // Add access token here
-            formData.append('pageId', selectedPageId);  // Add page ID here
+        const accessToken = selectedPage ? selectedPage.access_token : null;
 
-            files.forEach(file => formData.append('files', file));  // Attach files
-            if (message) formData.append('caption', message);  // Attach caption if provided
+        if (!accessToken) {
+            setMessage({ type: 'error', text: 'Access token is missing for the selected page.' });
+            setLoading(false);
+            return;
+        }
 
-            try {
-                const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
+        const formData = new FormData();
+        formData.append('caption', caption);
+        files.forEach((file) => formData.append('files', file));
+        formData.append('pageId', selectedPageId);
+        formData.append('accessToken', accessToken);  // Append the access token to form data
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error(`HTTP error! Status: ${response.status}, Response: ${errorText}`);
-                    throw new Error(`HTTP error! Status: ${response.status}, Details: ${errorText}`);
-                }
+        try {
+            const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
+                method: 'POST',
+                body: formData,
+            });
 
-                const result = await response.json();
-                console.log('Upload result:', result);
-                alert('Post uploaded successfully!');
-            } catch (error) {
-                console.error('Error uploading to backend:', error);
-                alert(`Error uploading: ${error.message}`);
+            const result = await response.json();
+
+            if (response.ok) {
+                setMessage({ type: 'success', text: `Post uploaded successfully! Post ID: ${result.postId}` });
+                setCaption('');
+                setFiles([]);
+            } else {
+                throw new Error(result.error || 'Upload failed');
             }
+        } catch (error) {
+            setMessage({ type: 'error', text: error.message });
+        } finally {
+            setLoading(false);
         }
     };
 
