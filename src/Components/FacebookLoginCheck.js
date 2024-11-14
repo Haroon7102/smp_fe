@@ -538,59 +538,6 @@ const FacebookPostUploader = () => {
         setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Append new files to existing ones
     };
 
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-
-    //     if (!selectedPageId) {
-    //         setMessage({ type: 'error', text: 'Please select a page to post to.' });
-    //         return;
-    //     }
-
-    //     if (!files.length && !caption) {
-    //         setMessage({ type: 'error', text: 'Please add a caption or select at least one file.' });
-    //         return;
-    //     }
-
-    //     setLoading(true);
-    //     setMessage(null);
-
-    //     const selectedPage = pages.find(page => page.id === selectedPageId);
-    //     const accessToken = selectedPage ? selectedPage.access_token : null;
-
-    //     if (!accessToken) {
-    //         setMessage({ type: 'error', text: 'Access token is missing for the selected page.' });
-    //         setLoading(false);
-    //         return;
-    //     }
-
-    //     const formData = new FormData();
-    //     formData.append('caption', caption);
-    //     formData.append('pageId', selectedPageId);
-    //     formData.append('accessToken', accessToken);
-    //     files.forEach(file => formData.append('files', file));
-
-    //     try {
-    //         const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
-    //             method: 'POST',
-    //             body: formData,
-    //         });
-
-    //         const result = await response.json();
-
-    //         if (response.ok) {
-    //             setMessage({ type: 'success', text: `Post uploaded successfully! Post ID: ${result.postId}` });
-    //             setCaption('');
-    //             setFiles([]);
-    //         } else {
-    //             throw new Error(result.error || 'Upload failed');
-    //         }
-    //     } catch (error) {
-    //         setMessage({ type: 'error', text: error.message });
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -599,17 +546,31 @@ const FacebookPostUploader = () => {
             return;
         }
 
+        if (!files.length && !caption) {
+            setMessage({ type: 'error', text: 'Please add a caption or select at least one file.' });
+            return;
+        }
+
         setLoading(true);
         setMessage(null);
+
+        const selectedPage = pages.find(page => page.id === selectedPageId);
+        const accessToken = selectedPage ? selectedPage.access_token : null;
+
+        if (!accessToken) {
+            setMessage({ type: 'error', text: 'Access token is missing for the selected page.' });
+            setLoading(false);
+            return;
+        }
 
         const formData = new FormData();
         formData.append('caption', caption);
         formData.append('pageId', selectedPageId);
+        formData.append('accessToken', accessToken);
         files.forEach(file => formData.append('files', file));
 
         try {
-            // Upload to S3 via backend
-            const response = await fetch('https://smp-be-mysql.vercel.app/upload/upload-to-s3', {
+            const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                 method: 'POST',
                 body: formData,
             });
@@ -617,32 +578,11 @@ const FacebookPostUploader = () => {
             const result = await response.json();
 
             if (response.ok) {
-                // After successful upload, send Facebook post request with URLs of uploaded files
-                const uploadedFileUrls = result.files;
-                // Append URLs to your Facebook post request
-                const facebookResponse = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        caption,
-                        pageId: selectedPageId,
-                        mediaUrls: uploadedFileUrls, // Add these URLs to your Facebook post body
-                    }),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const facebookResult = await facebookResponse.json();
-
-                if (facebookResponse.ok) {
-                    setMessage({ type: 'success', text: `Post uploaded successfully! Post ID: ${facebookResult.postId}` });
-                    setCaption('');
-                    setFiles([]);
-                } else {
-                    throw new Error(facebookResult.error || 'Facebook upload failed');
-                }
+                setMessage({ type: 'success', text: `Post uploaded successfully! Post ID: ${result.postId}` });
+                setCaption('');
+                setFiles([]);
             } else {
-                throw new Error(result.message || 'S3 upload failed');
+                throw new Error(result.error || 'Upload failed');
             }
         } catch (error) {
             setMessage({ type: 'error', text: error.message });
@@ -650,6 +590,8 @@ const FacebookPostUploader = () => {
             setLoading(false);
         }
     };
+
+
 
 
     useEffect(() => {
