@@ -609,7 +609,7 @@ const FacebookPostUploader = () => {
 
         try {
             // Upload to S3 via backend
-            const response = await fetch('https://smp-be-mysql.vercel.app/upload-to-s3', {
+            const response = await fetch('https://smp-be-mysql.vercel.app/upload/upload-to-s3', {
                 method: 'POST',
                 body: formData,
             });
