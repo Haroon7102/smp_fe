@@ -598,9 +598,20 @@ const FacebookPostUploader = () => {
             setMessage({ type: 'error', text: 'Please select a page to post to.' });
             return;
         }
-
+        if (!files.length && !caption) {
+            setMessage({ type: 'error', text: 'Please add a caption or select at least one file.' });
+            return;
+        }
         setLoading(true);
         setMessage(null);
+        const selectedPage = pages.find(page => page.id === selectedPageId);
+        const accessToken = selectedPage ? selectedPage.access_token : null;
+
+        if (!accessToken) {
+            setMessage({ type: 'error', text: 'Access token is missing for the selected page.' });
+            setLoading(false);
+            return;
+        }
 
         const formData = new FormData();
         formData.append('caption', caption);
