@@ -636,6 +636,7 @@ const FacebookPostUploader = () => {
                     method: 'POST',
                     body: JSON.stringify({
                         caption,
+                        accessToken,
                         pageId: selectedPageId,
                         mediaUrls: uploadedFileUrls, // Add these URLs to your Facebook post body
                     }),
