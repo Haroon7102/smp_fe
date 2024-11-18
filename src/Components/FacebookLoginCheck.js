@@ -986,9 +986,10 @@ const FacebookPostUploader = () => {
                         style={{ width: '100%', margin: '10px 0' }}
                     />
 
-                    <input
+
+//                     <input
                         type="file"
-                        accept={postType === 'feed' ? 'image/*,video/*' : 'video/*'}
+                        accept="image/*,video/*"
                         multiple
                         onChange={handleFileChange}
                         style={{ display: 'block', margin: '10px 0' }}
