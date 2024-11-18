@@ -839,7 +839,13 @@ const FacebookPostUploader = () => {
 
     const handleFileChange = (event) => {
         const selectedFiles = Array.from(event.target.files);
-        setFiles(selectedFiles);
+
+        // Append new files to the existing files, ensuring no duplicates by name
+        setFiles((prevFiles) => {
+            const fileMap = new Map(prevFiles.map((file) => [file.name, file]));
+            selectedFiles.forEach((file) => fileMap.set(file.name, file));
+            return Array.from(fileMap.values());
+        });
     };
 
     const handlePostTypeChange = (e) => {
@@ -986,10 +992,9 @@ const FacebookPostUploader = () => {
                         style={{ width: '100%', margin: '10px 0' }}
                     />
 
-
                     <input
                         type="file"
-                        accept="image/*,video/*"
+                        accept={postType === 'feed' ? 'images/*,videos/*' : 'videos/*'}
                         multiple
                         onChange={handleFileChange}
                         style={{ display: 'block', margin: '10px 0' }}
