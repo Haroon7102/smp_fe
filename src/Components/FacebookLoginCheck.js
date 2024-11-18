@@ -987,7 +987,7 @@ const FacebookPostUploader = () => {
                     />
 
 
-//                     <input
+                    <input
                         type="file"
                         accept="image/*,video/*"
                         multiple
