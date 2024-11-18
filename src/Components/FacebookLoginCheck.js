@@ -885,11 +885,33 @@ const FacebookPostUploader = () => {
             const result = await response.json();
 
             if (response.ok) {
-                setMessage({ type: 'success', text: `Post uploaded successfully!` });
-                setCaption('');
-                setFiles([]);
+                // After successful upload, send Facebook post request with URLs of uploaded files
+                const uploadedFileUrls = result.files;
+                // Append URLs to your Facebook post request
+                const facebookResponse = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        caption,
+                        accessToken,
+                        pageId: selectedPageId,
+                        mediaUrls: uploadedFileUrls, // Add these URLs to your Facebook post body
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const facebookResult = await facebookResponse.json();
+
+                if (facebookResponse.ok) {
+                    setMessage({ type: 'success', text: `Post uploaded successfully! Post ID: ${facebookResult.postId}` });
+                    setCaption('');
+                    setFiles([]);
+                } else {
+                    throw new Error(facebookResult.error || 'Facebook upload failed');
+                }
             } else {
-                throw new Error(result.message || 'Upload failed');
+                throw new Error(result.message || 'S3 upload failed');
             }
         } catch (error) {
             setMessage({ type: 'error', text: error.message });
