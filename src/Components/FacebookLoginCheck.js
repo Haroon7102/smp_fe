@@ -189,6 +189,10 @@ const FacebookLoginCheck = () => {
     const fetchUserData = (id) => {
         setUserId(id);
     };
+    const handleFileChange = (event) => {
+        const selectedFiles = Array.from(event.target.files); // Convert FileList to array
+        setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Append new files to existing ones
+    };
 
     const fetchPages = (accessToken) => {
         window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
@@ -354,7 +358,7 @@ const FacebookLoginCheck = () => {
                         type="file"
                         accept="image/*,video/*"
                         multiple
-                        onChange={(e) => setFiles(Array.from(e.target.files))}
+                        onChange={handleFileChange}
                         style={{ marginBottom: '10px' }}
                     />
 
