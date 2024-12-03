@@ -233,7 +233,7 @@ const FacebookLoginCheck = () => {
                 // Step 1: Upload files to S3 and get URLs
                 for (const file of files) {
                     // Get pre-signed URL from the backend
-                    const presignedResponse = await fetch('https://smp-be-mysql.vercel.app/generate-presigned-url', {
+                    const presignedResponse = await fetch('https://smp-be-mysql.vercel.app/upload/generate-presigned-url', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
