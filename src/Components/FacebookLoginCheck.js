@@ -228,56 +228,21 @@ const FacebookLoginCheck = () => {
                 return;
             }
 
+            const formData = new FormData();
+
+            files.forEach((file) => {
+                formData.append('files', file);
+            });
+
+            if (message) {
+                formData.append('caption', message);
+            }
+
+            formData.append('accessToken', selectedPage.access_token);
+            formData.append('pageId', selectedPageId);
+            formData.append('postType', postType); // Include post type in form data
+            console.log('post type added');
             try {
-                const uploadedUrls = [];
-                // Step 1: Upload files to S3 and get URLs
-                for (const file of files) {
-                    // Get pre-signed URL from the backend
-                    const presignedResponse = await fetch('https://smp-be-mysql.vercel.app/upload/generate-presigned-url', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            fileName: file.name,
-                            fileType: file.type,
-                        }),
-                    });
-
-                    if (!presignedResponse.ok) {
-                        throw new Error(`Failed to get pre-signed URL: ${presignedResponse.statusText}`);
-                    }
-
-                    const { uploadUrl, fileUrl } = await presignedResponse.json();
-
-                    // Upload file to S3 using the pre-signed URL
-                    const s3UploadResponse = await fetch(uploadUrl, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': file.type },
-                        body: file,
-                    });
-
-                    if (!s3UploadResponse.ok) {
-                        throw new Error(`Failed to upload file to S3: ${s3UploadResponse.statusText}`);
-                    }
-
-                    // Store the uploaded file's URL
-                    uploadedUrls.push(fileUrl);
-                }
-
-                // Step 2: Call the backend with the S3 URLs
-                const formData = new FormData();
-                uploadedUrls.forEach((url) => {
-                    formData.append('fileUrls', url);
-                });
-
-                if (message) {
-                    formData.append('caption', message);
-                }
-
-                formData.append('accessToken', selectedPage.access_token);
-                formData.append('pageId', selectedPageId);
-                formData.append('postType', postType); // Include post type in form data
-                console.log('Post type added');
-
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                     method: 'POST',
                     body: formData,
@@ -290,14 +255,13 @@ const FacebookLoginCheck = () => {
                 const result = await response.json();
                 console.log('Upload result:', result);
             } catch (error) {
-                console.error('Error during upload process:', error);
+                console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
             }
         } else {
             alert('Please select a page to post to.');
         }
     };
-
 
     useEffect(() => {
         window.fbAsyncInit = function () {
