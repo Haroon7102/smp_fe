@@ -227,46 +227,57 @@ const FacebookLoginCheck = () => {
 
     const handlePost = async () => {
         const selectedPage = pages.find(page => page.id === selectedPageId);
-        if (selectedPage) {
-            if (!userId) {
-                alert('User ID is missing. Please log in again.');
-                return;
-            }
+        if (!selectedPage) {
+            alert('Please select a page to post to.');
+            return;
+        }
 
-            const formData = new FormData();
+        if (!userId) {
+            alert('User ID is missing. Please log in again.');
+            return;
+        }
 
-            files.forEach((file) => {
-                formData.append('files', file);
-            });
+        if (!files.length) {
+            alert('No files selected for upload.');
+            return;
+        }
 
-            if (message) {
-                formData.append('caption', message);
-            }
+        try {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const formData = new FormData();
 
-            formData.append('accessToken', selectedPage.access_token);
-            formData.append('pageId', selectedPageId);
-            formData.append('postType', postType); // Include post type in form data
-            console.log('post type added');
-            try {
+                // Append the current file and other form data
+                formData.append('file', file);
+                formData.append('accessToken', selectedPage.access_token);
+                formData.append('pageId', selectedPageId);
+                formData.append('postType', postType); // Include post type
+                if (message) {
+                    formData.append('caption', message);
+                }
+
+                console.log(`Uploading file ${i + 1} of ${files.length}: ${file.name}`);
+
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                     method: 'POST',
                     body: formData,
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`Upload failed for file ${file.name}: ${response.status}`);
                 }
 
                 const result = await response.json();
-                console.log('Upload result:', result);
-            } catch (error) {
-                console.error('Error uploading to backend:', error);
-                alert(`Error uploading: ${error.message}`);
+                console.log(`File ${i + 1} uploaded successfully:`, result);
             }
-        } else {
-            alert('Please select a page to post to.');
+
+            alert('All files uploaded successfully!');
+        } catch (error) {
+            console.error('Error during file upload:', error);
+            alert(`Error during upload: ${error.message}`);
         }
     };
+
 
     useEffect(() => {
         window.fbAsyncInit = function () {
