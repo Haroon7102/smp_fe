@@ -173,8 +173,7 @@ const FacebookLoginCheck = () => {
     const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
-    const [files, setFiles] = useState([]);  // Keep track of files being uploaded
-    const [isUploading, setIsUploading] = useState(false);  // Track upload status
+    const [files, setFiles] = useState([]);
     const [postType, setPostType] = useState('feed'); // Post type dropdown
 
     const statusChangeCallback = useCallback((response) => {
@@ -190,7 +189,6 @@ const FacebookLoginCheck = () => {
     const fetchUserData = (id) => {
         setUserId(id);
     };
-
     const handleFileChange = (event) => {
         const selectedFiles = Array.from(event.target.files); // Convert FileList to array
         setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Append new files to existing ones
@@ -223,16 +221,6 @@ const FacebookLoginCheck = () => {
     };
 
     const handlePost = async () => {
-        if (isUploading) {
-            alert('Upload is already in progress. Please wait.');
-            return;
-        }
-
-        if (files.length === 0) {
-            alert('No files selected.');
-            return;
-        }
-
         const selectedPage = pages.find(page => page.id === selectedPageId);
         if (selectedPage) {
             if (!userId) {
@@ -241,6 +229,7 @@ const FacebookLoginCheck = () => {
             }
 
             const formData = new FormData();
+
             files.forEach((file) => {
                 formData.append('files', file);
             });
@@ -252,10 +241,8 @@ const FacebookLoginCheck = () => {
             formData.append('accessToken', selectedPage.access_token);
             formData.append('pageId', selectedPageId);
             formData.append('postType', postType); // Include post type in form data
-
+            console.log('post type added');
             try {
-                setIsUploading(true); // Set uploading state to true
-
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                     method: 'POST',
                     body: formData,
@@ -267,14 +254,7 @@ const FacebookLoginCheck = () => {
 
                 const result = await response.json();
                 console.log('Upload result:', result);
-
-                // After successful upload, reset the state
-                setFiles([]);
-                setMessage('');
-                setIsUploading(false);
-                alert('Upload successful!');
             } catch (error) {
-                setIsUploading(false); // Reset the upload state in case of error
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
             }
@@ -396,40 +376,33 @@ const FacebookLoginCheck = () => {
                                         src={URL.createObjectURL(file)}
                                         controls
                                         style={{ width: '100px', height: '100px' }}
-                                    ></video>
+                                    />
                                 )}
-                                <div>{file.name}</div>
                             </div>
                         ))}
                     </div>
 
                     <button
                         onClick={handlePost}
-                        disabled={isUploading}
                         style={{
                             padding: '10px 20px',
                             fontSize: '16px',
-                            backgroundColor: '#4267B2',
+                            backgroundColor: '#28a745',
                             color: 'white',
                             border: 'none',
                             borderRadius: '5px',
-                            cursor: isUploading ? 'not-allowed' : 'pointer',
+                            cursor: 'pointer',
                         }}
                     >
-                        {isUploading ? 'Uploading...' : 'Upload Post'}
+                        Post to Page
                     </button>
                 </div>
-            )}
-
-            {isLoggedIn && pages.length === 0 && (
-                <p>You don't have any pages to post to.</p>
             )}
         </div>
     );
 };
 
 export default FacebookLoginCheck;
-
 
 // _______________________________________________________________________________________________________________________________
 
