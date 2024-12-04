@@ -189,6 +189,7 @@ const FacebookLoginCheck = () => {
     const fetchUserData = (id) => {
         setUserId(id);
     };
+
     const handleFileChange = (event) => {
         const selectedFiles = Array.from(event.target.files); // Convert FileList to array
         setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Append new files to existing ones
@@ -254,6 +255,12 @@ const FacebookLoginCheck = () => {
 
                 const result = await response.json();
                 console.log('Upload result:', result);
+
+                // Reset the form after successful post
+                setSelectedPageId(null);
+                setMessage('');
+                setFiles([]);
+                setPostType('feed');
             } catch (error) {
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
@@ -403,6 +410,7 @@ const FacebookLoginCheck = () => {
 };
 
 export default FacebookLoginCheck;
+
 
 // _______________________________________________________________________________________________________________________________
 
