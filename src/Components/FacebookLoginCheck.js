@@ -248,7 +248,7 @@ const FacebookLoginCheck = () => {
                 const formData = new FormData();
 
                 // Append the current file and other form data
-                formData.append('file', file);
+                formData.append('files', file);
                 formData.append('accessToken', selectedPage.access_token);
                 formData.append('pageId', selectedPageId);
                 formData.append('postType', postType); // Include post type
