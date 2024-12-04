@@ -189,9 +189,14 @@ const FacebookLoginCheck = () => {
     const fetchUserData = (id) => {
         setUserId(id);
     };
+
     const handleFileChange = (event) => {
         const selectedFiles = Array.from(event.target.files); // Convert FileList to array
         setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Append new files to existing ones
+    };
+
+    const handleRemoveFile = (index) => {
+        setFiles(prevFiles => prevFiles.filter((_, i) => i !== index)); // Remove the file at the given index
     };
 
     const fetchPages = (accessToken) => {
@@ -364,7 +369,7 @@ const FacebookLoginCheck = () => {
 
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '10px' }}>
                         {files.map((file, index) => (
-                            <div key={index} style={{ textAlign: 'center' }}>
+                            <div key={index} style={{ textAlign: 'center', position: 'relative' }}>
                                 {file.type.startsWith('image') ? (
                                     <img
                                         src={URL.createObjectURL(file)}
@@ -378,6 +383,23 @@ const FacebookLoginCheck = () => {
                                         style={{ width: '100px', height: '100px' }}
                                     />
                                 )}
+                                <button
+                                    onClick={() => handleRemoveFile(index)}
+                                    style={{
+                                        position: 'absolute',
+                                        top: '5px',
+                                        right: '5px',
+                                        backgroundColor: 'red',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '50%',
+                                        width: '20px',
+                                        height: '20px',
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    X
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -403,6 +425,7 @@ const FacebookLoginCheck = () => {
 };
 
 export default FacebookLoginCheck;
+
 
 // _______________________________________________________________________________________________________________________________
 
