@@ -170,17 +170,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 const FacebookLoginCheck = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [pages, setPages] = useState([]);
-    const [selectedPageId, setSelectedPageId] = useState(localStorage.getItem('selectedPageId') || '');
+    const [selectedPageId, setSelectedPageId] = useState(null);
     const [message, setMessage] = useState('');
     const [userId, setUserId] = useState(null);
     const [files, setFiles] = useState([]);
     const [postType, setPostType] = useState('feed'); // Post type dropdown
-
-    const resetState = useCallback(() => {
-        setMessage('');
-        setFiles([]);
-        setPostType('feed');
-    }, []);
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -195,7 +189,6 @@ const FacebookLoginCheck = () => {
     const fetchUserData = (id) => {
         setUserId(id);
     };
-
     const handleFileChange = (event) => {
         const selectedFiles = Array.from(event.target.files); // Convert FileList to array
         setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Append new files to existing ones
@@ -248,7 +241,7 @@ const FacebookLoginCheck = () => {
             formData.append('accessToken', selectedPage.access_token);
             formData.append('pageId', selectedPageId);
             formData.append('postType', postType); // Include post type in form data
-
+            console.log('post type added');
             try {
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                     method: 'POST',
@@ -261,8 +254,6 @@ const FacebookLoginCheck = () => {
 
                 const result = await response.json();
                 console.log('Upload result:', result);
-                alert('Post uploaded successfully!');
-                resetState(); // Reset state after successful upload
             } catch (error) {
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
@@ -293,20 +284,7 @@ const FacebookLoginCheck = () => {
             const fjs = d.getElementsByTagName(s)[0];
             fjs.parentNode.insertBefore(js, fjs);
         })(document, 'script', 'facebook-jssdk');
-
-        // Reset state on component mount
-        resetState();
-
-        return () => {
-            // Cleanup on unmount
-            resetState();
-        };
-    }, [statusChangeCallback, resetState]);
-
-    useEffect(() => {
-        // Store selectedPageId in localStorage
-        localStorage.setItem('selectedPageId', selectedPageId);
-    }, [selectedPageId]);
+    }, [statusChangeCallback]);
 
     return (
         <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', maxWidth: '600px', margin: 'auto' }}>
@@ -425,7 +403,6 @@ const FacebookLoginCheck = () => {
 };
 
 export default FacebookLoginCheck;
-
 
 // _______________________________________________________________________________________________________________________________
 
