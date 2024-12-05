@@ -246,6 +246,7 @@ const FacebookLoginCheck = () => {
             formData.append('accessToken', selectedPage.access_token);
             formData.append('pageId', selectedPageId);
             formData.append('postType', postType); // Include post type in form data
+
             console.log('post type added');
             try {
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
@@ -259,6 +260,18 @@ const FacebookLoginCheck = () => {
 
                 const result = await response.json();
                 console.log('Upload result:', result);
+
+                // Update the UI dynamically
+                if (result.success) {
+                    // Example: Add the new post to a post list dynamically
+                    const postList = document.getElementById('post-list');
+                    const newPost = document.createElement('li');
+                    newPost.textContent = `Posted to ${selectedPage.name}: ${message || 'No caption provided'}`;
+                    postList.prepend(newPost); // Add the new post to the top of the list
+                    alert('Post uploaded successfully!');
+                } else {
+                    alert('Post upload failed. Please try again.');
+                }
             } catch (error) {
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
@@ -267,6 +280,7 @@ const FacebookLoginCheck = () => {
             alert('Please select a page to post to.');
         }
     };
+
 
     useEffect(() => {
         window.fbAsyncInit = function () {
