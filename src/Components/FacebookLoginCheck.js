@@ -175,8 +175,6 @@ const FacebookLoginCheck = () => {
     const [userId, setUserId] = useState(null);
     const [files, setFiles] = useState([]);
     const [postType, setPostType] = useState('feed'); // Post type dropdown
-    const [postedMessages, setPostedMessages] = useState([]);
-
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -248,7 +246,6 @@ const FacebookLoginCheck = () => {
             formData.append('accessToken', selectedPage.access_token);
             formData.append('pageId', selectedPageId);
             formData.append('postType', postType); // Include post type in form data
-
             console.log('post type added');
             try {
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
@@ -262,17 +259,6 @@ const FacebookLoginCheck = () => {
 
                 const result = await response.json();
                 console.log('Upload result:', result);
-
-                if (result.success) {
-                    // Add new post details to the postedMessages array
-                    setPostedMessages(prev => [
-                        { pageName: selectedPage.name, message: message || 'No caption provided' },
-                        ...prev,
-                    ]);
-                    alert('Post uploaded successfully!');
-                } else {
-                    alert('Post upload failed. Please try again.');
-                }
             } catch (error) {
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
@@ -281,7 +267,6 @@ const FacebookLoginCheck = () => {
             alert('Please select a page to post to.');
         }
     };
-
 
     useEffect(() => {
         window.fbAsyncInit = function () {
@@ -433,20 +418,7 @@ const FacebookLoginCheck = () => {
                     >
                         Post to Page
                     </button>
-                    <div>
-                        <h2>Posted Messages</h2>
-                        <ul style={{ listStyleType: 'none', padding: 0 }} id="post-list">
-                            {postedMessages.map((post, index) => (
-                                <li key={index} style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ccc' }}>
-                                    <strong>Page:</strong> {post.pageName} <br />
-                                    <strong>Message:</strong> {post.message}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
                 </div>
-
             )}
         </div>
     );
