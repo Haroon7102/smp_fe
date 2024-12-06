@@ -267,7 +267,6 @@ const FacebookLoginCheck = () => {
                 setMessage('');
                 setFiles([]);
                 setPostType('feed');
-                fetchPages(selectedPage.access_token); // Re-fetch page data
             } catch (error) {
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
