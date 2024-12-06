@@ -175,7 +175,6 @@ const FacebookLoginCheck = () => {
     const [userId, setUserId] = useState(null);
     const [files, setFiles] = useState([]);
     const [postType, setPostType] = useState('feed'); // Post type dropdown
-    const [isLoading, setIsLoading] = useState(false);
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -248,12 +247,7 @@ const FacebookLoginCheck = () => {
             formData.append('pageId', selectedPageId);
             formData.append('postType', postType); // Include post type in form data
             console.log('post type added');
-            setIsLoading(true);
-
             try {
-                setMessage(''); // Clear message
-                setFiles([]); // Clear files
-                alert('Posting...');
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                     method: 'POST',
                     body: formData,
@@ -269,13 +263,9 @@ const FacebookLoginCheck = () => {
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
             }
-            finally {
-                setIsLoading(false);
-            }
         } else {
             alert('Please select a page to post to.');
         }
-
     };
 
     useEffect(() => {
@@ -423,14 +413,10 @@ const FacebookLoginCheck = () => {
                             color: 'white',
                             border: 'none',
                             borderRadius: '5px',
-                            // cursor: 'pointer',
-                            cursor: isLoading ? 'not-allowed' : 'pointer',
-
+                            cursor: 'pointer',
                         }}
-                        disabled={isLoading}
-
                     >
-                        {isLoading ? 'Posting...' : 'Post to Page'}
+                        Post to Page
                     </button>
                 </div>
             )}
