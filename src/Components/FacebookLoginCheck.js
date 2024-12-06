@@ -165,268 +165,6 @@
 // export default FacebookLoginCheck;
 
 // _______________________________________________________________________________________________________________________________
-// import React, { useState, useEffect, useCallback } from 'react';
-
-// const FacebookLoginCheck = () => {
-//     const [isLoggedIn, setIsLoggedIn] = useState(false);
-//     const [pages, setPages] = useState([]);
-//     const [selectedPageId, setSelectedPageId] = useState(null);
-//     const [message, setMessage] = useState('');
-//     const [userId, setUserId] = useState(null);
-//     const [files, setFiles] = useState([]);
-//     const [postType, setPostType] = useState('feed'); // Post type dropdown
-
-//     const statusChangeCallback = useCallback((response) => {
-//         if (response.status === 'connected') {
-//             setIsLoggedIn(true);
-//             fetchUserData(response.authResponse.userID);
-//             fetchPages(response.authResponse.accessToken);
-//         } else {
-//             setIsLoggedIn(false);
-//         }
-//     }, []);
-
-//     const fetchUserData = (id) => {
-//         setUserId(id);
-//     };
-
-//     const handleFileChange = (event) => {
-//         const selectedFiles = Array.from(event.target.files); // Convert FileList to array
-//         setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Append new files to existing ones
-//     };
-
-//     const handleRemoveFile = (index) => {
-//         setFiles(prevFiles => prevFiles.filter((_, i) => i !== index)); // Remove the file at the given index
-//     };
-
-//     const fetchPages = (accessToken) => {
-//         window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
-//             if (response && !response.error) {
-//                 setPages(response.data);
-//             } else {
-//                 console.error('Error fetching pages:', response.error);
-//             }
-//         });
-//     };
-
-//     const loginWithFacebook = () => {
-//         window.FB.login(function (response) {
-//             if (response.status === 'connected') {
-//                 setIsLoggedIn(true);
-//                 fetchPages(response.authResponse.accessToken);
-//             } else if (response.status === 'not_authorized') {
-//                 alert('You need to authorize the app to manage your Facebook pages.');
-//             } else {
-//                 alert('Facebook login failed. Please try again.');
-//             }
-//         }, {
-//             scope: 'email, public_profile, pages_show_list, pages_manage_posts',
-//             config_id: '1273277580768760'
-//         });
-//     };
-
-//     const handlePost = async () => {
-//         const selectedPage = pages.find(page => page.id === selectedPageId);
-//         if (selectedPage) {
-//             if (!userId) {
-//                 alert('User ID is missing. Please log in again.');
-//                 return;
-//             }
-
-//             const formData = new FormData();
-
-//             files.forEach((file) => {
-//                 formData.append('files', file);
-//             });
-
-//             if (message) {
-//                 formData.append('caption', message);
-//             }
-
-//             formData.append('accessToken', selectedPage.access_token);
-//             formData.append('pageId', selectedPageId);
-//             formData.append('postType', postType); // Include post type in form data
-//             console.log('post type added');
-//             try {
-//                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
-//                     method: 'POST',
-//                     body: formData,
-//                 });
-
-//                 if (!response.ok) {
-//                     throw new Error(`HTTP error! status: ${response.status}`);
-//                 }
-
-//                 const result = await response.json();
-//                 console.log('Upload result:', result);
-//             } catch (error) {
-//                 console.error('Error uploading to backend:', error);
-//                 alert(`Error uploading: ${error.message}`);
-//             }
-//         } else {
-//             alert('Please select a page to post to.');
-//         }
-//     };
-
-//     useEffect(() => {
-//         window.fbAsyncInit = function () {
-//             window.FB.init({
-//                 appId: '1332019044439778',
-//                 cookie: true,
-//                 xfbml: true,
-//                 version: 'v20.0'
-//             });
-
-//             window.FB.getLoginStatus(function (response) {
-//                 statusChangeCallback(response);
-//             });
-//         };
-
-//         (function (d, s, id) {
-//             const js = d.createElement(s);
-//             js.id = id;
-//             js.src = 'https://connect.facebook.net/en_US/sdk.js';
-//             const fjs = d.getElementsByTagName(s)[0];
-//             fjs.parentNode.insertBefore(js, fjs);
-//         })(document, 'script', 'facebook-jssdk');
-//     }, [statusChangeCallback]);
-
-//     return (
-//         <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', maxWidth: '600px', margin: 'auto' }}>
-//             <h1 style={{ textAlign: 'center', color: '#4267B2' }}>Facebook Page Manager</h1>
-
-//             {!isLoggedIn && (
-//                 <button
-//                     onClick={loginWithFacebook}
-//                     style={{
-//                         padding: '10px 20px',
-//                         fontSize: '16px',
-//                         backgroundColor: '#4267B2',
-//                         color: 'white',
-//                         border: 'none',
-//                         borderRadius: '5px',
-//                         cursor: 'pointer',
-//                     }}>
-//                     Login with Facebook
-//                 </button>
-//             )}
-
-//             {isLoggedIn && pages.length > 0 && (
-//                 <div>
-//                     <h2>Select a Page to Post</h2>
-//                     <select
-//                         onChange={(e) => setSelectedPageId(e.target.value)}
-//                         value={selectedPageId}
-//                         style={{
-//                             padding: '10px',
-//                             fontSize: '14px',
-//                             marginBottom: '10px',
-//                             width: '100%',
-//                         }}
-//                     >
-//                         <option value="">Select Page</option>
-//                         {pages.map((page) => (
-//                             <option key={page.id} value={page.id}>
-//                                 {page.name}
-//                             </option>
-//                         ))}
-//                     </select>
-
-//                     <textarea
-//                         placeholder="Write your post"
-//                         value={message}
-//                         onChange={(e) => setMessage(e.target.value)}
-//                         style={{
-//                             width: '100%',
-//                             height: '100px',
-//                             padding: '10px',
-//                             marginBottom: '10px',
-//                         }}
-//                     ></textarea>
-
-//                     <select
-//                         onChange={(e) => setPostType(e.target.value)}
-//                         value={postType}
-//                         style={{
-//                             padding: '10px',
-//                             fontSize: '14px',
-//                             marginBottom: '10px',
-//                             width: '100%',
-//                         }}
-//                     >
-//                         <option value="feed">Feed</option>
-//                         <option value="videos">Videos</option>
-//                         <option value="reels">Reels</option>
-//                     </select>
-
-//                     <input
-//                         type="file"
-//                         accept="image/*,video/*"
-//                         multiple
-//                         onChange={handleFileChange}
-//                         style={{ marginBottom: '10px' }}
-//                     />
-
-//                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '10px' }}>
-//                         {files.map((file, index) => (
-//                             <div key={index} style={{ textAlign: 'center', position: 'relative' }}>
-//                                 {file.type.startsWith('image') ? (
-//                                     <img
-//                                         src={URL.createObjectURL(file)}
-//                                         alt="Preview"
-//                                         style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-//                                     />
-//                                 ) : (
-//                                     <video
-//                                         src={URL.createObjectURL(file)}
-//                                         controls
-//                                         style={{ width: '100px', height: '100px' }}
-//                                     />
-//                                 )}
-//                                 <button
-//                                     onClick={() => handleRemoveFile(index)}
-//                                     style={{
-//                                         position: 'absolute',
-//                                         top: '5px',
-//                                         right: '5px',
-//                                         backgroundColor: 'red',
-//                                         color: 'white',
-//                                         border: 'none',
-//                                         borderRadius: '50%',
-//                                         width: '20px',
-//                                         height: '20px',
-//                                         cursor: 'pointer',
-//                                     }}
-//                                 >
-//                                     X
-//                                 </button>
-//                             </div>
-//                         ))}
-//                     </div>
-
-//                     <button
-//                         onClick={handlePost}
-//                         style={{
-//                             padding: '10px 20px',
-//                             fontSize: '16px',
-//                             backgroundColor: '#28a745',
-//                             color: 'white',
-//                             border: 'none',
-//                             borderRadius: '5px',
-//                             cursor: 'pointer',
-//                         }}
-//                     >
-//                         Post to Page
-//                     </button>
-//                 </div>
-//             )}
-//         </div>
-//     );
-// };
-
-// export default FacebookLoginCheck;
-
-
 import React, { useState, useEffect, useCallback } from 'react';
 
 const FacebookLoginCheck = () => {
@@ -437,9 +175,7 @@ const FacebookLoginCheck = () => {
     const [userId, setUserId] = useState(null);
     const [files, setFiles] = useState([]);
     const [postType, setPostType] = useState('feed'); // Post type dropdown
-    const [recentPosts, setRecentPosts] = useState([]); // Store recent posts
 
-    // Callback function for status changes
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
             setIsLoggedIn(true);
@@ -450,23 +186,19 @@ const FacebookLoginCheck = () => {
         }
     }, []);
 
-    // Fetch user data (for later use, like posting)
     const fetchUserData = (id) => {
         setUserId(id);
     };
 
-    // Handle file input changes (multiple files)
     const handleFileChange = (event) => {
-        const selectedFiles = Array.from(event.target.files);
-        setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+        const selectedFiles = Array.from(event.target.files); // Convert FileList to array
+        setFiles(prevFiles => [...prevFiles, ...selectedFiles]); // Append new files to existing ones
     };
 
-    // Remove selected file from files array
     const handleRemoveFile = (index) => {
-        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+        setFiles(prevFiles => prevFiles.filter((_, i) => i !== index)); // Remove the file at the given index
     };
 
-    // Fetch pages that the user manages
     const fetchPages = (accessToken) => {
         window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
             if (response && !response.error) {
@@ -477,7 +209,6 @@ const FacebookLoginCheck = () => {
         });
     };
 
-    // Facebook login handler
     const loginWithFacebook = () => {
         window.FB.login(function (response) {
             if (response.status === 'connected') {
@@ -494,9 +225,8 @@ const FacebookLoginCheck = () => {
         });
     };
 
-    // Handle post submission (posting to selected page)
     const handlePost = async () => {
-        const selectedPage = pages.find((page) => page.id === selectedPageId);
+        const selectedPage = pages.find(page => page.id === selectedPageId);
         if (selectedPage) {
             if (!userId) {
                 alert('User ID is missing. Please log in again.');
@@ -504,6 +234,7 @@ const FacebookLoginCheck = () => {
             }
 
             const formData = new FormData();
+
             files.forEach((file) => {
                 formData.append('files', file);
             });
@@ -514,8 +245,8 @@ const FacebookLoginCheck = () => {
 
             formData.append('accessToken', selectedPage.access_token);
             formData.append('pageId', selectedPageId);
-            formData.append('postType', postType);
-
+            formData.append('postType', postType); // Include post type in form data
+            console.log('post type added');
             try {
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                     method: 'POST',
@@ -528,25 +259,6 @@ const FacebookLoginCheck = () => {
 
                 const result = await response.json();
                 console.log('Upload result:', result);
-
-                if (result.success) {
-                    // Add the new post to the recentPosts state dynamically
-                    setRecentPosts((prevPosts) => [
-                        {
-                            pageName: selectedPage.name,
-                            message: message || 'No caption provided',
-                            time: new Date().toLocaleString(),
-                        },
-                        ...prevPosts,
-                    ]);
-
-                    // Clear form inputs
-                    setMessage('');
-                    setFiles([]);
-                    alert('Post uploaded successfully!');
-                } else {
-                    alert('Post upload failed. Please try again.');
-                }
             } catch (error) {
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
@@ -562,7 +274,7 @@ const FacebookLoginCheck = () => {
                 appId: '1332019044439778',
                 cookie: true,
                 xfbml: true,
-                version: 'v20.0',
+                version: 'v20.0'
             });
 
             window.FB.getLoginStatus(function (response) {
@@ -599,7 +311,7 @@ const FacebookLoginCheck = () => {
                 </button>
             )}
 
-            {isLoggedIn && (
+            {isLoggedIn && pages.length > 0 && (
                 <div>
                     <h2>Select a Page to Post</h2>
                     <select
@@ -708,27 +420,315 @@ const FacebookLoginCheck = () => {
                     </button>
                 </div>
             )}
-
-            <h3>Recent Posts</h3>
-            <div>
-                {recentPosts.length === 0 ? (
-                    <p>No posts made yet</p>
-                ) : (
-                    <ul>
-                        {recentPosts.map((post, index) => (
-                            <li key={index}>
-                                <strong>{post.pageName}</strong>: {post.message} <br />
-                                <small>{post.time}</small>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
         </div>
     );
 };
 
 export default FacebookLoginCheck;
+
+
+// import React, { useState, useEffect, useCallback } from 'react';
+
+// const FacebookLoginCheck = () => {
+//     const [isLoggedIn, setIsLoggedIn] = useState(false);
+//     const [pages, setPages] = useState([]);
+//     const [selectedPageId, setSelectedPageId] = useState(null);
+//     const [message, setMessage] = useState('');
+//     const [userId, setUserId] = useState(null);
+//     const [files, setFiles] = useState([]);
+//     const [postType, setPostType] = useState('feed'); // Post type dropdown
+//     const [recentPosts, setRecentPosts] = useState([]); // Store recent posts
+
+//     // Callback function for status changes
+//     const statusChangeCallback = useCallback((response) => {
+//         if (response.status === 'connected') {
+//             setIsLoggedIn(true);
+//             fetchUserData(response.authResponse.userID);
+//             fetchPages(response.authResponse.accessToken);
+//         } else {
+//             setIsLoggedIn(false);
+//         }
+//     }, []);
+
+//     // Fetch user data (for later use, like posting)
+//     const fetchUserData = (id) => {
+//         setUserId(id);
+//     };
+
+//     // Handle file input changes (multiple files)
+//     const handleFileChange = (event) => {
+//         const selectedFiles = Array.from(event.target.files);
+//         setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+//     };
+
+//     // Remove selected file from files array
+//     const handleRemoveFile = (index) => {
+//         setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+//     };
+
+//     // Fetch pages that the user manages
+//     const fetchPages = (accessToken) => {
+//         window.FB.api('/me/accounts', { access_token: accessToken }, function (response) {
+//             if (response && !response.error) {
+//                 setPages(response.data);
+//             } else {
+//                 console.error('Error fetching pages:', response.error);
+//             }
+//         });
+//     };
+
+//     // Facebook login handler
+//     const loginWithFacebook = () => {
+//         window.FB.login(function (response) {
+//             if (response.status === 'connected') {
+//                 setIsLoggedIn(true);
+//                 fetchPages(response.authResponse.accessToken);
+//             } else if (response.status === 'not_authorized') {
+//                 alert('You need to authorize the app to manage your Facebook pages.');
+//             } else {
+//                 alert('Facebook login failed. Please try again.');
+//             }
+//         }, {
+//             scope: 'email, public_profile, pages_show_list, pages_manage_posts',
+//             config_id: '1273277580768760'
+//         });
+//     };
+
+//     // Handle post submission (posting to selected page)
+//     const handlePost = async () => {
+//         const selectedPage = pages.find((page) => page.id === selectedPageId);
+//         if (selectedPage) {
+//             if (!userId) {
+//                 alert('User ID is missing. Please log in again.');
+//                 return;
+//             }
+
+//             const formData = new FormData();
+//             files.forEach((file) => {
+//                 formData.append('files', file);
+//             });
+
+//             if (message) {
+//                 formData.append('caption', message);
+//             }
+
+//             formData.append('accessToken', selectedPage.access_token);
+//             formData.append('pageId', selectedPageId);
+//             formData.append('postType', postType);
+
+//             try {
+//                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
+//                     method: 'POST',
+//                     body: formData,
+//                 });
+
+//                 if (!response.ok) {
+//                     throw new Error(`HTTP error! status: ${response.status}`);
+//                 }
+
+//                 const result = await response.json();
+//                 console.log('Upload result:', result);
+
+//                 if (result.success) {
+//                     // Add the new post to the recentPosts state dynamically
+//                     setRecentPosts((prevPosts) => [
+//                         {
+//                             pageName: selectedPage.name,
+//                             message: message || 'No caption provided',
+//                             time: new Date().toLocaleString(),
+//                         },
+//                         ...prevPosts,
+//                     ]);
+
+//                     // Clear form inputs
+//                     setMessage('');
+//                     setFiles([]);
+//                     alert('Post uploaded successfully!');
+//                 } else {
+//                     alert('Post upload failed. Please try again.');
+//                 }
+//             } catch (error) {
+//                 console.error('Error uploading to backend:', error);
+//                 alert(`Error uploading: ${error.message}`);
+//             }
+//         } else {
+//             alert('Please select a page to post to.');
+//         }
+//     };
+
+//     useEffect(() => {
+//         window.fbAsyncInit = function () {
+//             window.FB.init({
+//                 appId: '1332019044439778',
+//                 cookie: true,
+//                 xfbml: true,
+//                 version: 'v20.0',
+//             });
+
+//             window.FB.getLoginStatus(function (response) {
+//                 statusChangeCallback(response);
+//             });
+//         };
+
+//         (function (d, s, id) {
+//             const js = d.createElement(s);
+//             js.id = id;
+//             js.src = 'https://connect.facebook.net/en_US/sdk.js';
+//             const fjs = d.getElementsByTagName(s)[0];
+//             fjs.parentNode.insertBefore(js, fjs);
+//         })(document, 'script', 'facebook-jssdk');
+//     }, [statusChangeCallback]);
+
+//     return (
+//         <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', maxWidth: '600px', margin: 'auto' }}>
+//             <h1 style={{ textAlign: 'center', color: '#4267B2' }}>Facebook Page Manager</h1>
+
+//             {!isLoggedIn && (
+//                 <button
+//                     onClick={loginWithFacebook}
+//                     style={{
+//                         padding: '10px 20px',
+//                         fontSize: '16px',
+//                         backgroundColor: '#4267B2',
+//                         color: 'white',
+//                         border: 'none',
+//                         borderRadius: '5px',
+//                         cursor: 'pointer',
+//                     }}>
+//                     Login with Facebook
+//                 </button>
+//             )}
+
+//             {isLoggedIn && (
+//                 <div>
+//                     <h2>Select a Page to Post</h2>
+//                     <select
+//                         onChange={(e) => setSelectedPageId(e.target.value)}
+//                         value={selectedPageId}
+//                         style={{
+//                             padding: '10px',
+//                             fontSize: '14px',
+//                             marginBottom: '10px',
+//                             width: '100%',
+//                         }}
+//                     >
+//                         <option value="">Select Page</option>
+//                         {pages.map((page) => (
+//                             <option key={page.id} value={page.id}>
+//                                 {page.name}
+//                             </option>
+//                         ))}
+//                     </select>
+
+//                     <textarea
+//                         placeholder="Write your post"
+//                         value={message}
+//                         onChange={(e) => setMessage(e.target.value)}
+//                         style={{
+//                             width: '100%',
+//                             height: '100px',
+//                             padding: '10px',
+//                             marginBottom: '10px',
+//                         }}
+//                     ></textarea>
+
+//                     <select
+//                         onChange={(e) => setPostType(e.target.value)}
+//                         value={postType}
+//                         style={{
+//                             padding: '10px',
+//                             fontSize: '14px',
+//                             marginBottom: '10px',
+//                             width: '100%',
+//                         }}
+//                     >
+//                         <option value="feed">Feed</option>
+//                         <option value="videos">Videos</option>
+//                         <option value="reels">Reels</option>
+//                     </select>
+
+//                     <input
+//                         type="file"
+//                         accept="image/*,video/*"
+//                         multiple
+//                         onChange={handleFileChange}
+//                         style={{ marginBottom: '10px' }}
+//                     />
+
+//                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '10px' }}>
+//                         {files.map((file, index) => (
+//                             <div key={index} style={{ textAlign: 'center', position: 'relative' }}>
+//                                 {file.type.startsWith('image') ? (
+//                                     <img
+//                                         src={URL.createObjectURL(file)}
+//                                         alt="Preview"
+//                                         style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+//                                     />
+//                                 ) : (
+//                                     <video
+//                                         src={URL.createObjectURL(file)}
+//                                         controls
+//                                         style={{ width: '100px', height: '100px' }}
+//                                     />
+//                                 )}
+//                                 <button
+//                                     onClick={() => handleRemoveFile(index)}
+//                                     style={{
+//                                         position: 'absolute',
+//                                         top: '5px',
+//                                         right: '5px',
+//                                         backgroundColor: 'red',
+//                                         color: 'white',
+//                                         border: 'none',
+//                                         borderRadius: '50%',
+//                                         width: '20px',
+//                                         height: '20px',
+//                                         cursor: 'pointer',
+//                                     }}
+//                                 >
+//                                     X
+//                                 </button>
+//                             </div>
+//                         ))}
+//                     </div>
+
+//                     <button
+//                         onClick={handlePost}
+//                         style={{
+//                             padding: '10px 20px',
+//                             fontSize: '16px',
+//                             backgroundColor: '#28a745',
+//                             color: 'white',
+//                             border: 'none',
+//                             borderRadius: '5px',
+//                             cursor: 'pointer',
+//                         }}
+//                     >
+//                         Post to Page
+//                     </button>
+//                 </div>
+//             )}
+
+//             <h3>Recent Posts</h3>
+//             <div>
+//                 {recentPosts.length === 0 ? (
+//                     <p>No posts made yet</p>
+//                 ) : (
+//                     <ul>
+//                         {recentPosts.map((post, index) => (
+//                             <li key={index}>
+//                                 <strong>{post.pageName}</strong>: {post.message} <br />
+//                                 <small>{post.time}</small>
+//                             </li>
+//                         ))}
+//                     </ul>
+//                 )}
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default FacebookLoginCheck;
 
 
 // _______________________________________________________________________________________________________________________________
