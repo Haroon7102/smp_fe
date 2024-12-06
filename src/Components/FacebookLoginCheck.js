@@ -175,8 +175,6 @@ const FacebookLoginCheck = () => {
     const [userId, setUserId] = useState(null);
     const [files, setFiles] = useState([]);
     const [postType, setPostType] = useState('feed'); // Post type dropdown
-    const [isPosting, setIsPosting] = useState(false);
-
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -228,8 +226,6 @@ const FacebookLoginCheck = () => {
     };
 
     const handlePost = async () => {
-        setIsPosting(true); // Start loading
-
         const selectedPage = pages.find(page => page.id === selectedPageId);
         if (selectedPage) {
             if (!userId) {
@@ -263,10 +259,6 @@ const FacebookLoginCheck = () => {
 
                 const result = await response.json();
                 console.log('Upload result:', result);
-                alert('Post published successfully!');
-                setMessage('');
-                setFiles([]);
-                setPostType('feed');
             } catch (error) {
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
@@ -274,8 +266,6 @@ const FacebookLoginCheck = () => {
         } else {
             alert('Please select a page to post to.');
         }
-        setIsPosting(false); // Start loading
-
     };
 
     useEffect(() => {
@@ -414,11 +404,8 @@ const FacebookLoginCheck = () => {
                         ))}
                     </div>
 
-                    {isPosting && <p>Posting...</p>}
-
                     <button
                         onClick={handlePost}
-                        disabled={isPosting}
                         style={{
                             padding: '10px 20px',
                             fontSize: '16px',
@@ -429,8 +416,7 @@ const FacebookLoginCheck = () => {
                             cursor: 'pointer',
                         }}
                     >
-                        {isPosting ? 'Posting...' : 'Post to Page'}
-
+                        Post to Page
                     </button>
                 </div>
             )}
