@@ -50,6 +50,8 @@ const Dashboard = () => {
             return;
         }
 
+        console.log("Sending email to upload server:", email); // Add this for debugging
+
         try {
             const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                 method: 'POST',
@@ -69,6 +71,7 @@ const Dashboard = () => {
             console.error('Error sending email to upload server:', error);
         }
     };
+
 
 
     return (
