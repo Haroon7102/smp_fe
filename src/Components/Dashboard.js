@@ -45,14 +45,18 @@ const Dashboard = () => {
 
     // Function to send email to the /facebook-upload/upload endpoint
     const sendEmailToUploadEndpoint = async (email) => {
+        if (!email) {
+            console.error("Email is missing!");
+            return;
+        }
+
         try {
             const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Pass JWT token
+                    'Content-Type': 'application/json', // Just the Content-Type header
                 },
-                body: JSON.stringify({ email }) // Send email in the request body
+                body: JSON.stringify({ email }) // Send only email in the request body
             });
 
             if (response.ok) {
@@ -65,6 +69,7 @@ const Dashboard = () => {
             console.error('Error sending email to upload server:', error);
         }
     };
+
 
     return (
         <div className="dashboard">
