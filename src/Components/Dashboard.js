@@ -29,6 +29,9 @@ const Dashboard = () => {
                     const data = await response.json();
                     console.log('User data:', data); // Add this line
                     setUserInfo(data);
+
+                    // Send the email to the upload endpoint
+                    sendEmailToUploadEndpoint(data.email);
                 } else {
                     console.error('Failed to fetch user data:', response.statusText);
                 }
@@ -40,6 +43,29 @@ const Dashboard = () => {
         fetchUserData();
     }, []);
 
+    // Function to send email to the /facebook-upload/upload endpoint
+    const sendEmailToUploadEndpoint = async (email) => {
+        try {
+            const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Pass JWT token
+                },
+                body: JSON.stringify({ email }) // Send email in the request body
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Email sent to upload server:', data);
+            } else {
+                console.error('Failed to send email to upload server:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error sending email to upload server:', error);
+        }
+    };
+
     return (
         <div className="dashboard">
             <div className={`sidebar ${isSidebarOpen ? 'sidebar-open' : ''}`}>
@@ -49,8 +75,8 @@ const Dashboard = () => {
                 <h3>Personal Info</h3>
                 {userInfo ? (
                     <>
-                        <p>      {userInfo.name}</p>
-                        <p>        {userInfo.email}</p>
+                        <p>{userInfo.name}</p>
+                        <p>{userInfo.email}</p>
                     </>
                 ) : (
                     <p>Loading...</p>
