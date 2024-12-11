@@ -167,7 +167,7 @@
 // _______________________________________________________________________________________________________________________________
 import React, { useState, useEffect, useCallback } from 'react';
 
-const FacebookLoginCheck = () => {
+const FacebookLoginCheck = ({ email }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [pages, setPages] = useState([]);
     const [selectedPageId, setSelectedPageId] = useState(null);
@@ -224,6 +224,32 @@ const FacebookLoginCheck = () => {
             config_id: '1273277580768760'
         });
     };
+    useEffect(() => {
+        if (email) {
+            console.log('Dashboard Data:', email);
+            // You can now use dashboardData.userName, dashboardData.userRole, etc.
+        }
+        window.fbAsyncInit = function () {
+            window.FB.init({
+                appId: '1332019044439778',
+                cookie: true,
+                xfbml: true,
+                version: 'v20.0'
+            });
+
+            window.FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+        };
+
+        (function (d, s, id) {
+            const js = d.createElement(s);
+            js.id = id;
+            js.src = 'https://connect.facebook.net/en_US/sdk.js';
+            const fjs = d.getElementsByTagName(s)[0];
+            fjs.parentNode.insertBefore(js, fjs);
+        })(document, 'script', 'facebook-jssdk');
+    }, [statusChangeCallback, email]);
 
     const handlePost = async () => {
         const selectedPage = pages.find(page => page.id === selectedPageId);
@@ -246,6 +272,8 @@ const FacebookLoginCheck = () => {
             formData.append('accessToken', selectedPage.access_token);
             formData.append('pageId', selectedPageId);
             formData.append('postType', postType); // Include post type in form data
+            formData.append('email', email); // Send email to backend
+
             console.log('post type added');
             try {
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
@@ -268,28 +296,6 @@ const FacebookLoginCheck = () => {
         }
     };
 
-    useEffect(() => {
-        window.fbAsyncInit = function () {
-            window.FB.init({
-                appId: '1332019044439778',
-                cookie: true,
-                xfbml: true,
-                version: 'v20.0'
-            });
-
-            window.FB.getLoginStatus(function (response) {
-                statusChangeCallback(response);
-            });
-        };
-
-        (function (d, s, id) {
-            const js = d.createElement(s);
-            js.id = id;
-            js.src = 'https://connect.facebook.net/en_US/sdk.js';
-            const fjs = d.getElementsByTagName(s)[0];
-            fjs.parentNode.insertBefore(js, fjs);
-        })(document, 'script', 'facebook-jssdk');
-    }, [statusChangeCallback]);
 
     return (
         <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', maxWidth: '600px', margin: 'auto' }}>

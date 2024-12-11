@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Dashboard.css';
 import FacebookLoginCheck from './FacebookLoginCheck';
-// import InstagramLoginCheck from './InstagramLoginCheck';
-// import CaptionGenerator from './CaptionGenerator';
+// import PostUploader from './PostUploader'; // Import the component where form data is sent
 
 const Dashboard = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -29,9 +28,6 @@ const Dashboard = () => {
                     const data = await response.json();
                     console.log('User data:', data); // Add this line
                     setUserInfo(data);
-
-                    // Send the email to the upload endpoint
-                    sendEmailToUploadEndpoint(data.email);
                 } else {
                     console.error('Failed to fetch user data:', response.statusText);
                 }
@@ -42,37 +38,6 @@ const Dashboard = () => {
 
         fetchUserData();
     }, []);
-
-    // Function to send email to the /facebook-upload/upload endpoint
-    const sendEmailToUploadEndpoint = async (email) => {
-        if (!email) {
-            console.error("Email is missing!");
-            return;
-        }
-
-        console.log("Sending email to upload server:", email); // Add this for debugging
-
-        try {
-            const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/upload', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json', // Just the Content-Type header
-                },
-                body: JSON.stringify({ email }) // Send only email in the request body
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Email sent to upload server:', data);
-            } else {
-                console.error('Failed to send email to upload server:', response.statusText);
-            }
-        } catch (error) {
-            console.error('Error sending email to upload server:', error);
-        }
-    };
-
-
 
     return (
         <div className="dashboard">
@@ -97,16 +62,15 @@ const Dashboard = () => {
             <div className={`content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
                 <h2>Welcome to your Dashboard</h2>
 
-                {/* Other dashboard content */}
-                <FacebookLoginCheck />
-                {/* <CaptionGenerator /> */}
-                {/* <InstagramLoginCheck /> */}
+                {/* Pass the email to PostUploader */}
+                {userInfo && <FacebookLoginCheck email={userInfo.email} />}
             </div>
         </div>
     );
 };
 
 export default Dashboard;
+
 
 
 // import React, { useState, useEffect } from 'react';
