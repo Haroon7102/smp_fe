@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Dashboard.css';
 import FacebookLoginCheck from './FacebookLoginCheck';
-// import PostUploader from './PostUploader'; // Import the component where form data is sent
+import TotalPosts from './TotalPosts'; // Import the TotalPosts component
 
 const Dashboard = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
+    const [showTotalPosts, setShowTotalPosts] = useState(false); // State to toggle TotalPosts component
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
+    };
+
+    const handleTotalPostsClick = () => {
+        setShowTotalPosts((prevState) => !prevState); // Toggle TotalPosts component visibility
     };
 
     useEffect(() => {
@@ -58,18 +63,25 @@ const Dashboard = () => {
                 <Link to="/settings" className="sidebar-link">
                     <button className="sidebar-btn">Settings</button>
                 </Link>
+                <button className="sidebar-btn" onClick={handleTotalPostsClick}>
+                    {showTotalPosts ? 'Hide Total Posts' : 'Total Posts'}
+                </button>
             </div>
             <div className={`content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
                 <h2>Welcome to your Dashboard</h2>
 
-                {/* Pass the email to PostUploader */}
+                {/* Pass the email to FacebookLoginCheck */}
                 {userInfo && <FacebookLoginCheck email={userInfo.email} />}
+
+                {/* Show TotalPosts when the button is clicked */}
+                {showTotalPosts && <TotalPosts />}
             </div>
         </div>
     );
 };
 
 export default Dashboard;
+
 
 
 
