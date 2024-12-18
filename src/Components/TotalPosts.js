@@ -13,7 +13,7 @@ const TotalPosts = () => {
 
     const fetchPosts = async () => {
         try {
-            const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/posts'); // Replace with your actual API endpoint
+            const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/fetch-posts'); // Replace with your actual API endpoint
             const data = await response.json();
             setPosts(data);
             setTotalPosts(data.length); // Total posts
