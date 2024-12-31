@@ -9,6 +9,7 @@ const TotalPosts = () => {
             try {
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/posts'); // Replace with your backend URL
                 const data = await response.json();
+                console.log('Fetched posts:', data); // Debug API response
                 setPosts(data);
             } catch (error) {
                 console.error('Error fetching posts:', error);
@@ -28,17 +29,14 @@ const TotalPosts = () => {
                     </div>
                     <div className="post-content">
                         <p>{post.message}</p>
-                        {post.media && (
-                            <div className="post-media">
-                                {JSON.parse(post.media).map((mediaItem, index) => (
-                                    <img
-                                        key={index}
-                                        src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/picture?access_token=${post.accessToken}`}
-                                        alt="Media"
-                                    />
-                                ))}
-                            </div>
-                        )}
+                        {post.media && Array.isArray(post.media) && post.media.map((mediaItem, index) => (
+                            <img
+                                key={index}
+                                src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/picture?access_token=${post.accessToken}`}
+                                alt="Media"
+                            />
+                        ))}
+
                     </div>
                 </div>
             ))}
