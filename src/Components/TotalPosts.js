@@ -7,12 +7,17 @@ const TotalPosts = () => {
         // Fetch posts from the backend
         const fetchPosts = async () => {
             try {
-                const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/posts'); // Replace with your backend URL
+                const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/posts');
                 const data = await response.json();
-                console.log('Fetched posts:', data); // Debug API response
-                setPosts(data);
+                if (Array.isArray(data)) {
+                    setPosts(data);
+                } else {
+                    console.error('Error fetching posts:', data.error);
+                    setPosts([]); // Set to an empty array to avoid crashing
+                }
             } catch (error) {
                 console.error('Error fetching posts:', error);
+                setPosts([]); // Handle fetch errors gracefully
             }
         };
 
