@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Dashboard.css';
 import FacebookLoginCheck from './FacebookLoginCheck';
-import TotalPosts from './TotalPosts'; // Import the TotalPosts component
+// import TotalPosts from './TotalPosts'; // Import the TotalPosts component
 
 const Dashboard = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
