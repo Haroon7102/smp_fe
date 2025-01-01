@@ -7,15 +7,15 @@ import FacebookLoginCheck from './FacebookLoginCheck';
 const Dashboard = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
-    const [showTotalPosts, setShowTotalPosts] = useState(false); // State to toggle TotalPosts component
+    // const [showTotalPosts, setShowTotalPosts] = useState(false); // State to toggle TotalPosts component
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
     };
 
-    const handleTotalPostsClick = () => {
-        setShowTotalPosts((prevState) => !prevState); // Toggle TotalPosts component visibility
-    };
+    // const handleTotalPostsClick = () => {
+    //     setShowTotalPosts((prevState) => !prevState); // Toggle TotalPosts component visibility
+    // };
 
     useEffect(() => {
         // Fetch user information from your API
@@ -68,9 +68,9 @@ const Dashboard = () => {
                         Total Posts
                     </button>
                 </Link>
-                <button className="sidebar-btn" onClick={handleTotalPostsClick}>
+                {/* <button className="sidebar-btn" onClick={handleTotalPostsClick}>
                     {showTotalPosts ? 'Hide Total Posts' : 'Total Posts'}
-                </button>
+                </button> */}
             </div>
             <div className={`content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
                 <h2>Welcome to your Dashboard</h2>
