@@ -10,6 +10,7 @@ import MainPage from './Components/MainPage';
 import Settings from './Components/Setting';
 import DataDeletionPolicy from './Components/DataDeletionPolicy';
 import PrivacyPolicy from './Components/PrivacyPolicy';
+import TotalPosts from './Components/TotalPosts';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/data-deletion" element={<DataDeletionPolicy />} /> {/* Ensure correct route */}
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/posts" element={<TotalPosts />} />
 
           </Routes>
         </div>

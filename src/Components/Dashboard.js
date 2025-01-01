@@ -63,6 +63,11 @@ const Dashboard = () => {
                 <Link to="/settings" className="sidebar-link">
                     <button className="sidebar-btn">Settings</button>
                 </Link>
+                <Link to="/posts" className="sidebar-link">
+                    <button className="sidebar-btn">
+                        Total Posts
+                    </button>
+                </Link>
                 <button className="sidebar-btn" onClick={handleTotalPostsClick}>
                     {showTotalPosts ? 'Hide Total Posts' : 'Total Posts'}
                 </button>
@@ -74,7 +79,7 @@ const Dashboard = () => {
                 {userInfo && <FacebookLoginCheck email={userInfo.email} />}
 
                 {/* Show TotalPosts when the button is clicked */}
-                {showTotalPosts && <TotalPosts />}
+                {/* {showTotalPosts && <TotalPosts />} */}
             </div>
         </div>
     );
