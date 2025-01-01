@@ -26,27 +26,37 @@ const TotalPosts = () => {
 
     return (
         <div className="posts-feed">
-            {posts.map(post => (
-                <div key={post.id} className="post-card">
-                    <div className="post-header">
-                        <h3>{post.pageName}</h3>
-                        <p className="post-time">{new Date(post.createdAt).toLocaleString()}</p>
+            {posts.length > 0 ? (
+                posts.map(post => (
+                    <div key={post.id} className="post-card">
+                        <div className="post-header">
+                            <h3>{post.pageName}</h3>
+                            <p className="post-time">{new Date(post.createdAt).toLocaleString()}</p>
+                        </div>
+                        <div className="post-content">
+                            <p>{post.message}</p>
+                            {post.media && Array.isArray(post.media) && post.media.length > 0 ? (
+                                <div className="post-media">
+                                    {post.media.map((mediaItem, index) => (
+                                        <img
+                                            key={index}
+                                            src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/picture?access_token=${post.accessToken}`}
+                                            alt="Media"
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>No media available.</p>
+                            )}
+                        </div>
                     </div>
-                    <div className="post-content">
-                        <p>{post.message}</p>
-                        {post.media && Array.isArray(post.media) && post.media.map((mediaItem, index) => (
-                            <img
-                                key={index}
-                                src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/picture?access_token=${post.accessToken}`}
-                                alt="Media"
-                            />
-                        ))}
-
-                    </div>
-                </div>
-            ))}
+                ))
+            ) : (
+                <p>No posts found.</p>
+            )}
         </div>
     );
+
 };
 
 export default TotalPosts;
