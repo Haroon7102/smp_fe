@@ -29,20 +29,37 @@ const TotalPosts = () => {
             {posts.length > 0 ? (
                 posts.map(post => (
                     <div key={post.id} className="post-card">
+                        {/* Post Header */}
                         <div className="post-header">
                             <h3>{post.pageName}</h3>
                             <p className="post-time">{new Date(post.createdAt).toLocaleString()}</p>
                         </div>
+
+                        {/* Post Content */}
                         <div className="post-content">
-                            <p>{post.message}</p>
+                            {/* Message/Caption */}
+                            <p>{post.message || 'No caption provided.'}</p>
+
+                            {/* Media */}
                             {post.media && Array.isArray(post.media) && post.media.length > 0 ? (
                                 <div className="post-media">
                                     {post.media.map((mediaItem, index) => (
-                                        <img
-                                            key={index}
-                                            src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/picture?access_token=${post.accessToken}`}
-                                            alt="Media"
-                                        />
+                                        <div key={index}>
+                                            {mediaItem.type === 'video' ? (
+                                                <video
+                                                    controls
+                                                    src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/videos?access_token=${post.accessToken}`}
+                                                    alt="Video Media"
+                                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/picture?access_token=${post.accessToken}`}
+                                                    alt="Photo Media"
+                                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                                />
+                                            )}
+                                        </div>
                                     ))}
                                 </div>
                             ) : (
@@ -56,7 +73,6 @@ const TotalPosts = () => {
             )}
         </div>
     );
-
 };
 
 export default TotalPosts;
