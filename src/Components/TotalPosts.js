@@ -55,9 +55,10 @@ const TotalPosts = () => {
                                             ) : (
                                                 <img
                                                     src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/picture?access_token=${post.accessToken}`}
-                                                    alt="Photo Media"
+                                                    alt={post.message || 'Facebook media'} // Use a meaningful description or the post's message
                                                     style={{ maxWidth: '100%', height: 'auto' }}
                                                 />
+
                                             )}
                                         </div>
                                     ))}
