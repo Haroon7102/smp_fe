@@ -15,6 +15,7 @@ const TotalPosts = () => {
             );
             const data = await response.json();
             if (data.source) {
+                console.log("media url is: ", data.source);
                 return data.source;
             } else {
                 console.error("No video source found for media_fbid:", mediaFbid);
