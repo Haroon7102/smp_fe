@@ -29,36 +29,36 @@ const TotalPosts = () => {
             {posts.length > 0 ? (
                 posts.map(post => (
                     <div key={post.id} className="post-card">
+                        {/* Post Header */}
                         <div className="post-header">
                             <h3>{post.pageName}</h3>
                             <p className="post-time">{new Date(post.createdAt).toLocaleString()}</p>
                         </div>
+
+                        {/* Post Content */}
                         <div className="post-content">
-                            <p>{post.message}</p>
+                            {/* Message/Caption */}
+                            <p>{post.message || 'No caption provided.'}</p>
+
+                            {/* Media */}
                             {post.media && Array.isArray(post.media) && post.media.length > 0 ? (
                                 <div className="post-media">
                                     {post.media.map((mediaItem, index) => (
                                         <div key={index}>
-                                            {/* Check if the media is a photo or a video */}
-                                            {mediaItem.media_type === 'PHOTO' ? (
-                                                <img
-                                                    src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/picture?access_token=${post.accessToken}`}
-                                                    alt={post.message || 'Facebook photo'}
-                                                    style={{ maxWidth: '100%', height: 'auto' }}
-                                                />
-                                            ) : mediaItem.media_type === 'VIDEO' ? (
+                                            {mediaItem.type === 'video' ? (
                                                 <video
                                                     controls
+                                                    src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/videos?access_token=${post.accessToken}`}
+                                                    alt={post.message || 'Facebook media'} // Use a meaningful description or the post's message
                                                     style={{ maxWidth: '100%', height: 'auto' }}
-                                                >
-                                                    <source
-                                                        src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}?fields=source&access_token=${post.accessToken}`}
-                                                        type="video/mp4"
-                                                    />
-                                                    Your browser does not support the video tag.
-                                                </video>
+                                                />
                                             ) : (
-                                                <p>Unsupported media type</p>
+                                                <img
+                                                    src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/picture?access_token=${post.accessToken}`}
+                                                    alt={post.message || 'Facebook media'} // Use a meaningful description or the post's message
+                                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                                />
+
                                             )}
                                         </div>
                                     ))}
