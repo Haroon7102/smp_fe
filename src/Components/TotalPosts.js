@@ -10,17 +10,19 @@ const TotalPosts = () => {
                 `https://graph.facebook.com/v21.0/${mediaFbid}?fields=source&access_token=${accessToken}`
             );
             const data = await response.json();
-            if (data && data.source) {
-                return data.source; // Return the video source URL
+            if (data.source) {
+                console.log("Fetched video source:", data.source);
+                return data.source;
             } else {
-                console.error(`No video source found for media_fbid: ${mediaFbid}`);
+                console.error("No video source found for media_fbid:", mediaFbid);
                 return null;
             }
         } catch (error) {
-            console.error(`Error fetching video source for media_fbid ${mediaFbid}:`, error);
+            console.error("Error fetching video source:", error);
             return null;
         }
     };
+
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -91,17 +93,26 @@ const TotalPosts = () => {
                                                 <video
                                                     controls
                                                     src={mediaItem.source}
-                                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                                    onError={(e) => {
+                                                        console.error("Failed to load video:", e.target.src);
+                                                    }}
+                                                    style={{ maxWidth: "100%", height: "auto" }}
                                                 >
                                                     Your browser does not support the video tag.
                                                 </video>
+
                                             ) : (
                                                 // Render photos
                                                 <img
                                                     src={`https://graph.facebook.com/v21.0/${mediaItem.media_fbid}/picture?access_token=${post.accessToken}`}
-                                                    alt={post.message || 'Facebook media'}
-                                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                                    onError={(e) => {
+                                                        console.error("Failed to load photo:", e.target.src);
+                                                        e.target.src = "placeholder-image-url.png"; // Fallback image
+                                                    }}
+                                                    alt="Facebook media"
+                                                    style={{ maxWidth: "100%", height: "auto" }}
                                                 />
+
                                             )}
                                         </div>
                                     ))}
