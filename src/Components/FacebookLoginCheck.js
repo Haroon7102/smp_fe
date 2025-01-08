@@ -175,7 +175,8 @@ const FacebookLoginCheck = ({ email }) => {
     const [userId, setUserId] = useState(null);
     const [files, setFiles] = useState([]);
     const [postType, setPostType] = useState('feed'); // Post type dropdown
-
+    const [videoStatus, setVideoStatus] = useState(''); // Video processing status
+    const [videoId, setVideoId] = useState(null); // Facebook Video ID
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
             setIsLoggedIn(true);
@@ -251,6 +252,24 @@ const FacebookLoginCheck = ({ email }) => {
         })(document, 'script', 'facebook-jssdk');
     }, [statusChangeCallback, email]);
 
+    const checkVideoStatus = async (videoId) => {
+        try {
+            const response = await fetch(`https://smp-be-mysql.vercel.app/facebook-upload/status/${videoId}`);
+            const result = await response.json();
+
+            if (result.status === 'completed') {
+                setVideoStatus('Completed');
+                alert('Video processed successfully!');
+                console.log('Processed video URL:', result.finalUrl);
+
+                // Optionally save the final video URL to the database
+            } else {
+                setVideoStatus('Processing...');
+            }
+        } catch (error) {
+            console.error('Error checking video status:', error);
+        }
+    };
     const handlePost = async () => {
         const selectedPage = pages.find(page => page.id === selectedPageId);
         if (selectedPage) {
@@ -287,6 +306,10 @@ const FacebookLoginCheck = ({ email }) => {
 
                 const result = await response.json();
                 console.log('Upload result:', result);
+                if (result.videoId) {
+                    setVideoId(result.videoId);
+                    setVideoStatus('Processing...');
+                }
             } catch (error) {
                 console.error('Error uploading to backend:', error);
                 alert(`Error uploading: ${error.message}`);
@@ -296,7 +319,15 @@ const FacebookLoginCheck = ({ email }) => {
         }
     };
 
+    useEffect(() => {
+        if (videoId) {
+            const interval = setInterval(() => {
+                checkVideoStatus(videoId);
+            }, 5000); // Poll every 5 seconds
 
+            return () => clearInterval(interval);
+        }
+    }, [videoId]);
     return (
         <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', maxWidth: '600px', margin: 'auto' }}>
             <h1 style={{ textAlign: 'center', color: '#4267B2' }}>Facebook Page Manager</h1>
@@ -424,6 +455,7 @@ const FacebookLoginCheck = ({ email }) => {
                     >
                         Post to Page
                     </button>
+                    {videoStatus && <p>Video Status: {videoStatus}</p>}
                 </div>
             )}
         </div>
