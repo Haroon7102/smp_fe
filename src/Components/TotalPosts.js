@@ -43,45 +43,9 @@ const TotalPosts = () => {
                             <p>{post.message || "No caption provided."}</p>
 
                             {/* Media */}
-                            {post.media && Array.isArray(post.media) && post.media.length > 0 ? (
+                            {post.media ? (
                                 <div className="post-media">
-                                    {post.media.map((mediaItem, index) => (
-                                        <div key={index}>
-                                            {mediaItem.type === "video" ? (
-                                                <video
-                                                    controls
-                                                    src={mediaItem.url}
-                                                    onError={(e) => {
-                                                        console.error(
-                                                            "Failed to load video:",
-                                                            e.target.src
-                                                        );
-                                                    }}
-                                                    style={{
-                                                        maxWidth: "100%",
-                                                        height: "auto",
-                                                    }}
-                                                >
-                                                    Your browser does not support the video tag.
-                                                </video>
-                                            ) : (
-                                                <img
-                                                    src={mediaItem.url}
-                                                    alt="Media"
-                                                    onError={(e) => {
-                                                        console.error(
-                                                            "Failed to load image:",
-                                                            e.target.src
-                                                        );
-                                                    }}
-                                                    style={{
-                                                        maxWidth: "100%",
-                                                        height: "auto",
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
-                                    ))}
+                                    <RenderMedia media={post.media} />
                                 </div>
                             ) : (
                                 <p>No media available.</p>
@@ -93,6 +57,50 @@ const TotalPosts = () => {
                 <p>No posts found.</p>
             )}
         </div>
+    );
+};
+
+// Helper Component to Render Media
+const RenderMedia = ({ media }) => {
+    // Ensure media is in array format
+    const mediaArray = Array.isArray(media) ? media : [media];
+
+    return (
+        <>
+            {mediaArray.map((mediaItem, index) => {
+                const mediaUrl = mediaItem.url; // Media URL from backend
+                const mediaType = mediaItem.type; // Media type ('image' or 'video')
+
+                if (mediaType === "video") {
+                    return (
+                        <video
+                            key={index}
+                            controls
+                            src={mediaUrl}
+                            onError={(e) => {
+                                console.error("Failed to load video:", e.target.src);
+                            }}
+                            style={{ maxWidth: "100%", height: "auto" }}
+                        >
+                            Your browser does not support the video tag.
+                        </video>
+                    );
+                } else {
+                    return (
+                        <img
+                            key={index}
+                            src={mediaUrl}
+                            alt="Media"
+                            onError={(e) => {
+                                console.error("Failed to load image:", e.target.src);
+                                e.target.src = "https://via.placeholder.com/150"; // Fallback placeholder
+                            }}
+                            style={{ maxWidth: "100%", height: "auto" }}
+                        />
+                    );
+                }
+            })}
+        </>
     );
 };
 
