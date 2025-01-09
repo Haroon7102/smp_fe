@@ -9,6 +9,8 @@ const TotalPosts = () => {
                 const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/posts');
                 const data = await response.json();
 
+                console.log("Fetched data:", data); // Log fetched data to verify structure
+
                 if (Array.isArray(data)) {
                     const processedPosts = data.map((post) => {
                         return { ...post };
@@ -48,6 +50,7 @@ const TotalPosts = () => {
                                 <div className="post-media">
                                     {post.media.map((mediaItem, index) => {
                                         console.log("Media URL:", mediaItem.url); // Log the URL to check if it's valid
+
                                         return (
                                             <div key={index}>
                                                 {mediaItem.type === 'video' && mediaItem.url ? (
@@ -63,11 +66,11 @@ const TotalPosts = () => {
                                                     </video>
                                                 ) : (
                                                     <img
-                                                        src={mediaItem.url || "placeholder-image-url.png"} // Use media URL from the database
+                                                        src={mediaItem.url || "https://smpfe.netlify.app/fallback-image-url.png"} // Fallback image URL if media URL is missing or invalid
                                                         alt="Facebook media"
                                                         onError={(e) => {
                                                             console.error("Failed to load image:", e.target.src);
-                                                            e.target.src = "fallback-image-url.png"; // Optional fallback image
+                                                            e.target.src = "https://smpfe.netlify.app/fallback-image-url.png"; // Optional fallback image
                                                         }}
                                                         style={{ maxWidth: "100%", height: "auto" }}
                                                     />
