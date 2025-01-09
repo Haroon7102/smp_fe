@@ -26,45 +26,57 @@ const TotalPosts = () => {
     }, []);
 
     const renderMedia = (mediaUrl, index) => {
+        const [isVideo, setIsVideo] = useState(false);
+        const [isImage, setIsImage] = useState(false);
+
+        useEffect(() => {
+            // Check the URL to identify if it is a video or image
+            if (mediaUrl.includes(".mp4")) {
+                setIsVideo(true);
+            } else {
+                setIsImage(true);
+            }
+        }, [mediaUrl]);
+
+        const handleVideoError = (e) => {
+            e.target.style.display = "none";
+            setIsImage(true); // Show image fallback
+        };
+
+        const handleImageError = (e) => {
+            e.target.style.display = "none";
+            console.error("Failed to load media:", e.target.src);
+        };
+
         return (
             <div key={index} className="media-container">
-                {/* Try rendering as video first */}
-                <video
-                    src={mediaUrl}
-                    controls
-                    style={{
-                        maxWidth: "100%",
-                        margin: "10px 0",
-                        borderRadius: "8px",
-                    }}
-                    onError={(e) => {
-                        // If video fails to load, fallback to image
-                        e.target.style.display = "none";
-                        const fallbackImg = e.target.nextSibling;
-                        if (fallbackImg) {
-                            fallbackImg.style.display = "block";
-                        }
-                    }}
-                >
-                    Your browser does not support the video tag.
-                </video>
+                {isVideo && (
+                    <video
+                        src={mediaUrl}
+                        controls
+                        style={{
+                            maxWidth: "100%",
+                            margin: "10px 0",
+                            borderRadius: "8px",
+                        }}
+                        onError={handleVideoError}
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                )}
 
-                {/* Image fallback */}
-                <img
-                    src={mediaUrl}
-                    alt={`Media ${index + 1}`}
-                    style={{
-                        maxWidth: "100%",
-                        margin: "10px 0",
-                        borderRadius: "8px",
-                        display: "none", // Initially hide the image
-                    }}
-                    onError={(e) => {
-                        console.error("Failed to load media:", e.target.src);
-                        e.target.src = "https://via.placeholder.com/150"; // Fallback placeholder
-                        e.target.style.display = "block"; // Ensure the placeholder is shown
-                    }}
-                />
+                {isImage && (
+                    <img
+                        src={mediaUrl}
+                        alt={`Media ${index + 1}`}
+                        style={{
+                            maxWidth: "100%",
+                            margin: "10px 0",
+                            borderRadius: "8px",
+                        }}
+                        onError={handleImageError}
+                    />
+                )}
             </div>
         );
     };
