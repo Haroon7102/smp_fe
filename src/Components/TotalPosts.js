@@ -43,9 +43,28 @@ const TotalPosts = () => {
                             <p>{post.message || "No caption provided."}</p>
 
                             {/* Media */}
-                            {post.media ? (
+                            {post.media && post.media.length > 0 ? (
                                 <div className="post-media">
-                                    <RenderMedia media={post.media} />
+                                    {post.media.map((mediaUrl, index) => (
+                                        <img
+                                            key={index}
+                                            src={mediaUrl}
+                                            alt={`Media ${index + 1}`}
+                                            onError={(e) => {
+                                                console.error(
+                                                    "Failed to load image:",
+                                                    e.target.src
+                                                );
+                                                e.target.src =
+                                                    "https://via.placeholder.com/150"; // Fallback placeholder
+                                            }}
+                                            style={{
+                                                maxWidth: "100%",
+                                                margin: "10px 0",
+                                                borderRadius: "8px",
+                                            }}
+                                        />
+                                    ))}
                                 </div>
                             ) : (
                                 <p>No media available.</p>
@@ -57,50 +76,6 @@ const TotalPosts = () => {
                 <p>No posts found.</p>
             )}
         </div>
-    );
-};
-
-// Helper Component to Render Media
-const RenderMedia = ({ media }) => {
-    // Ensure media is in array format
-    const mediaArray = Array.isArray(media) ? media : [media];
-
-    return (
-        <>
-            {mediaArray.map((mediaItem, index) => {
-                const mediaUrl = mediaItem.url; // Media URL from backend
-                const mediaType = mediaItem.type; // Media type ('image' or 'video')
-
-                if (mediaType === "video") {
-                    return (
-                        <video
-                            key={index}
-                            controls
-                            src={mediaUrl}
-                            onError={(e) => {
-                                console.error("Failed to load video:", e.target.src);
-                            }}
-                            style={{ maxWidth: "100%", height: "auto" }}
-                        >
-                            Your browser does not support the video tag.
-                        </video>
-                    );
-                } else {
-                    return (
-                        <img
-                            key={index}
-                            src={mediaUrl}
-                            alt="Media"
-                            onError={(e) => {
-                                console.error("Failed to load image:", e.target.src);
-                                e.target.src = "https://via.placeholder.com/150"; // Fallback placeholder
-                            }}
-                            style={{ maxWidth: "100%", height: "auto" }}
-                        />
-                    );
-                }
-            })}
-        </>
     );
 };
 
