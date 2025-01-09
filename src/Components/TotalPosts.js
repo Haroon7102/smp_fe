@@ -11,7 +11,6 @@ const TotalPosts = () => {
 
                 if (Array.isArray(data)) {
                     const processedPosts = data.map((post) => {
-                        // Simply return the post with media URL that was pre-fetched and stored in the database
                         return { ...post };
                     });
                     setPosts(processedPosts);
@@ -48,7 +47,7 @@ const TotalPosts = () => {
                             {post.media && Array.isArray(post.media) && post.media.length > 0 ? (
                                 <div className="post-media">
                                     {post.media.map((mediaItem, index) => {
-                                        console.log("Media item:", mediaItem); // Log each media item
+                                        console.log("Media URL:", mediaItem.url); // Log the URL to check if it's valid
                                         return (
                                             <div key={index}>
                                                 {mediaItem.type === 'video' && mediaItem.url ? (
@@ -65,10 +64,11 @@ const TotalPosts = () => {
                                                 ) : (
                                                     <img
                                                         src={mediaItem.url || "placeholder-image-url.png"} // Use media URL from the database
-                                                        onError={(e) => {
-                                                            console.error("Failed to load photo:", e.target.src);
-                                                        }}
                                                         alt="Facebook media"
+                                                        onError={(e) => {
+                                                            console.error("Failed to load image:", e.target.src);
+                                                            e.target.src = "fallback-image-url.png"; // Optional fallback image
+                                                        }}
                                                         style={{ maxWidth: "100%", height: "auto" }}
                                                     />
                                                 )}
