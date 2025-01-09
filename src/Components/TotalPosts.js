@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const TotalPosts = () => {
     const [posts, setPosts] = useState([]);
@@ -6,23 +6,19 @@ const TotalPosts = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/posts');
+                const response = await fetch(
+                    "https://smp-be-mysql.vercel.app/facebook-upload/posts"
+                );
                 const data = await response.json();
 
-                console.log("Fetched data:", data); // Log fetched data to verify structure
-
+                console.log("Fetched posts:", data); // Debug fetched data
                 if (Array.isArray(data)) {
-                    const processedPosts = data.map((post) => {
-                        return { ...post };
-                    });
-                    setPosts(processedPosts);
+                    setPosts(data);
                 } else {
-                    console.error('Invalid response format or error fetching posts:', data.error);
-                    setPosts([]);
+                    console.error("Invalid response format:", data);
                 }
             } catch (error) {
-                console.error('Error fetching posts:', error);
-                setPosts([]);
+                console.error("Error fetching posts:", error);
             }
         };
 
@@ -36,48 +32,56 @@ const TotalPosts = () => {
                     <div key={post.id} className="post-card">
                         {/* Post Header */}
                         <div className="post-header">
-                            <h3>{post.pageName || 'Page Name'}</h3>
-                            <p className="post-time">{new Date(post.createdAt).toLocaleString()}</p>
+                            <h3>{post.pageName || "Page Name"}</h3>
+                            <p className="post-time">
+                                {new Date(post.createdAt).toLocaleString()}
+                            </p>
                         </div>
 
                         {/* Post Content */}
                         <div className="post-content">
-                            {/* Message/Caption */}
-                            <p>{post.message || 'No caption provided.'}</p>
+                            <p>{post.message || "No caption provided."}</p>
 
                             {/* Media */}
                             {post.media && Array.isArray(post.media) && post.media.length > 0 ? (
                                 <div className="post-media">
-                                    {post.media.map((mediaItem, index) => {
-                                        console.log("Media URL:", mediaItem.url); // Log the URL to check if it's valid
-
-                                        return (
-                                            <div key={index}>
-                                                {mediaItem.type === 'video' && mediaItem.url ? (
-                                                    <video
-                                                        controls
-                                                        src={mediaItem.url} // Use media URL from the database
-                                                        onError={(e) => {
-                                                            console.error("Failed to load video:", e.target.src);
-                                                        }}
-                                                        style={{ maxWidth: '100%', height: 'auto' }}
-                                                    >
-                                                        Your browser does not support the video tag.
-                                                    </video>
-                                                ) : (
-                                                    <img
-                                                        src={mediaItem.url || "https://smpfe.netlify.app/fallback-image-url.png"} // Fallback image URL if media URL is missing or invalid
-                                                        alt="Facebook media"
-                                                        onError={(e) => {
-                                                            console.error("Failed to load image:", e.target.src);
-                                                            e.target.src = "https://smpfe.netlify.app/fallback-image-url.png"; // Optional fallback image
-                                                        }}
-                                                        style={{ maxWidth: "100%", height: "auto" }}
-                                                    />
-                                                )}
-                                            </div>
-                                        );
-                                    })}
+                                    {post.media.map((mediaItem, index) => (
+                                        <div key={index}>
+                                            {mediaItem.type === "video" ? (
+                                                <video
+                                                    controls
+                                                    src={mediaItem.url}
+                                                    onError={(e) => {
+                                                        console.error(
+                                                            "Failed to load video:",
+                                                            e.target.src
+                                                        );
+                                                    }}
+                                                    style={{
+                                                        maxWidth: "100%",
+                                                        height: "auto",
+                                                    }}
+                                                >
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            ) : (
+                                                <img
+                                                    src={mediaItem.url}
+                                                    alt="Media"
+                                                    onError={(e) => {
+                                                        console.error(
+                                                            "Failed to load image:",
+                                                            e.target.src
+                                                        );
+                                                    }}
+                                                    style={{
+                                                        maxWidth: "100%",
+                                                        height: "auto",
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
+                                    ))}
                                 </div>
                             ) : (
                                 <p>No media available.</p>
