@@ -26,49 +26,52 @@ const TotalPosts = () => {
     }, []);
 
     const renderMedia = (mediaUrl, index) => {
-        if (mediaUrl.includes("facebook")) {
-            // Assume video if 'video' appears in query params, otherwise assume image
-            const isVideo = mediaUrl.includes("video") || mediaUrl.includes("_vid");
-
-            if (isVideo) {
-                return (
-                    <video
-                        key={index}
-                        src={mediaUrl}
-                        controls
-                        style={{
-                            maxWidth: "100%",
-                            margin: "10px 0",
-                            borderRadius: "8px",
-                        }}
-                        onError={(e) => {
-                            console.error("Failed to load video:", e.target.src);
-                        }}
-                    >
-                        Your browser does not support the video tag.
-                    </video>
-                );
-            } else {
-                return (
-                    <img
-                        key={index}
-                        src={mediaUrl}
-                        alt={`Media ${index + 1}`}
-                        onError={(e) => {
-                            console.error("Failed to load image:", e.target.src);
-                            e.target.src = "https://via.placeholder.com/150"; // Fallback placeholder
-                        }}
-                        style={{
-                            maxWidth: "100%",
-                            margin: "10px 0",
-                            borderRadius: "8px",
-                        }}
-                    />
-                );
-            }
+        // Determine media type based on file extension or content characteristics
+        if (mediaUrl.match(/\.(mp4|webm|ogg)$/i)) {
+            // Video rendering
+            return (
+                <video
+                    key={index}
+                    src={mediaUrl}
+                    controls
+                    style={{
+                        maxWidth: "100%",
+                        margin: "10px 0",
+                        borderRadius: "8px",
+                    }}
+                    onError={(e) => {
+                        console.error("Failed to load video:", e.target.src);
+                    }}
+                >
+                    Your browser does not support the video tag.
+                </video>
+            );
+        } else if (mediaUrl.match(/\.(jpg|jpeg|png|gif)$/i)) {
+            // Image rendering
+            return (
+                <img
+                    key={index}
+                    src={mediaUrl}
+                    alt={`Media ${index + 1}`}
+                    onError={(e) => {
+                        console.error("Failed to load image:", e.target.src);
+                        e.target.src = "https://via.placeholder.com/150"; // Fallback placeholder
+                    }}
+                    style={{
+                        maxWidth: "100%",
+                        margin: "10px 0",
+                        borderRadius: "8px",
+                    }}
+                />
+            );
+        } else {
+            // Unsupported media type
+            return (
+                <p key={index} style={{ color: "red" }}>
+                    Unsupported media format.
+                </p>
+            );
         }
-
-        return <p key={index}>Unsupported media format.</p>;
     };
 
     return (
