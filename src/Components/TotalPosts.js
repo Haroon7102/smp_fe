@@ -26,13 +26,10 @@ const TotalPosts = () => {
     }, []);
 
     const renderMedia = (mediaUrl, index) => {
-        // Assume video if the URL includes common video extensions or keywords
-        const isVideo = /\.(mp4|webm|ogg)$/i.test(mediaUrl) || mediaUrl.includes("video");
-
-        if (isVideo) {
-            return (
+        return (
+            <div key={index} className="media-container">
+                {/* Try rendering as video first */}
                 <video
-                    key={index}
                     src={mediaUrl}
                     controls
                     style={{
@@ -41,31 +38,35 @@ const TotalPosts = () => {
                         borderRadius: "8px",
                     }}
                     onError={(e) => {
-                        console.error("Failed to load video:", e.target.src);
-                        e.target.style.display = "none"; // Hide failed videos
+                        // If video fails to load, fallback to image
+                        e.target.style.display = "none";
+                        const fallbackImg = e.target.nextSibling;
+                        if (fallbackImg) {
+                            fallbackImg.style.display = "block";
+                        }
                     }}
                 >
                     Your browser does not support the video tag.
                 </video>
-            );
-        } else {
-            return (
+
+                {/* Image fallback */}
                 <img
-                    key={index}
                     src={mediaUrl}
                     alt={`Media ${index + 1}`}
-                    onError={(e) => {
-                        console.error("Failed to load image:", e.target.src);
-                        e.target.src = "https://via.placeholder.com/150"; // Fallback placeholder
-                    }}
                     style={{
                         maxWidth: "100%",
                         margin: "10px 0",
                         borderRadius: "8px",
+                        display: "none", // Initially hide the image
+                    }}
+                    onError={(e) => {
+                        console.error("Failed to load media:", e.target.src);
+                        e.target.src = "https://via.placeholder.com/150"; // Fallback placeholder
+                        e.target.style.display = "block"; // Ensure the placeholder is shown
                     }}
                 />
-            );
-        }
+            </div>
+        );
     };
 
     return (
