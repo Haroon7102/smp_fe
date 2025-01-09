@@ -26,9 +26,10 @@ const TotalPosts = () => {
     }, []);
 
     const renderMedia = (mediaUrl, index) => {
-        // Determine media type based on file extension or content characteristics
-        if (mediaUrl.match(/\.(mp4|webm|ogg)$/i)) {
-            // Video rendering
+        // Assume video if the URL includes common video extensions or keywords
+        const isVideo = /\.(mp4|webm|ogg)$/i.test(mediaUrl) || mediaUrl.includes("video");
+
+        if (isVideo) {
             return (
                 <video
                     key={index}
@@ -41,13 +42,13 @@ const TotalPosts = () => {
                     }}
                     onError={(e) => {
                         console.error("Failed to load video:", e.target.src);
+                        e.target.style.display = "none"; // Hide failed videos
                     }}
                 >
                     Your browser does not support the video tag.
                 </video>
             );
-        } else if (mediaUrl.match(/\.(jpg|jpeg|png|gif)$/i)) {
-            // Image rendering
+        } else {
             return (
                 <img
                     key={index}
@@ -63,13 +64,6 @@ const TotalPosts = () => {
                         borderRadius: "8px",
                     }}
                 />
-            );
-        } else {
-            // Unsupported media type
-            return (
-                <p key={index} style={{ color: "red" }}>
-                    Unsupported media format.
-                </p>
             );
         }
     };
