@@ -73,38 +73,32 @@ const TotalPosts = () => {
     }, []);
 
     // Delete post handler
-    const handleDelete = async (postId, pageId, accessToken, userEmail) => {
+    const handleDelete = async (postId) => {
         try {
-            const response = await fetch(
-                "https://smp-be-mysql.vercel.app/facebook-upload/post/delete",
-                {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        accessToken,
-                        pageId,
-                        postId,
-                        email: userEmail,
-                    }),
-                }
-            );
+            const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/post/delete', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postId }) // Send only the postId
+            });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || "Failed to delete post.");
+            const data = await response.json();
+
+            if (data.success) {
+                alert('Post deleted successfully.');
+            } else {
+                alert(`Error: ${data.error}`);
             }
-
-            const result = await response.json();
-            console.log("Post deleted successfully:", result);
-
-            // Update the frontend state to remove the deleted post
-            setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
         } catch (error) {
-            console.error("Error deleting post:", error.message);
+            console.error('Error:', error);
+            alert('Failed to delete post');
         }
     };
+
+    // In your JSX, attach this handler to the delete button for each post:
+    <button onClick={() => handleDelete(postId)}>Delete Post</button>
+
 
     // Update post handler (placeholder for now)
     const handleUpdate = (postId) => {
