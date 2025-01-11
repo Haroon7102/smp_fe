@@ -6,7 +6,6 @@ const Media = ({ mediaUrl, index }) => {
     const [isImage, setIsImage] = useState(false);
 
     useEffect(() => {
-        // Check the URL to identify if it is a video or image
         if (mediaUrl.includes(".mp4")) {
             setIsVideo(true);
         } else {
@@ -16,7 +15,7 @@ const Media = ({ mediaUrl, index }) => {
 
     const handleVideoError = (e) => {
         e.target.style.display = "none";
-        setIsImage(true); // Show image fallback
+        setIsImage(true);
     };
 
     const handleImageError = (e) => {
@@ -30,11 +29,7 @@ const Media = ({ mediaUrl, index }) => {
                 <video
                     src={mediaUrl}
                     controls
-                    style={{
-                        maxWidth: "100%",
-                        margin: "10px 0",
-                        borderRadius: "8px",
-                    }}
+                    style={{ maxWidth: "100%", margin: "10px 0", borderRadius: "8px" }}
                     onError={handleVideoError}
                 >
                     Your browser does not support the video tag.
@@ -45,11 +40,7 @@ const Media = ({ mediaUrl, index }) => {
                 <img
                     src={mediaUrl}
                     alt={`Media ${index + 1}`}
-                    style={{
-                        maxWidth: "100%",
-                        margin: "10px 0",
-                        borderRadius: "8px",
-                    }}
+                    style={{ maxWidth: "100%", margin: "10px 0", borderRadius: "8px" }}
                     onError={handleImageError}
                 />
             )}
@@ -60,6 +51,7 @@ const Media = ({ mediaUrl, index }) => {
 const TotalPosts = () => {
     const [posts, setPosts] = useState([]);
 
+    // Fetch posts on component mount
     useEffect(() => {
         const fetchPosts = async () => {
             try {
@@ -67,8 +59,6 @@ const TotalPosts = () => {
                     "https://smp-be-mysql.vercel.app/facebook-upload/posts"
                 );
                 const data = await response.json();
-
-                console.log("Fetched posts:", data); // Debug fetched data
                 if (Array.isArray(data)) {
                     setPosts(data);
                 } else {
@@ -81,6 +71,29 @@ const TotalPosts = () => {
 
         fetchPosts();
     }, []);
+
+    // Delete post handler
+    const handleDelete = async (postId) => {
+        try {
+            const response = await fetch(
+                `https://smp-be-mysql.vercel.app/facebook-upload/post/delete`,
+                { method: "DELETE" }
+            );
+            if (response.ok) {
+                alert("Post deleted successfully.");
+                setPosts(posts.filter((post) => post.id !== postId));
+            } else {
+                console.error("Failed to delete post");
+            }
+        } catch (error) {
+            console.error("Error deleting post:", error);
+        }
+    };
+
+    // Update post handler (placeholder for now)
+    const handleUpdate = (postId) => {
+        alert(`Update post functionality for ID: ${postId} is not implemented yet.`);
+    };
 
     return (
         <div className="posts-feed">
@@ -109,6 +122,22 @@ const TotalPosts = () => {
                             ) : (
                                 <p>No media available.</p>
                             )}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="post-actions">
+                            <button
+                                onClick={() => handleUpdate(post.id)}
+                                className="update-button"
+                            >
+                                Update
+                            </button>
+                            <button
+                                onClick={() => handleDelete(post.id)}
+                                className="delete-button"
+                            >
+                                Delete
+                            </button>
                         </div>
                     </div>
                 ))

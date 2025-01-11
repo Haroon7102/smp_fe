@@ -1,68 +1,52 @@
 .posts-feed {
     max-width: 600px;
-    margin: auto;
+    margin: 0 auto;
     padding: 20px;
-    background: #f7f7f7;
-    border-radius: 8px;
 }
 
 .post-card {
-    background: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
-    margin-bottom: 20px;
     padding: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
 }
 
 .post-header {
+    margin-bottom: 10px;
+}
+
+.post-content {
+    margin-bottom: 15px;
+}
+
+.post-actions {
     display: flex;
     justify-content: space-between;
-    align-items: center;
 }
 
-.post-time {
-    font-size: 12px;
-    color: #888;
+.update-button,
+.delete-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-.post-content p {
-    margin: 10px 0;
-    font-size: 14px;
+.update-button {
+    background-color: #4caf50;
+    color: white;
 }
 
-.post-media {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.delete-button {
+    background-color: #f44336;
+    color: white;
 }
 
-.post-media img,
-.post-media video {
-    width: 100%;
-    max-width: 600px; /* Set to max width of post-card */
-    height: auto;
-    margin-top: 10px;
-    border-radius: 8px;
-    object-fit: contain; /* This will keep the aspect ratio of images and videos */
+.update-button:hover {
+    background-color: #45a049;
 }
 
-/* You can also tweak this for mobile responsiveness */
-@media (max-width: 768px) {
-    .posts-feed {
-        padding: 10px;
-    }
-
-    .post-card {
-        padding: 10px;
-    }
-
-    .post-media img,
-    .post-media video {
-        max-width: 100%; /* Make it responsive on smaller screens */
-    }
+.delete-button:hover {
+    background-color: #e53935;
 }
