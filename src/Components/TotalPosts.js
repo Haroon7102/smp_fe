@@ -87,6 +87,7 @@ const TotalPosts = () => {
 
             if (data.success) {
                 alert('Post deleted successfully.');
+                setPosts(posts.filter((post) => post.id !== postId)); // Update state to reflect deletion
             } else {
                 alert(`Error: ${data.error}`);
             }
@@ -95,10 +96,6 @@ const TotalPosts = () => {
             alert('Failed to delete post');
         }
     };
-
-    // In your JSX, attach this handler to the delete button for each post:
-    // The corrected button
-    // <button onClick={() => handleDelete(post.id)}>Delete Post</button>
 
     // Update post handler (placeholder for now)
     const handleUpdate = (postId) => {
@@ -143,7 +140,7 @@ const TotalPosts = () => {
                                 Update
                             </button>
                             <button
-                                onClick={() => handleDelete(post.id)} // Corrected to use post.id
+                                onClick={() => handleDelete(post.id)}
                                 className="delete-button"
                             >
                                 Delete
