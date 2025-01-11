@@ -97,8 +97,8 @@ const TotalPosts = () => {
     };
 
     // In your JSX, attach this handler to the delete button for each post:
-    <button onClick={() => handleDelete(postId)}>Delete Post</button>
-
+    // The corrected button
+    // <button onClick={() => handleDelete(post.id)}>Delete Post</button>
 
     // Update post handler (placeholder for now)
     const handleUpdate = (postId) => {
@@ -143,7 +143,7 @@ const TotalPosts = () => {
                                 Update
                             </button>
                             <button
-                                onClick={() => handleDelete(post.id)}
+                                onClick={() => handleDelete(post.id)} // Corrected to use post.id
                                 className="delete-button"
                             >
                                 Delete
