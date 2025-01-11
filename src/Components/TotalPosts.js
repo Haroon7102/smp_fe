@@ -73,20 +73,36 @@ const TotalPosts = () => {
     }, []);
 
     // Delete post handler
-    const handleDelete = async (postId) => {
+    const handleDelete = async (postId, pageId) => {
         try {
             const response = await fetch(
-                `https://smp-be-mysql.vercel.app/facebook-upload/post/delete`,
-                { method: "DELETE" }
+                "https://smp-be-mysql.vercel.app/facebook-upload/post/delete",
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        accessToken,
+                        pageId,
+                        postId,
+                        email: userEmail,
+                    }),
+                }
             );
-            if (response.ok) {
-                alert("Post deleted successfully.");
-                setPosts(posts.filter((post) => post.id !== postId));
-            } else {
-                console.error("Failed to delete post");
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to delete post.");
             }
+
+            const result = await response.json();
+            console.log("Post deleted successfully:", result);
+
+            // Update the frontend state to remove the deleted post
+            setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
         } catch (error) {
-            console.error("Error deleting post:", error);
+            console.error("Error deleting post:", error.message);
         }
     };
 
