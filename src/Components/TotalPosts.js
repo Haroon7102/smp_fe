@@ -73,29 +73,39 @@ const TotalPosts = () => {
     }, []);
 
     // Delete post handler
-    const handleDelete = async (postId) => {
+    const handleDelete = async (postId, pageId, email, accessToken) => {
         try {
-            const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/post/delete', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ postId }) // Send only the postId
-            });
+            const response = await fetch(
+                "https://smp-be-mysql.vercel.app/facebook-upload/post/delete",
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        postId,       // Post ID to identify the post
+                        pageId,       // Page ID (if required)
+                        email,        // User email (optional, for logging)
+                        accessToken,  // Access token for authorization
+                    }),
+                }
+            );
 
             const data = await response.json();
 
             if (data.success) {
-                alert('Post deleted successfully.');
-                setPosts(posts.filter((post) => post.id !== postId)); // Update state to reflect deletion
+                alert("Post deleted successfully.");
+                // Remove the deleted post from the frontend state
+                setPosts(posts.filter((post) => post.postId !== postId));
             } else {
                 alert(`Error: ${data.error}`);
             }
         } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to delete post');
+            console.error("Error:", error);
+            alert("Failed to delete post.");
         }
     };
+
 
     // Update post handler (placeholder for now)
     const handleUpdate = (postId) => {
@@ -140,8 +150,14 @@ const TotalPosts = () => {
                                 Update
                             </button>
                             <button
-                                onClick={() => handleDelete(post.id)}
-                                className="delete-button"
+                                onClick={() =>
+                                    handleDelete(
+                                        post.postId,       // Unique post ID
+                                        post.pageId,       // Page ID associated with the post
+                                        post.email,        // User email (if required by backend)
+                                        post.accessToken   // Access token (for permissions)
+                                    )
+                                }
                             >
                                 Delete
                             </button>
