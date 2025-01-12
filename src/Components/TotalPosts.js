@@ -78,8 +78,8 @@ const TotalPosts = () => {
         // Explicitly extract fields and log the post object for debugging
         console.log("Post object received in handleDelete:", post);
 
-        const postId = post.postId; // Use the correct field explicitly
-        const { pageId, accessToken, email } = post;
+        // const postId = post.postId; // Use the correct field explicitly
+        const { postId, pageId, accessToken, email } = post;
 
         // Validate required fields
         if (!postId || !pageId || !accessToken || !email) {
