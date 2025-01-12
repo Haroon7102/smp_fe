@@ -81,6 +81,9 @@ const TotalPosts = () => {
         // const postId = post.postId; // Use the correct field explicitly
         const { postId, pageId, accessToken, email } = post;
 
+        console.log("Deleting post with ID:", postId);  // Log the postId before deletion
+
+
         // Validate required fields
         if (!postId || !pageId || !accessToken || !email) {
             alert("Required data missing. Cannot delete post.");
