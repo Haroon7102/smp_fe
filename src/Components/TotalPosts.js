@@ -75,6 +75,7 @@ const TotalPosts = () => {
 
     // Delete post handler
     const handleDelete = async (post) => {
+        console.log("post being deleted:", post);
         const { id: postId, pageId, accessToken, email } = post; // Extract required fields from post
         if (!postId || !pageId || !accessToken || !email) {
             alert("Required data missing. Cannot delete post.");
@@ -103,7 +104,7 @@ const TotalPosts = () => {
             if (data.success) {
                 alert("Post deleted successfully.");
                 // Remove the deleted post from the frontend state
-                setPosts(posts.filter((post) => post.id !== postId));
+                setPosts(posts.filter((post) => post.postId !== postId));
             } else {
                 alert(`Error: ${data.error}`);
             }
