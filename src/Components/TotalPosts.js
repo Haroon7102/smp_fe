@@ -60,6 +60,7 @@ const TotalPosts = () => {
                 );
                 const data = await response.json();
                 if (Array.isArray(data)) {
+                    console.log("Fetched Posts:", data);
                     setPosts(data);
                 } else {
                     console.error("Invalid response format:", data);
@@ -73,7 +74,13 @@ const TotalPosts = () => {
     }, []);
 
     // Delete post handler
-    const handleDelete = async (postId, pageId, email, accessToken) => {
+    const handleDelete = async (post) => {
+        const { id: postId, pageId, accessToken, email } = post; // Extract required fields from post
+        if (!postId || !pageId || !accessToken || !email) {
+            alert("Required data missing. Cannot delete post.");
+            console.error("Missing fields:", { postId, pageId, accessToken, email });
+            return;
+        }
         try {
             const response = await fetch(
                 "https://smp-be-mysql.vercel.app/facebook-upload/post/delete",
@@ -96,7 +103,7 @@ const TotalPosts = () => {
             if (data.success) {
                 alert("Post deleted successfully.");
                 // Remove the deleted post from the frontend state
-                setPosts(posts.filter((post) => post.postId !== postId));
+                setPosts(posts.filter((post) => post.id !== postId));
             } else {
                 alert(`Error: ${data.error}`);
             }
@@ -150,14 +157,8 @@ const TotalPosts = () => {
                                 Update
                             </button>
                             <button
-                                onClick={() =>
-                                    handleDelete(
-                                        post.postId,       // Unique post ID
-                                        post.pageId,       // Page ID associated with the post
-                                        post.email,        // User email (if required by backend)
-                                        post.accessToken   // Access token (for permissions)
-                                    )
-                                }
+                                onClick={() => handleDelete(post)} // Pass the entire post object
+                                className="delete-button"
                             >
                                 Delete
                             </button>
