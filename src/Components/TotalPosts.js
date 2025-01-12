@@ -75,14 +75,21 @@ const TotalPosts = () => {
 
     // Delete post handler
     const handleDelete = async (post) => {
-        console.log("post being deleted:", post);
-        const { id: postId, pageId, accessToken, email } = post; // Extract required fields from post
+        // Explicitly extract fields and log the post object for debugging
+        console.log("Post object received in handleDelete:", post);
+
+        const postId = post.postId; // Use the correct field explicitly
+        const { pageId, accessToken, email } = post;
+
+        // Validate required fields
         if (!postId || !pageId || !accessToken || !email) {
             alert("Required data missing. Cannot delete post.");
             console.error("Missing fields:", { postId, pageId, accessToken, email });
             return;
         }
+
         try {
+            // Send DELETE request
             const response = await fetch(
                 "https://smp-be-mysql.vercel.app/facebook-upload/post/delete",
                 {
@@ -91,20 +98,21 @@ const TotalPosts = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        postId,       // Post ID to identify the post
-                        pageId,       // Page ID (if required)
-                        email,        // User email (optional, for logging)
-                        accessToken,  // Access token for authorization
+                        postId,       // Use explicitly extracted postId
+                        pageId,       // Use explicitly extracted pageId
+                        email,        // Use explicitly extracted email
+                        accessToken,  // Use explicitly extracted accessToken
                     }),
                 }
             );
 
             const data = await response.json();
 
+            // Check success response
             if (data.success) {
                 alert("Post deleted successfully.");
                 // Remove the deleted post from the frontend state
-                setPosts(posts.filter((post) => post.postId !== postId));
+                setPosts(posts.filter((p) => p.postId !== postId));
             } else {
                 alert(`Error: ${data.error}`);
             }
@@ -113,6 +121,7 @@ const TotalPosts = () => {
             alert("Failed to delete post.");
         }
     };
+
 
 
     // Update post handler (placeholder for now)
