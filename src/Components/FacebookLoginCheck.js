@@ -208,12 +208,33 @@ const FacebookLoginCheck = ({ email }) => {
             }
         });
     };
+    const generateLongLivedToken = async (shortToken) => {
+        const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload//generate-long-lived-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ shortToken: shortToken })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log('Long-Lived Token:', data.accessToken);
+            // You can now use this long-lived token for API requests
+        } else {
+            console.error('Error:', data.error);
+        }
+    };
+
 
     const loginWithFacebook = () => {
         window.FB.login(function (response) {
             if (response.status === 'connected') {
                 setIsLoggedIn(true);
+                generateLongLivedToken(response.authResponse.accessToken);
                 fetchPages(response.authResponse.accessToken);
+
             } else if (response.status === 'not_authorized') {
                 alert('You need to authorize the app to manage your Facebook pages.');
             } else {
