@@ -140,6 +140,7 @@ const TotalPosts = () => {
         e.preventDefault();
 
         const updatedPost = {
+            pageId: postToUpdate.pageId,  // Add pageId here
             postId: postToUpdate.postId,
             email: postToUpdate.email,
             message: updatedCaption,
