@@ -191,7 +191,7 @@ const TotalPosts = () => {
                                             key={index}
                                             mediaUrl={mediaUrl}
                                             index={index}
-                                            handleRemoveMedia={handleRemoveMedia}
+                                        // handleRemoveMedia={handleRemoveMedia}
                                         />
                                     ))}
                                 </div>
@@ -263,7 +263,7 @@ const TotalPosts = () => {
                                     {updatedMedia.map((media, index) => (
                                         <div key={index}>
                                             {typeof media === "string" ? (
-                                                <Media mediaUrl={media} index={index} handleRemoveMedia={handleRemoveMedia} />
+                                                <Media mediaUrl={media} index={index} />
                                             ) : (
                                                 <img
                                                     src={URL.createObjectURL(media)}
