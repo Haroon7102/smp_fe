@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 // New Media component for handling image and video rendering
-const Media = ({ mediaUrl, index, handleRemoveMedia }) => {
+const Media = ({ mediaUrl, index }) => {
     const [isVideo, setIsVideo] = useState(false);
     const [isImage, setIsImage] = useState(false);
 
@@ -44,13 +44,6 @@ const Media = ({ mediaUrl, index, handleRemoveMedia }) => {
                     onError={handleImageError}
                 />
             )}
-
-            <button
-                onClick={() => handleRemoveMedia(index)}
-                style={{ marginTop: "10px", color: "red" }}
-            >
-                Remove
-            </button>
         </div>
     );
 };
@@ -125,28 +118,9 @@ const TotalPosts = () => {
         setUpdatedMedia(post.media || []);
     };
 
-    const handleRemoveMedia = (index) => {
-        const updatedMediaList = [...updatedMedia];
-        updatedMediaList.splice(index, 1);
-        setUpdatedMedia(updatedMediaList);
-    };
-
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
-        const validFiles = files.filter((file) => {
-            const isValidSize = file.size <= 4000000; // 4MB size limit
-            const validExtensions = ['mp4', 'mov', 'avi'];
-            const fileExtension = file.name.split('.').pop().toLowerCase();
-
-            if (!isValidSize) {
-                alert(`File ${file.name} is too large. Max size is 4MB.`);
-            } else if (!validExtensions.includes(fileExtension)) {
-                alert(`File ${file.name} is not a supported format. Only MP4, MOV, and AVI are allowed.`);
-            }
-
-            return isValidSize && validExtensions.includes(fileExtension);
-        });
-        setUpdatedMedia([...updatedMedia, ...files, ...validFiles]);
+        setUpdatedMedia([...updatedMedia, ...files]);
     };
 
     const handleSubmitUpdate = async (e) => {
@@ -192,7 +166,6 @@ const TotalPosts = () => {
         }
     };
 
-
     return (
         <div className="posts-feed">
             {posts.length > 0 ? (
@@ -229,18 +202,34 @@ const TotalPosts = () => {
 
                         {/* Action Buttons */}
                         <div className="post-actions">
-                            <button
-                                onClick={() => handleUpdate(post)}
-                                className="update-button"
-                            >
-                                Update
-                            </button>
-                            <button
-                                onClick={() => handleDelete(post)}
-                                className="delete-button"
-                            >
-                                Delete
-                            </button>
+                            {/* Check if the post contains only videos */}
+                            {post.media &&
+                                post.media.length > 0 &&
+                                post.media.every((mediaUrl) => mediaUrl.includes(".mp4")) ? (
+                                // Only delete button for video posts
+                                <button
+                                    onClick={() => handleDelete(post)}
+                                    className="delete-button"
+                                >
+                                    Delete
+                                </button>
+                            ) : (
+                                // Update and delete buttons for other posts
+                                <>
+                                    <button
+                                        onClick={() => handleUpdate(post)}
+                                        className="update-button"
+                                    >
+                                        Update
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(post)}
+                                        className="delete-button"
+                                    >
+                                        Delete
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
                 ))
@@ -292,6 +281,7 @@ const TotalPosts = () => {
                 </div>
             )}
         </div>
+
     );
 };
 
