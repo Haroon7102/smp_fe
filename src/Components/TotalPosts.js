@@ -115,8 +115,11 @@ const TotalPosts = () => {
         setIsUpdating(true);
         setPostToUpdate(post);
         setUpdatedCaption(post.message);
-        setUpdatedMedia(post.media || []);
+
+        // Ensure media is always an array, even if null or undefined
+        setUpdatedMedia(post.media && post.media.length > 0 ? post.media : []);
     };
+
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
