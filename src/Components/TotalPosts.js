@@ -139,23 +139,23 @@ const TotalPosts = () => {
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
 
-        const updatedPost = {
-            pageId: postToUpdate.pageId,  // Add pageId here
-            postId: postToUpdate.postId,
-            email: postToUpdate.email,
-            message: updatedCaption,
-            mediaUrls: updatedMedia,
-        };
+        const formData = new FormData();
+        formData.append("pageId", postToUpdate.pageId);
+        formData.append("postId", postToUpdate.postId);
+        formData.append("caption", updatedCaption);
+        formData.append("email", postToUpdate.email);
+
+        // Append files
+        updatedMedia.forEach((file) => {
+            formData.append("files", file);
+        });
 
         try {
             const response = await fetch(
                 "https://smp-be-mysql.vercel.app/facebook-upload/post/update",
                 {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(updatedPost),
+                    body: formData,
                 }
             );
 
@@ -163,7 +163,7 @@ const TotalPosts = () => {
 
             if (data.success) {
                 alert("Post updated successfully.");
-                setPosts(posts.map((post) => (post.postId === postToUpdate.postId ? updatedPost : post)));
+                setPosts(posts.map((post) => (post.postId === postToUpdate.postId ? { ...post, caption: updatedCaption, media: updatedMedia } : post)));
                 setIsUpdating(false);
             } else {
                 alert("Error updating post.");
@@ -173,6 +173,7 @@ const TotalPosts = () => {
             alert("Error updating post.");
         }
     };
+
 
     return (
         <div className="posts-feed">
