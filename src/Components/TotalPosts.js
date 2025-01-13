@@ -133,7 +133,20 @@ const TotalPosts = () => {
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
-        setUpdatedMedia([...updatedMedia, ...files]);
+        const validFiles = files.filter((file) => {
+            const isValidSize = file.size <= 4000000; // 4MB size limit
+            const validExtensions = ['mp4', 'mov', 'avi'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if (!isValidSize) {
+                alert(`File ${file.name} is too large. Max size is 4MB.`);
+            } else if (!validExtensions.includes(fileExtension)) {
+                alert(`File ${file.name} is not a supported format. Only MP4, MOV, and AVI are allowed.`);
+            }
+
+            return isValidSize && validExtensions.includes(fileExtension);
+        });
+        setUpdatedMedia([...updatedMedia, ...files, ...validFiles]);
     };
 
     const handleSubmitUpdate = async (e) => {
@@ -144,7 +157,12 @@ const TotalPosts = () => {
         formData.append("postId", postToUpdate.postId);
         formData.append("caption", updatedCaption);
         formData.append("email", postToUpdate.email);
-
+        4
+        if (postToUpdate.media && Array.isArray(postToUpdate.media)) {
+            postToUpdate.media.forEach((mediaUrl) => {
+                formData.append("existingMediaUrls", mediaUrl); // Send existing media URLs as part of the form data
+            });
+        }
         // Append files
         updatedMedia.forEach((file) => {
             formData.append("files", file);
