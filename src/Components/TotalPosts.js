@@ -1,53 +1,3 @@
-import React, { useState, useEffect } from "react";
-
-// New Media component for handling image and video rendering
-const Media = ({ mediaUrl, index }) => {
-    const [isVideo, setIsVideo] = useState(false);
-    const [isImage, setIsImage] = useState(false);
-
-    useEffect(() => {
-        if (mediaUrl.includes(".mp4")) {
-            setIsVideo(true);
-        } else {
-            setIsImage(true);
-        }
-    }, [mediaUrl]);
-
-    const handleVideoError = (e) => {
-        e.target.style.display = "none";
-        setIsImage(true);
-    };
-
-    const handleImageError = (e) => {
-        e.target.style.display = "none";
-        console.error("Failed to load media:", e.target.src);
-    };
-
-    return (
-        <div key={index} className="media-container">
-            {isVideo && (
-                <video
-                    src={mediaUrl}
-                    controls
-                    style={{ maxWidth: "100%", margin: "10px 0", borderRadius: "8px" }}
-                    onError={handleVideoError}
-                >
-                    Your browser does not support the video tag.
-                </video>
-            )}
-
-            {isImage && (
-                <img
-                    src={mediaUrl}
-                    alt={`Media ${index + 1}`}
-                    style={{ maxWidth: "100%", margin: "10px 0", borderRadius: "8px" }}
-                    onError={handleImageError}
-                />
-            )}
-        </div>
-    );
-};
-
 const TotalPosts = () => {
     const [posts, setPosts] = useState([]);
     const [isUpdating, setIsUpdating] = useState(false);
@@ -119,7 +69,6 @@ const TotalPosts = () => {
         // Ensure media is always an array, even if null or undefined
         setUpdatedMedia(post.media && post.media.length > 0 ? post.media : []);
     };
-
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
@@ -194,9 +143,12 @@ const TotalPosts = () => {
                                             key={index}
                                             mediaUrl={mediaUrl}
                                             index={index}
-                                        // handleRemoveMedia={handleRemoveMedia}
                                         />
                                     ))}
+                                </div>
+                            ) : post.mediaUrl ? (
+                                <div className="post-media">
+                                    <Media mediaUrl={post.mediaUrl} index={0} />
                                 </div>
                             ) : (
                                 <p>No media available.</p>
@@ -205,11 +157,9 @@ const TotalPosts = () => {
 
                         {/* Action Buttons */}
                         <div className="post-actions">
-                            {/* Check if the post contains only videos */}
                             {post.media &&
                                 post.media.length > 0 &&
                                 post.media.every((mediaUrl) => mediaUrl.includes(".mp4")) ? (
-                                // Only delete button for video posts
                                 <button
                                     onClick={() => handleDelete(post)}
                                     className="delete-button"
@@ -217,7 +167,6 @@ const TotalPosts = () => {
                                     Delete
                                 </button>
                             ) : (
-                                // Update and delete buttons for other posts
                                 <>
                                     <button
                                         onClick={() => handleUpdate(post)}
@@ -284,8 +233,5 @@ const TotalPosts = () => {
                 </div>
             )}
         </div>
-
     );
 };
-
-export default TotalPosts;
