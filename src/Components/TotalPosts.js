@@ -157,7 +157,7 @@ const TotalPosts = () => {
         formData.append("postId", postToUpdate.postId);
         formData.append("caption", updatedCaption);
         formData.append("email", postToUpdate.email);
-        4
+
         if (postToUpdate.media && Array.isArray(postToUpdate.media)) {
             postToUpdate.media.forEach((mediaUrl) => {
                 formData.append("existingMediaUrls", mediaUrl); // Send existing media URLs as part of the form data
