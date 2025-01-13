@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // New Media component for handling image and video rendering
-const Media = ({ mediaUrl, index }) => {
+const Media = ({ mediaUrl, index, handleRemoveMedia }) => {
     const [isVideo, setIsVideo] = useState(false);
     const [isImage, setIsImage] = useState(false);
 
@@ -44,12 +44,23 @@ const Media = ({ mediaUrl, index }) => {
                     onError={handleImageError}
                 />
             )}
+
+            <button
+                onClick={() => handleRemoveMedia(index)}
+                style={{ marginTop: "10px", color: "red" }}
+            >
+                Remove
+            </button>
         </div>
     );
 };
 
 const TotalPosts = () => {
     const [posts, setPosts] = useState([]);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [postToUpdate, setPostToUpdate] = useState(null);
+    const [updatedCaption, setUpdatedCaption] = useState("");
+    const [updatedMedia, setUpdatedMedia] = useState([]);
 
     // Fetch posts on component mount
     useEffect(() => {
@@ -73,26 +84,10 @@ const TotalPosts = () => {
         fetchPosts();
     }, []);
 
-    // Delete post handler
     const handleDelete = async (post) => {
-        // Explicitly extract fields and log the post object for debugging
-        console.log("Post object received in handleDelete:", post);
-
-        // const postId = post.postId; // Use the correct field explicitly
         const { postId, pageId, accessToken, email } = post;
 
-        console.log("Deleting post with ID:", postId);  // Log the postId before deletion
-
-
-        // Validate required fields
-        if (!postId || !pageId || !accessToken || !email) {
-            alert("Required data missing. Cannot delete post.");
-            console.error("Missing fields:", { postId, pageId, accessToken, email });
-            return;
-        }
-
         try {
-            // Send DELETE request
             const response = await fetch(
                 "https://smp-be-mysql.vercel.app/facebook-upload/post/delete",
                 {
@@ -101,20 +96,18 @@ const TotalPosts = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        postId,       // Use explicitly extracted postId
-                        pageId,       // Use explicitly extracted pageId
-                        email,        // Use explicitly extracted email
-                        accessToken,  // Use explicitly extracted accessToken
+                        postId,
+                        pageId,
+                        email,
+                        accessToken,
                     }),
                 }
             );
 
             const data = await response.json();
 
-            // Check success response
             if (data.success) {
                 alert("Post deleted successfully.");
-                // Remove the deleted post from the frontend state
                 setPosts(posts.filter((p) => p.postId !== postId));
             } else {
                 alert(`Error: ${data.error}`);
@@ -125,11 +118,59 @@ const TotalPosts = () => {
         }
     };
 
+    const handleUpdate = (post) => {
+        setIsUpdating(true);
+        setPostToUpdate(post);
+        setUpdatedCaption(post.message);
+        setUpdatedMedia(post.media || []);
+    };
 
+    const handleRemoveMedia = (index) => {
+        const updatedMediaList = [...updatedMedia];
+        updatedMediaList.splice(index, 1);
+        setUpdatedMedia(updatedMediaList);
+    };
 
-    // Update post handler (placeholder for now)
-    const handleUpdate = (postId) => {
-        alert(`Update post functionality for ID: ${postId} is not implemented yet.`);
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        setUpdatedMedia([...updatedMedia, ...files]);
+    };
+
+    const handleSubmitUpdate = async (e) => {
+        e.preventDefault();
+
+        const updatedPost = {
+            postId: postToUpdate.postId,
+            email: postToUpdate.email,
+            message: updatedCaption,
+            mediaUrls: updatedMedia,
+        };
+
+        try {
+            const response = await fetch(
+                "https://smp-be-mysql.vercel.app/facebook-upload/post/update",
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedPost),
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert("Post updated successfully.");
+                setPosts(posts.map((post) => (post.postId === postToUpdate.postId ? updatedPost : post)));
+                setIsUpdating(false);
+            } else {
+                alert("Error updating post.");
+            }
+        } catch (error) {
+            console.error("Error updating post:", error);
+            alert("Error updating post.");
+        }
     };
 
     return (
@@ -153,7 +194,12 @@ const TotalPosts = () => {
                             {post.media && post.media.length > 0 ? (
                                 <div className="post-media">
                                     {post.media.map((mediaUrl, index) => (
-                                        <Media key={index} mediaUrl={mediaUrl} index={index} />
+                                        <Media
+                                            key={index}
+                                            mediaUrl={mediaUrl}
+                                            index={index}
+                                            handleRemoveMedia={handleRemoveMedia}
+                                        />
                                     ))}
                                 </div>
                             ) : (
@@ -164,13 +210,13 @@ const TotalPosts = () => {
                         {/* Action Buttons */}
                         <div className="post-actions">
                             <button
-                                onClick={() => handleUpdate(post.id)}
+                                onClick={() => handleUpdate(post)}
                                 className="update-button"
                             >
                                 Update
                             </button>
                             <button
-                                onClick={() => handleDelete(post)} // Pass the entire post object
+                                onClick={() => handleDelete(post)}
                                 className="delete-button"
                             >
                                 Delete
@@ -180,6 +226,50 @@ const TotalPosts = () => {
                 ))
             ) : (
                 <p>No posts found.</p>
+            )}
+
+            {/* Update Post Form */}
+            {isUpdating && postToUpdate && (
+                <div className="update-form">
+                    <h3>Update Post</h3>
+                    <form onSubmit={handleSubmitUpdate}>
+                        <div>
+                            <label>Caption:</label>
+                            <textarea
+                                value={updatedCaption}
+                                onChange={(e) => setUpdatedCaption(e.target.value)}
+                                rows="4"
+                                placeholder="Update the caption..."
+                            />
+                        </div>
+                        <div>
+                            <label>Media:</label>
+                            <input
+                                type="file"
+                                multiple
+                                onChange={handleFileChange}
+                            />
+                            {updatedMedia.length > 0 && (
+                                <div className="updated-media-preview">
+                                    {updatedMedia.map((media, index) => (
+                                        <div key={index}>
+                                            {typeof media === "string" ? (
+                                                <Media mediaUrl={media} index={index} handleRemoveMedia={handleRemoveMedia} />
+                                            ) : (
+                                                <img
+                                                    src={URL.createObjectURL(media)}
+                                                    alt={`New Media ${index}`}
+                                                    style={{ maxWidth: "100%", margin: "10px 0", borderRadius: "8px" }}
+                                                />
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        <button type="submit">Save Changes</button>
+                    </form>
+                </div>
             )}
         </div>
     );
