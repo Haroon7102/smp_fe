@@ -213,7 +213,28 @@ const FacebookLoginCheck = ({ email }) => {
         window.FB.login(function (response) {
             if (response.status === 'connected') {
                 setIsLoggedIn(true);
-                fetchPages(response.authResponse.accessToken);
+
+                // Get the short-lived access token from the login response
+                let accessToken = response.authResponse.accessToken;
+
+                // Fetch the long-lived access token
+                getLongLivedAccessToken(accessToken)
+                    .then(longLivedAccessToken => {
+                        // Update the accessToken with the long-lived token
+                        accessToken = longLivedAccessToken; // Now, accessToken holds the long-lived token
+
+                        // Continue with the rest of your code using the updated accessToken
+                        console.log('Using long-lived access token:', accessToken);
+
+                        // Now you can use this accessToken for your next operations, like fetching pages
+                        fetchPages(accessToken);
+
+                    })
+                    .catch(error => {
+                        console.error('Error fetching long-lived token:', error);
+                        alert('Failed to fetch long-lived access token.');
+                    });
+
             } else if (response.status === 'not_authorized') {
                 alert('You need to authorize the app to manage your Facebook pages.');
             } else {
@@ -224,6 +245,32 @@ const FacebookLoginCheck = ({ email }) => {
             config_id: '1273277580768760'
         });
     };
+
+    // Function to exchange short-lived token for a long-lived token
+    const getLongLivedAccessToken = async (shortLivedAccessToken) => {
+        try {
+            const appId = '1332019044439778'; // Replace with your app's ID
+            const appSecret = '84b1a81f8b8129f43983db4e9692a39a'; // Replace with your app's secret
+
+            const response = await fetch(`https://graph.facebook.com/v12.0/oauth/access_token?` +
+                `grant_type=fb_exchange_token&` +
+                `client_id=${appId}&` +
+                `client_secret=${appSecret}&` +
+                `fb_exchange_token=${shortLivedAccessToken}`);
+
+            const data = await response.json();
+
+            if (data.access_token) {
+                return data.access_token; // Return the long-lived access token
+            } else {
+                throw new Error('Failed to exchange for long-lived token');
+            }
+        } catch (error) {
+            console.error('Error exchanging for long-lived token:', error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
         if (email) {
             console.log('Dashboard Data:', email);
