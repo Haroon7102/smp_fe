@@ -342,6 +342,50 @@ const FacebookLoginCheck = ({ email }) => {
             alert('Please select a page to post to.');
         }
     };
+    const handleSchedule = async () => {
+        const selectedPage = pages.find(page => page.id === selectedPageId);
+        if (selectedPage) {
+            if (!userId) {
+                alert('User ID is missing. Please log in again.');
+                return;
+            }
+
+            const formData = new FormData();
+
+            files.forEach((file) => {
+                formData.append('files', file);
+            });
+
+            if (message) {
+                formData.append('caption', message);
+            }
+
+            formData.append('accessToken', selectedPage.access_token);
+            formData.append('pageId', selectedPageId);
+            formData.append('postType', postType); // Include post type in form data
+            formData.append('email', email); // Send email to backend
+
+            console.log('post type added');
+            try {
+                const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/schedule-post', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Upload result:', result);
+            } catch (error) {
+                console.error('Error uploading to backend:', error);
+                alert(`Error uploading: ${error.message}`);
+            }
+        } else {
+            alert('Please select a page to post to.');
+        }
+    };
 
 
     return (
@@ -459,6 +503,20 @@ const FacebookLoginCheck = ({ email }) => {
 
                     <button
                         onClick={handlePost}
+                        style={{
+                            padding: '10px 20px',
+                            fontSize: '16px',
+                            backgroundColor: '#28a745',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        Post to Page
+                    </button>
+                    <button
+                        onClick={handleSchedule}
                         style={{
                             padding: '10px 20px',
                             fontSize: '16px',
