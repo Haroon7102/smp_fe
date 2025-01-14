@@ -133,6 +133,7 @@ const TotalPosts = () => {
         formData.append("postId", postToUpdate.postId);
         formData.append("caption", updatedCaption);
         formData.append("email", postToUpdate.email);
+        formData.append("accessToken", postToUpdate.accessToken);
 
         if (postToUpdate.media && Array.isArray(postToUpdate.media)) {
             postToUpdate.media.forEach((mediaUrl) => {
