@@ -175,6 +175,7 @@ const FacebookLoginCheck = ({ email }) => {
     const [userId, setUserId] = useState(null);
     const [files, setFiles] = useState([]);
     const [postType, setPostType] = useState('feed'); // Post type dropdown
+    const [scheduledDate, setScheduledDate] = useState(''); // State for scheduled date
 
     const statusChangeCallback = useCallback((response) => {
         if (response.status === 'connected') {
@@ -360,6 +361,8 @@ const FacebookLoginCheck = ({ email }) => {
                 formData.append('caption', message);
             }
 
+            formData.append('scheduledDate', scheduledDate);
+
             formData.append('accessToken', selectedPage.access_token);
             formData.append('pageId', selectedPageId);
             formData.append('postType', postType); // Include post type in form data
@@ -515,6 +518,13 @@ const FacebookLoginCheck = ({ email }) => {
                     >
                         Post to Page
                     </button>
+                    <label htmlFor="scheduledDate">Schedule Post At</label>
+                    <input
+                        type="datetime-local"
+                        id="scheduledDate"
+                        value={scheduledDate}
+                        onChange={(e) => setScheduledDate(e.target.value)}
+                    />
                     <button
                         onClick={handleSchedule}
                         style={{
@@ -527,7 +537,7 @@ const FacebookLoginCheck = ({ email }) => {
                             cursor: 'pointer',
                         }}
                     >
-                        Post to Page
+                        Schedule a Post
                     </button>
                 </div>
             )}
