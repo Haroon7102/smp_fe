@@ -7,12 +7,13 @@ const ScheduledPosts = () => {
         id: null,
         caption: '',
         postType: '',
-        files: [],
+        file: [],
+        scheduledDate: '',
     });
     const [showUpdateModal, setShowUpdateModal] = useState(false);
 
+    // Fetch scheduled posts
     useEffect(() => {
-        // Fetch scheduled posts when the component mounts
         axios.get('https://smp-be-mysql.vercel.app/scheduled/fetch-scheduled-posts')
             .then(response => {
                 setPosts(response.data);
@@ -22,34 +23,41 @@ const ScheduledPosts = () => {
             });
     }, []);
 
+    // Calculate time left until the post is due
     const calculateTimeLeft = (scheduledDate) => {
-        const now = new Date(); // Current time in local timezone
-        const scheduledTime = new Date(scheduledDate); // Scheduled time from the database
-        const timeDiff = scheduledTime.getTime() - now.getTime(); // Compare time in milliseconds
+        const now = new Date();
+        const scheduledTime = new Date(scheduledDate);
+        const timeDiff = scheduledTime.getTime() - now.getTime();
 
         if (timeDiff <= 0) {
             return "Post is already due";
         }
 
-        const hours = Math.floor(timeDiff / 1000 / 60 / 60); // Get hours
-        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)); // Get remaining minutes
+        const hours = Math.floor(timeDiff / 1000 / 60 / 60);
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 
         return `${hours} hours ${minutes} minutes left`;
     };
 
-    const handleUpdate = (postId, existingCaption, existingPostType, existingFiles) => {
-        // Open the update form (modal or form)
+    // Handle updating the post
+    const handleUpdate = (postId, existingCaption, existingPostType, existingFiles, existingScheduledDate, status) => {
+        if (status !== "scheduled") {
+            alert("Scheduled date can only be updated for posts that are scheduled.");
+            return;
+        }
+
         setShowUpdateModal(true);
 
-        // Set the existing post data in the form
         setPostData({
             id: postId,
             caption: existingCaption,
             postType: existingPostType,
-            files: existingFiles || [], // Existing files
+            file: existingFiles,
+            scheduledDate: existingScheduledDate,
         });
     };
 
+    // Handle input field changes (caption, postType)
     const handleChange = (e) => {
         const { name, value } = e.target;
         setPostData({
@@ -58,31 +66,43 @@ const ScheduledPosts = () => {
         });
     };
 
+    // Handle file input changes
     const handleFileChange = (e) => {
         const newFiles = Array.from(e.target.files);
         setPostData({
             ...postData,
-            files: [...postData.files, ...newFiles], // Add new files to existing ones
+            file: [...postData.files, ...newFiles],
         });
     };
 
+    // Remove a file from the list
     const handleRemoveFile = (fileName) => {
         setPostData({
             ...postData,
-            files: postData.files.filter((file) => file.name !== fileName),
+            files: postData.file.filter((file) => file.name !== fileName),
         });
     };
 
+    // Handle scheduled date change
+    const handleScheduledDateChange = (e) => {
+        const { value } = e.target;
+        setPostData({
+            ...postData,
+            scheduledDate: value,
+        });
+    };
+
+    // Submit the updated post
     const handleSubmitUpdate = async (e) => {
         e.preventDefault();
 
-        // Prepare FormData for the PUT request
         const formData = new FormData();
         formData.append('caption', postData.caption);
         formData.append('postType', postData.postType);
+        formData.append('scheduledDate', postData.scheduledDate);
 
-        // Add files (both existing and newly added)
-        postData.files.forEach((file) => {
+        // Append files (new and existing files)
+        postData.file.forEach((file) => {
             formData.append('files', file, file.name);
         });
 
@@ -91,13 +111,13 @@ const ScheduledPosts = () => {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             console.log('Post updated successfully:', response.data);
-            // Close the modal after success
             setShowUpdateModal(false);
         } catch (error) {
             console.error('Error updating post:', error);
         }
     };
 
+    // Delete post
     const handleDelete = (postId) => {
         axios.delete(`https://smp-be-mysql.vercel.app/scheduled/delete-scheduled-post/${postId}`)
             .then(response => {
@@ -129,7 +149,9 @@ const ScheduledPosts = () => {
                             <td>{post.isScheduled ? "Scheduled" : "Published"}</td>
                             <td>{post.isScheduled ? calculateTimeLeft(post.scheduledDate) : "Post is published"}</td>
                             <td>
-                                <button onClick={() => handleUpdate(post.id, post.caption, post.postType, post.files)}>Update</button>
+                                {post.isScheduled && (
+                                    <button onClick={() => handleUpdate(post.id, post.caption, post.postType, post.files, post.scheduledDate, post.status)}>Update</button>
+                                )}
                                 <button onClick={() => handleDelete(post.id)}>Delete</button>
                             </td>
                         </tr>
@@ -137,7 +159,7 @@ const ScheduledPosts = () => {
                 </tbody>
             </table>
 
-            {/* Modal for updating post */}
+            {/* Update Modal */}
             {showUpdateModal && (
                 <div className="update-modal">
                     <h2>Update Post</h2>
@@ -163,23 +185,42 @@ const ScheduledPosts = () => {
                             </select>
                         </div>
 
+                        {/* Only allow scheduled date change if post is scheduled */}
+                        {postData.scheduledDate && (
+                            <div>
+                                <label>Scheduled Date:</label>
+                                <input
+                                    type="datetime-local"
+                                    name="scheduledDate"
+                                    value={postData.scheduledDate}
+                                    onChange={handleScheduledDateChange}
+                                    disabled={postData.status !== "scheduled"}
+                                />
+                            </div>
+                        )}
+
+                        {/* Display existing files */}
                         <div>
                             <label>Files:</label>
+                            <div>
+                                {postData.files && postData.files.map((file, index) => (
+                                    <div key={index} className="file-preview">
+                                        {file.type.startsWith('image/') ? (
+                                            <img src={URL.createObjectURL(file)} alt={file.name} width="100" />
+                                        ) : (
+                                            <video width="100" controls>
+                                                <source src={URL.createObjectURL(file)} type={file.type} />
+                                            </video>
+                                        )}
+                                        <button type="button" onClick={() => handleRemoveFile(file.name)}>Remove</button>
+                                    </div>
+                                ))}
+                            </div>
                             <input
                                 type="file"
                                 multiple
                                 onChange={handleFileChange}
                             />
-                            <ul>
-                                {(Array.isArray(postData.files) ? postData.files : []).map((file) => (
-                                    <li key={file.name}>
-                                        {file.name}
-                                        <button type="button" onClick={() => handleRemoveFile(file.name)}>
-                                            Remove
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
                         </div>
 
                         <button type="submit">Update Post</button>
