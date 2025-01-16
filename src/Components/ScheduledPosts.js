@@ -29,9 +29,8 @@ const ScheduledPosts = () => {
         const scheduledTime = new Date(scheduledDate); // Convert to Date object
 
         // If you want to handle the timezone explicitly:
-        const scheduledTimeInKarachi = new Date(scheduledTime.toLocaleString("en-US", { timeZone: "Asia/Karachi" }));
 
-        const timeDiff = scheduledTimeInKarachi.getTime() - now.getTime(); // Compare time in milliseconds
+        const timeDiff = scheduledTime.getTime() - now.getTime(); // Compare time in milliseconds
 
         if (timeDiff <= 0) {
             return "Post is already due";
