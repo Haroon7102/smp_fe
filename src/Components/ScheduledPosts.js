@@ -27,7 +27,9 @@ const ScheduledPosts = () => {
     const calculateTimeLeft = (scheduledDate) => {
         const now = new Date();
         const currentTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Karachi" }));
-        const scheduledTime = new Date(scheduledDate); // Parse the DB string as UTC milliseconds since epoch
+        console.log("using current time:", currentTime);
+        const scheduledTime = Date.parse(scheduledDate); // Parse the DB string as UTC milliseconds since epoch
+        console.log("using date.parse:", scheduledTime);
 
         // Compare the two times
         const timeDiff = scheduledTime - currentTime;
