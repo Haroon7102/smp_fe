@@ -25,16 +25,20 @@ const ScheduledPosts = () => {
 
     // Calculate time left until the post is due
     const calculateTimeLeft = (scheduledDate) => {
-        const now = new Date();
-        const scheduledTime = new Date(scheduledDate);
-        const timeDiff = scheduledTime.getTime() - now.getTime();
+        const now = new Date(); // Current time in local timezone
+        const scheduledTime = new Date(scheduledDate); // Convert to Date object
+
+        // If you want to handle the timezone explicitly:
+        const scheduledTimeInKarachi = new Date(scheduledTime.toLocaleString("en-US", { timeZone: "Asia/Karachi" }));
+
+        const timeDiff = scheduledTimeInKarachi.getTime() - now.getTime(); // Compare time in milliseconds
 
         if (timeDiff <= 0) {
             return "Post is already due";
         }
 
-        const hours = Math.floor(timeDiff / 1000 / 60 / 60);
-        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const hours = Math.floor(timeDiff / 1000 / 60 / 60); // Get hours
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)); // Get remaining minutes
 
         return `${hours} hours ${minutes} minutes left`;
     };
