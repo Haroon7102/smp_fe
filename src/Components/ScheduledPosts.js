@@ -26,15 +26,14 @@ const ScheduledPosts = () => {
     // Calculate time left until the post is due
 
     const calculateTimeLeft = (scheduledDate) => {
-        console.log(scheduledDate);
-        // Parse scheduledDate explicitly as UTC
-        const scheduledTime = new Date(scheduledDate);
-        console.log("after using new Date:", scheduledTime);
-        // Get the current time in UTC
         const now = new Date();
+        const scheduledTimeUTC = new Date(scheduledDate).toISOString(); // Get it in UTC
+        const nowUTC = now.toISOString(); // Convert current time to UTC for consistency
 
-        // Calculate the difference in milliseconds
-        const timeDiff = scheduledTime.getTime() - now.getTime();
+        const timeDiff = new Date(scheduledTimeUTC).getTime() - new Date(nowUTC).getTime();
+        // console.log("Time Difference (ms):", timeDiff);
+        // console.log("Time Left in Hours:", Math.floor(timeDiff / (1000 * 60 * 60)));
+
 
         if (timeDiff <= 0) {
             return "Post is already due";
