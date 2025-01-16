@@ -370,7 +370,7 @@ const FacebookLoginCheck = ({ email }) => {
 
             console.log('post type added');
             try {
-                const response = await fetch('https://smp-be-mysql.vercel.app/facebook-upload/schedule-post', {
+                const response = await fetch('https://smp-be-mysql.vercel.app/scheduled/schedule-post', {
                     method: 'POST',
                     body: formData,
                 });

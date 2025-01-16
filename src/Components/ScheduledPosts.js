@@ -6,7 +6,7 @@ const ScheduledPosts = () => {
 
     useEffect(() => {
         // Fetch scheduled posts when the component mounts
-        axios.get('https://smp-be-mysql.vercel.app/facebook-upload/fetch-scheduled-posts')
+        axios.get('https://smp-be-mysql.vercel.app/scheduled/fetch-scheduled-posts')
             .then(response => {
                 setPosts(response.data);
             })
@@ -36,7 +36,7 @@ const ScheduledPosts = () => {
     };
 
     const handleDelete = (postId) => {
-        axios.delete(`https://smp-be-mysql.vercel.app/facebook-upload/delete-scheduled-post/${postId}`)
+        axios.delete(`https://smp-be-mysql.vercel.app/scheduled/delete-scheduled-post/${postId}`)
             .then(response => {
                 // Remove the deleted post from the list
                 setPosts(posts.filter(post => post.id !== postId));
