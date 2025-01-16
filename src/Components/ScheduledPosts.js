@@ -25,7 +25,8 @@ const ScheduledPosts = () => {
 
     // Calculate time left until the post is due
     const calculateTimeLeft = (scheduledDate) => {
-
+        const now = new Date(); // Current time
+        console.log("Current time (now):", now.toISOString()); // For debugging
 
         // scheduledDate is assumed to be fetched from the database as a UTC string (ISO 8601 format)
         console.log("Scheduled Date (from DB):", scheduledDate); // For debugging
