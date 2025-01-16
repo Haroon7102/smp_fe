@@ -12,6 +12,7 @@ import DataDeletionPolicy from './Components/DataDeletionPolicy';
 import PrivacyPolicy from './Components/PrivacyPolicy';
 import TotalPosts from './Components/TotalPosts';
 import ScheduledPosts from './Components/ScheduledPosts';
+import Chatbot from './Components/chatbot';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/posts" element={<TotalPosts />} />
             <Route path="/sch-posts" element={<ScheduledPosts />} />
+            <Route path="/chatbot" element={<Chatbot />} />
 
           </Routes>
         </div>

@@ -73,6 +73,11 @@ const Dashboard = () => {
                         Scheduled Posts
                     </button>
                 </Link>
+                <Link to="/chatbot" className="sidebar-link">
+                    <button className="sidebar-btn">
+                        Chatbot
+                    </button>
+                </Link>
                 {/* <button className="sidebar-btn" onClick={handleTotalPostsClick}>
                     {showTotalPosts ? 'Hide Total Posts' : 'Total Posts'}
                 </button> */}
