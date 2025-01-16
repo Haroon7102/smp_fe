@@ -33,7 +33,7 @@ const ScheduledPosts = () => {
 
         // Parse both as UTC timestamps directly
         const nowTime = now.getTime(); // Get the current time in milliseconds since epoch
-        const scheduledTime = scheduledDate; // Parse the DB string as UTC milliseconds since epoch
+        const scheduledTime = Date.parse(scheduledDate); // Parse the DB string as UTC milliseconds since epoch
 
         // Compare the two times
         const timeDiff = scheduledTime - nowTime;
@@ -155,7 +155,7 @@ const ScheduledPosts = () => {
                     {posts.map(post => (
                         <tr key={post.id}>
                             <td>{post.caption}</td>
-                            <td>{new Date(post.scheduledDate).toLocaleString()}</td>
+                            <td>{post.scheduledDate}</td>
                             <td>{post.isScheduled ? 'Scheduled' : 'Published'}</td>
                             <td>{post.isScheduled ? calculateTimeLeft(post.scheduledDate) : 'Post is published'}</td>
                             <td>
