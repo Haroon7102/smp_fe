@@ -27,10 +27,15 @@ const ScheduledPosts = () => {
 
     const calculateTimeLeft = (scheduledDate) => {
         const now = new Date();
-        const scheduledTimeUTC = new Date(scheduledDate).toISOString(); // Get it in UTC
-        const nowUTC = now.toISOString(); // Convert current time to UTC for consistency
+        console.log("Current Time (local):", now);
 
-        const timeDiff = new Date(scheduledTimeUTC).getTime() - new Date(nowUTC).getTime();
+        // Parse scheduledDate from the database as UTC
+        const scheduledTime = Date.parse(scheduledDate); // Get the UTC timestamp directly
+        console.log("Scheduled Time (UTC timestamp):", scheduledTime);
+
+        // Calculate time difference in milliseconds
+        const timeDiff = scheduledTime - now.getTime(); // Use now.getTime() as it is already a timestamp
+        console.log("Time Difference in ms:", timeDiff);
         // console.log("Time Difference (ms):", timeDiff);
         // console.log("Time Left in Hours:", Math.floor(timeDiff / (1000 * 60 * 60)));
 
