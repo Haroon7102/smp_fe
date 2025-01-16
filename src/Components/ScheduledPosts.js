@@ -44,7 +44,7 @@ const ScheduledPosts = () => {
 
     // Handle updating the post
     const handleUpdate = (postId, existingCaption, existingPostType, existingFiles, existingScheduledDate, status) => {
-        if (status.toLowerCase() !== "scheduled") {
+        if (!status || status.toLowerCase() !== "scheduled") {
             alert("Scheduled date can only be updated for posts that are scheduled.");
             return;
         }
