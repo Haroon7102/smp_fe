@@ -25,9 +25,8 @@ const ScheduledPosts = () => {
 
     // Calculate time left until the post is due
     const calculateTimeLeft = (scheduledDate) => {
-        console.log('Scheduled date from database is:', scheduledDate);
         const now = new Date(); // Current time
-        const scheduledTime = new Date(scheduledDate);
+        const scheduledTime = scheduledDate;
 
         const timeDiff = scheduledTime.getTime() - now.getTime();
 
