@@ -68,6 +68,11 @@ const Dashboard = () => {
                         Total Posts
                     </button>
                 </Link>
+                <Link to="/sch-posts" className="sidebar-link">
+                    <button className="sidebar-btn">
+                        Scheduled Posts
+                    </button>
+                </Link>
                 {/* <button className="sidebar-btn" onClick={handleTotalPostsClick}>
                     {showTotalPosts ? 'Hide Total Posts' : 'Total Posts'}
                 </button> */}
