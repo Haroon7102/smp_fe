@@ -24,7 +24,7 @@ const ScheduledPosts = () => {
 
     const calculateTimeLeft = (scheduledDate) => {
         const now = new Date(); // Current time in local timezone
-        const scheduledTime = new Date(scheduledDate); // Convert to Date object
+        const scheduledTime = new Date(scheduledDate); // Scheduled time from the database
         const timeDiff = scheduledTime.getTime() - now.getTime(); // Compare time in milliseconds
 
         if (timeDiff <= 0) {
@@ -46,7 +46,7 @@ const ScheduledPosts = () => {
             id: postId,
             caption: existingCaption,
             postType: existingPostType,
-            files: existingFiles, // Existing files
+            files: existingFiles || [], // Existing files
         });
     };
 
@@ -171,7 +171,7 @@ const ScheduledPosts = () => {
                                 onChange={handleFileChange}
                             />
                             <ul>
-                                {postData.files.map((file) => (
+                                {(Array.isArray(postData.files) ? postData.files : []).map((file) => (
                                     <li key={file.name}>
                                         {file.name}
                                         <button type="button" onClick={() => handleRemoveFile(file.name)}>
