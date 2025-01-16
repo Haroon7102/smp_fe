@@ -257,19 +257,23 @@ const ScheduledPosts = () => {
     useEffect(() => {
         axios.get('https://smp-be-mysql.vercel.app/scheduled/fetch-scheduled-posts')
             .then(response => {
-                const updatedPosts = response.data.map(post => ({
-                    ...post,
-                    files: post.files.map(file => ({
-                        name: file.name || `File-${Date.now()}`,
-                        url: file.url || `data:${file.mimeType};base64,${file.base64}`,
-                    })),
-                }));
+                // Ensure response.data is an array
+                const updatedPosts = Array.isArray(response.data)
+                    ? response.data.map(post => ({
+                        ...post,
+                        files: Array.isArray(post.files) ? post.files.map(file => ({
+                            name: file.name || `File-${Date.now()}`,
+                            url: file.url || `data:${file.mimeType || 'application/octet-stream'};base64,${file.base64 || ''}`,
+                        })) : [], // Fallback if post.files is not an array
+                    }))
+                    : []; // Fallback if response.data is not an array
                 setPosts(updatedPosts);
             })
             .catch(error => {
                 console.error('Error fetching posts:', error);
             });
     }, []);
+
 
     // Calculate time left until the post is due
     const calculateTimeLeft = (scheduledDate) => {
