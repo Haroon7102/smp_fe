@@ -24,10 +24,12 @@ const ScheduledPosts = () => {
     }, []);
 
     // Calculate time left until the post is due
+
     const calculateTimeLeft = (scheduledDate) => {
+        console.log(scheduledDate);
         // Parse scheduledDate explicitly as UTC
         const scheduledTime = new Date(scheduledDate);
-
+        console.log("after using new Date:", scheduledTime);
         // Get the current time in UTC
         const now = new Date();
 
