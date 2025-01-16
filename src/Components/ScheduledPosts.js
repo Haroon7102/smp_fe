@@ -25,18 +25,12 @@ const ScheduledPosts = () => {
 
     // Calculate time left until the post is due
     const calculateTimeLeft = (scheduledDate) => {
-        const now = new Date(); // Current time
-        console.log("Current time (now):", now.toISOString()); // For debugging
-
-        // scheduledDate is assumed to be fetched from the database as a UTC string (ISO 8601 format)
-        console.log("Scheduled Date (from DB):", scheduledDate); // For debugging
-
-        // Parse both as UTC timestamps directly
-        const nowTime = now.getTime(); // Get the current time in milliseconds since epoch
-        const scheduledTime = Date.parse(scheduledDate); // Parse the DB string as UTC milliseconds since epoch
+        const now = new Date();
+        const currentTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Karachi" }));
+        const scheduledTime = new Date(scheduledDate); // Parse the DB string as UTC milliseconds since epoch
 
         // Compare the two times
-        const timeDiff = scheduledTime - nowTime;
+        const timeDiff = scheduledTime - currentTime;
         console.log("Time Difference in ms:", timeDiff);
 
         if (timeDiff <= 0) {
