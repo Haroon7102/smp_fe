@@ -25,9 +25,8 @@ const ScheduledPosts = () => {
 
     // Calculate time left until the post is due
     const calculateTimeLeft = (scheduledDate) => {
-        const now = new Date(); // Current time in local timezone
-        const scheduledTime = new Date(scheduledDate); // Convert to Date object
-        scheduledTime.setHours(scheduledTime.getHours() - 5); // Subtract 5 hours
+        const now = new Date(); // Current time
+        const scheduledTime = new Date(new Date(scheduledDate).getTime() - 5 * 60 * 60 * 1000); // Subtract 5 hours in milliseconds
 
         const timeDiff = scheduledTime.getTime() - now.getTime(); // Compare time in milliseconds
 
@@ -40,6 +39,7 @@ const ScheduledPosts = () => {
 
         return `${hours} hours ${minutes} minutes left`;
     };
+
 
     // Handle updating the post
     const handleUpdate = (postId, existingCaption, existingPostType, existingFiles, existingScheduledDate, status) => {
