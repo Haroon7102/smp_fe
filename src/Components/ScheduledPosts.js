@@ -24,34 +24,30 @@ const ScheduledPosts = () => {
     }, []);
 
     // Calculate time left until the post is due
-
     const calculateTimeLeft = (scheduledDate) => {
-        const now = new Date();
-        console.log("Current Time (local):", now);
+        const now = new Date(); // Current time
+        console.log("Current time (now):", now.toISOString()); // For debugging
 
-        // Parse scheduledDate from the database as UTC
-        const scheduledTime = Date.parse(scheduledDate); // Get the UTC timestamp directly
-        console.log("Scheduled Time (UTC timestamp):", scheduledTime);
+        // scheduledDate is assumed to be fetched from the database as a UTC string (ISO 8601 format)
+        console.log("Scheduled Date (from DB):", scheduledDate); // For debugging
 
-        // Calculate time difference in milliseconds
-        const timeDiff = scheduledTime - now.getTime(); // Use now.getTime() as it is already a timestamp
+        // Parse both as UTC timestamps directly
+        const nowTime = now.getTime(); // Get the current time in milliseconds since epoch
+        const scheduledTime = Date.parse(scheduledDate); // Parse the DB string as UTC milliseconds since epoch
+
+        // Compare the two times
+        const timeDiff = scheduledTime - nowTime;
         console.log("Time Difference in ms:", timeDiff);
-        // console.log("Time Difference (ms):", timeDiff);
-        // console.log("Time Left in Hours:", Math.floor(timeDiff / (1000 * 60 * 60)));
-
 
         if (timeDiff <= 0) {
             return "Post is already due";
         }
 
-        // Convert milliseconds to hours and minutes
-        const hours = Math.floor(timeDiff / (1000 * 60 * 60)); // Hours remaining
-        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)); // Minutes remaining
+        const hours = Math.floor(timeDiff / 1000 / 60 / 60); // Get hours
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)); // Get remaining minutes
 
         return `${hours} hours ${minutes} minutes left`;
     };
-
-
 
     // Handle updating the post
     const handleUpdate = (postId, existingCaption, existingPostType, existingFiles, existingScheduledDate, status) => {
