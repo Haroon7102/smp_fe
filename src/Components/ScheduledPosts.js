@@ -25,6 +25,7 @@ const ScheduledPosts = () => {
 
     // Calculate time left until the post is due
     const calculateTimeLeft = (scheduledDate) => {
+        console.log("sechudled date from database is:", scheduledDate);
         const now = new Date(); // Current time in local timezone
         const scheduledTime = new Date(scheduledDate); // Convert to Date object
 
