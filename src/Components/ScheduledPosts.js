@@ -25,20 +25,26 @@ const ScheduledPosts = () => {
 
     // Calculate time left until the post is due
     const calculateTimeLeft = (scheduledDate) => {
-        const now = new Date(); // Current time
-        const scheduledTime = new Date(new Date(scheduledDate).getTime() - 5 * 60 * 60 * 1000); // Subtract 5 hours in milliseconds
+        // Parse scheduledDate explicitly as UTC
+        const scheduledTime = new Date(scheduledDate);
 
-        const timeDiff = scheduledTime.getTime() - now.getTime(); // Compare time in milliseconds
+        // Get the current time in UTC
+        const now = new Date();
+
+        // Calculate the difference in milliseconds
+        const timeDiff = scheduledTime.getTime() - now.getTime();
 
         if (timeDiff <= 0) {
             return "Post is already due";
         }
 
-        const hours = Math.floor(timeDiff / 1000 / 60 / 60); // Get hours
-        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)); // Get remaining minutes
+        // Convert milliseconds to hours and minutes
+        const hours = Math.floor(timeDiff / (1000 * 60 * 60)); // Hours remaining
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)); // Minutes remaining
 
         return `${hours} hours ${minutes} minutes left`;
     };
+
 
 
     // Handle updating the post
