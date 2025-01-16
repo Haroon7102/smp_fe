@@ -13,7 +13,7 @@ const Chatbot = () => {
 
         // Send user input to your backend or OpenAI API
         try {
-            const response = await axios.post('https:https://smp-be-mysql.vercel.app/open-ai/chat', { text: userInput });
+            const response = await axios.post('https://smp-be-mysql.vercel.app/open-ai/chat', { text: userInput });
             const botReply = response.data.reply;
             setMessages([...messages, { text: userInput, user: true }, { text: botReply, user: false }]);
         } catch (error) {
