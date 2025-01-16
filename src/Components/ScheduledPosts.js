@@ -28,11 +28,16 @@ const ScheduledPosts = () => {
         const now = new Date();
         const currentTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Karachi" }));
         console.log("using current time:", currentTime);
-        const scheduledTime = Date.parse(scheduledDate); // Parse the DB string as UTC milliseconds since epoch
-        console.log("using date.parse:", scheduledTime);
+
+        const offsetMillis = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
+
+        const scheduledTime = new Date(scheduledDate).getTime();; // Parse the DB string as UTC milliseconds since epoch
+        const correctedScheduledTimeMillis = scheduledTime - offsetMillis;
+
+        console.log("using date.parse:", correctedScheduledTimeMillis);
 
         // Compare the two times
-        const timeDiff = scheduledTime - currentTime;
+        const timeDiff = correctedScheduledTimeMillis - currentTime;
         console.log("Time Difference in ms:", timeDiff);
 
         if (timeDiff <= 0) {
