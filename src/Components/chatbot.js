@@ -22,7 +22,7 @@ export default function CaptionGenerator() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ topic, numberOfCaptions: 5 }), // Customize number of captions
+                body: JSON.stringify({ topic }),
             });
 
             if (!response.ok) {
