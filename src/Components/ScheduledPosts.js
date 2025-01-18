@@ -257,16 +257,7 @@ const ScheduledPosts = () => {
     useEffect(() => {
         axios.get('https://smp-be-mysql.vercel.app/scheduled/fetch-scheduled-posts')
             .then(response => {
-                // Ensure response.data is an array
-                const updatedPosts = response.data.map(post => ({
-                    ...post,
-                    files: post.files.map(file => ({
-                        name: file.name || 'Unnamed File',
-                        mimeType: file.mimeType,
-                        url: `data:${file.mimeType};base64,${file.base64}`,
-                    })),
-                }));
-                setPosts(updatedPosts);
+                setPosts(response.data);
             })
             .catch(error => {
                 console.error('Error fetching posts:', error);
@@ -406,18 +397,25 @@ const ScheduledPosts = () => {
                 <tbody>
                     {posts.map(post => (
                         <tr key={post.id}>
-                            <div className="files">
-                                {post.files.map((file, index) => (
-                                    <div key={index}>
-                                        {file.mimeType.startsWith('image/') ? (
-                                            <img src={file.url} alt={file.name} style={{ width: '200px' }} />
-                                        ) : file.mimeType.startsWith('video/') ? (
-                                            <video controls style={{ width: '200px' }}>
-                                                <source src={file.url} type={file.mimeType} />
-                                                Your browser does not support the video tag.
-                                            </video>
-                                        ) : (
-                                            <p>Unsupported file type</p>
+                            <div>
+                                {posts.map(post => (
+                                    <div key={post.id} style={{ marginBottom: '20px' }}>
+                                        <h3>{post.title || 'Untitled Post'}</h3>
+                                        <p>{post.message}</p>
+                                        {/* Render images or videos dynamically */}
+                                        {post.file && post.file.startsWith('data:image') && (
+                                            <img
+                                                src={post.file}
+                                                alt="Uploaded File"
+                                                style={{ maxWidth: '300px', maxHeight: '300px' }}
+                                            />
+                                        )}
+                                        {post.file && post.file.startsWith('data:video') && (
+                                            <video
+                                                src={post.file}
+                                                controls
+                                                style={{ maxWidth: '300px', maxHeight: '300px' }}
+                                            />
                                         )}
                                     </div>
                                 ))}
