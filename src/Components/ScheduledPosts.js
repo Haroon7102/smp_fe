@@ -241,7 +241,7 @@
 // export default ScheduledPosts;
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './ScheduledPost.css';
+import './ScheduledPosts.css';
 
 
 const ScheduledPosts = () => {
