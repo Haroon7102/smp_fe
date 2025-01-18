@@ -398,25 +398,17 @@ const ScheduledPosts = () => {
                     {posts.map(post => (
                         <tr key={post.id}>
                             <div>
-                                {posts.map(post => (
-                                    <div key={post.id} style={{ marginBottom: '20px' }}>
-                                        <h3>{post.title || 'Untitled Post'}</h3>
-                                        <p>{post.message}</p>
-                                        {/* Render images or videos dynamically */}
-                                        {post.file && post.file.startsWith('data:image') && (
-                                            <img
-                                                src={post.file}
-                                                alt="Uploaded File"
-                                                style={{ maxWidth: '300px', maxHeight: '300px' }}
-                                            />
+                                {post.files.map((file, index) => (
+                                    <div key={index}>
+                                        {file.src.startsWith('data:image') && (
+                                            <img src={file.src} alt={file.originalName} style={{ maxWidth: '300px', maxHeight: '300px' }} />
                                         )}
-                                        {post.file && post.file.startsWith('data:video') && (
-                                            <video
-                                                src={post.file}
-                                                controls
-                                                style={{ maxWidth: '300px', maxHeight: '300px' }}
-                                            />
+
+                                        {file.src.startsWith('data:video') && (
+                                            <video src={file.src} controls style={{ maxWidth: '300px', maxHeight: '300px' }} />
                                         )}
+
+                                        <p>Filename: {file.originalName}</p>
                                     </div>
                                 ))}
                             </div>
