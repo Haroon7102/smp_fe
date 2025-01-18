@@ -241,6 +241,8 @@
 // export default ScheduledPosts;
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './ScheduledPost.css';
+
 
 const ScheduledPosts = () => {
     const [posts, setPosts] = useState([]);
@@ -314,19 +316,6 @@ const ScheduledPosts = () => {
         setPostData({ ...postData, [name]: value });
     };
 
-    // Handle file input changes
-    const handleFileChange = (e) => {
-        const newFiles = Array.from(e.target.files);
-        setPostData({ ...postData, files: [...postData.files, ...newFiles] });
-    };
-
-    // Remove a file from the list
-    const handleRemoveFile = (fileName) => {
-        setPostData({
-            ...postData,
-            files: postData.files.filter(file => file.name !== fileName),
-        });
-    };
 
     // Handle scheduled date change
     const handleScheduledDateChange = (e) => {
@@ -390,6 +379,7 @@ const ScheduledPosts = () => {
                         <th>Caption</th>
                         <th>Scheduled Date</th>
                         <th>Status</th>
+                        <th>Post Type</th>
                         <th>Time Left</th>
                         <th>Actions</th>
                     </tr>
@@ -397,24 +387,10 @@ const ScheduledPosts = () => {
                 <tbody>
                     {posts.map(post => (
                         <tr key={post.id}>
-                            <div>
-                                {post.files.map((file, index) => (
-                                    <div key={index}>
-                                        {file && file.src?.startsWith('data:image') && (
-                                            <img src={file.src} alt={file.originalName} style={{ maxWidth: '300px', maxHeight: '300px' }} />
-                                        )}
-
-                                        {file && file.src?.startsWith('data:video') && (
-                                            <video src={file.src} controls style={{ maxWidth: '300px', maxHeight: '300px' }} />
-                                        )}
-
-                                        <p>Filename: {file?.originalName}</p>
-                                    </div>
-                                ))}
-                            </div>
                             <td>{post.caption}</td>
                             <td>{post.scheduledDate}</td>
                             <td>{post.isScheduled ? 'Scheduled' : 'Published'}</td>
+                            <td>{post.postType}</td>
                             <td>{post.isScheduled ? calculateTimeLeft(post.scheduledDate) : 'Post is published'}</td>
                             <td>
                                 {post.isScheduled && (
@@ -425,14 +401,12 @@ const ScheduledPosts = () => {
                         </tr>
                     ))}
                 </tbody>
-
-
             </table>
 
             {/* Update Modal */}
             {showUpdateModal && (
                 <div className="update-modal">
-                    <h2>Update Post</h2>
+                    <h2>Edit</h2>
                     <form onSubmit={handleSubmitUpdate}>
                         <div>
                             <label>Caption:</label>
@@ -444,48 +418,12 @@ const ScheduledPosts = () => {
                             />
                         </div>
                         <div>
-                            <label>Post Type:</label>
-                            <select
-                                name="postType"
-                                value={postData.postType}
-                                onChange={handleChange}
-                            >
-                                <option value="feed">Feed</option>
-                                <option value="videos">videos</option>
-                                <option value="reels">reels</option>
-                            </select>
-                        </div>
-
-                        <div>
                             <label>Scheduled Date:</label>
                             <input
                                 type="datetime-local"
                                 name="scheduledDate"
                                 value={postData.scheduledDate}
                                 onChange={handleScheduledDateChange}
-                            />
-                        </div>
-
-                        <div>
-                            <label>Files:</label>
-                            <div>
-                                {postData.files.map((file, index) => (
-                                    <div key={index} className="file-preview">
-                                        {file.url && file.url.startsWith('data:image') ? (
-                                            <img src={file.url} alt="preview" width="100" />
-                                        ) : file.url ? (
-                                            <video width="100" controls>
-                                                <source src={file.url} />
-                                            </video>
-                                        ) : null}
-                                        <button type="button" onClick={() => handleRemoveFile(file.name)}>Remove</button>
-                                    </div>
-                                ))}
-                            </div>
-                            <input
-                                type="file"
-                                multiple
-                                onChange={handleFileChange}
                             />
                         </div>
 
