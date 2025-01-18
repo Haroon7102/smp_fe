@@ -400,15 +400,15 @@ const ScheduledPosts = () => {
                             <div>
                                 {post.files.map((file, index) => (
                                     <div key={index}>
-                                        {file.src?.startsWith('data:image') && (
+                                        {file && file.src?.startsWith('data:image') && (
                                             <img src={file.src} alt={file.originalName} style={{ maxWidth: '300px', maxHeight: '300px' }} />
                                         )}
 
-                                        {file.src?.startsWith('data:video') && (
+                                        {file && file.src?.startsWith('data:video') && (
                                             <video src={file.src} controls style={{ maxWidth: '300px', maxHeight: '300px' }} />
                                         )}
 
-                                        <p>Filename: {file.originalName}</p>
+                                        <p>Filename: {file?.originalName}</p>
                                     </div>
                                 ))}
                             </div>
@@ -425,6 +425,7 @@ const ScheduledPosts = () => {
                         </tr>
                     ))}
                 </tbody>
+
 
             </table>
 
