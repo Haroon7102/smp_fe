@@ -312,15 +312,17 @@ const ScheduledPosts = () => {
 
     // Handle input field changes (caption, postType)
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setPostData({ ...postData, [name]: value });
+        setPostData({
+            ...postData,
+            [e.target.name]: e.target.value,
+        });
     };
 
-
-    // Handle scheduled date change
     const handleScheduledDateChange = (e) => {
-        const { value } = e.target;
-        setPostData({ ...postData, scheduledDate: value });
+        setPostData({
+            ...postData,
+            scheduledDate: e.target.value,
+        });
     };
 
     // Submit the updated post

@@ -90,7 +90,7 @@ button:nth-child(2):hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     background-color: #fff;
     border-radius: 8px;
-    z-index: 1000;
+    z-index: 9999;
 }
 
 .update-modal h2 {
