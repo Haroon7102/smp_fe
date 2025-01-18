@@ -1,0 +1,91 @@
+/* Styles for the ChatBot Component */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.chat-box {
+    width: 400px;
+    height: 500px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.chat-box .user {
+    background: #d1f7c4;
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 16px;
+    margin: 8px 0;
+    align-self: flex-end;
+    max-width: 70%;
+    word-wrap: break-word;
+    text-align: right;
+}
+
+.chat-box .bot {
+    background: #f0f0f0;
+    color: #444;
+    padding: 10px 15px;
+    border-radius: 16px;
+    margin: 8px 0;
+    align-self: flex-start;
+    max-width: 70%;
+    word-wrap: break-word;
+    text-align: left;
+}
+
+input[type="text"] {
+    width: calc(100% - 90px);
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input[type="text"]:focus {
+    border-color: #4caf50;
+}
+
+button {
+    background: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+button:active {
+    background: #3e8e41;
+}
+
+button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+div {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
