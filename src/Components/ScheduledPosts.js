@@ -269,6 +269,7 @@ const ScheduledPosts = () => {
 
     // Calculate time left until the post is due
     const calculateTimeLeft = (scheduledDate) => {
+        console.log("Scheduled date comming from checking the time", scheduledDate);
         const now = new Date();
         const currentTime = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Karachi" }));
         console.log("using current time:", currentTime);
@@ -334,16 +335,6 @@ const ScheduledPosts = () => {
         formData.append('postType', postData.postType);
         formData.append('scheduledDate', postData.scheduledDate);
 
-        // Append files (new and existing files)
-        postData.files.forEach((file) => {
-            if (file.url) {
-                // Existing file
-                formData.append('existingFiles', file.name);
-            } else {
-                // New file
-                formData.append('files', file, file.name);
-            }
-        });
 
         try {
             const response = await axios.put(`https://smp-be-mysql.vercel.app/scheduled/posts/${postData.id}/update`, formData, {
