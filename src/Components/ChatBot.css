@@ -1,4 +1,4 @@
-/* Styles for the ChatBot Component */
+/* Styles for the ChatBot Component
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f4f4f9;
@@ -88,4 +88,4 @@ div {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-}
+} */
