@@ -8,23 +8,10 @@ const Settings = () => {
 
     const baseURL = 'https://smp-be-mysql.vercel.app'; // Replace with your backend's base URL
 
-    const handleUpdateEmail = async () => {
-        try {
-            const response = await axios.put(`${baseURL}/auth/update-email`, { email }, {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-            });
-            console.log(response.data);
-            alert('Email updated successfully!');
-            setEmail(''); // Reset email input
-        } catch (error) {
-            console.error('Error updating email:', error.response?.data || error.message);
-            alert(error.response?.data?.msg || 'Failed to update email.');
-        }
-    };
 
     const handleUpdatePassword = async () => {
         try {
-            const response = await axios.put(`${baseURL}/auth/update-password`, { password, newPassword }, {
+            const response = await axios.put(`${baseURL}/auth/update-password`, { email, password, newPassword }, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             console.log(response.data);
@@ -56,17 +43,6 @@ const Settings = () => {
     return (
         <div>
             <h2>Settings</h2>
-            <div>
-                <h3>Update Email</h3>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="New email"
-                />
-                <button onClick={handleUpdateEmail}>Update Email</button>
-            </div>
-
             <div>
                 <h3>Update Password</h3>
                 <input
