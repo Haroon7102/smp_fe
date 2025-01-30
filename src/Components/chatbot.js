@@ -51,8 +51,7 @@ import React, { useState } from "react";
 const Chatbot = () => {
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState([]);
-    const API_URL = "https://api.groq.com/v1/chat/completions";
-    const API_KEY = "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"; // Replace with your Groq API key
+    const API_URL = "https://smp-be-mysql.vercel.app/open-ai/generate-captions"; // Replace with your deployed backend URL
 
     const handleSend = async () => {
         if (!input) return;
@@ -64,21 +63,17 @@ const Chatbot = () => {
         try {
             const response = await fetch(API_URL, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${API_KEY}`,
-                },
-                body: JSON.stringify({
-                    model: "mixtral-8x7b-32768",
-                    messages: [{ role: "user", content: input }],
-                    max_tokens: 100,
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userInput: input }),
             });
+
             const data = await response.json();
-            const botMessage = data.choices[0].message.content;
+            const botMessage = data.response || "No response received.";
+
             setMessages([...newMessages, { sender: "bot", text: botMessage }]);
         } catch (error) {
             console.error("Error fetching response:", error);
+            setMessages([...newMessages, { sender: "bot", text: "Error fetching response." }]);
         }
     };
 

@@ -7,6 +7,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.3",
+    "groq-sdk": "^0.13.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
@@ -15,14 +16,13 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-  "start": "set HTTPS=false&&set SSL_CRT_FILE=./certs/localhost.pem&&set SSL_KEY_FILE=./certs/localhost-key.pem&&react-scripts start",
-  "build": "react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject",
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d build"
-},
-
+    "start": "set HTTPS=false&&set SSL_CRT_FILE=./certs/localhost.pem&&set SSL_KEY_FILE=./certs/localhost-key.pem&&react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
