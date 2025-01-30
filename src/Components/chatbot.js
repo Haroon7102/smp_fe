@@ -51,7 +51,7 @@ import React, { useState } from "react";
 const Chatbot = () => {
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState([]);
-    const API_URL = "https://smp-be-mysql.vercel.app/open-ai/generate-captions"; // Backend URL
+    const API_URL = "https://smp-be-mysql.vercel.app/open-ai/generate-captions";
 
     const handleSend = async () => {
         if (!input) return;
@@ -64,11 +64,11 @@ const Chatbot = () => {
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userInput: `Generate a social media caption for: ${input}` }),
+                body: JSON.stringify({ userInput: input }),
             });
 
             const data = await response.json();
-            const botMessage = data.response || "No response received.";
+            const botMessage = data.response || "No relevant response received.";
 
             setMessages([...newMessages, { sender: "bot", text: botMessage }]);
         } catch (error) {
@@ -77,38 +77,40 @@ const Chatbot = () => {
         }
     };
 
-    const handleCopy = () => {
-        const botMessages = messages.filter(msg => msg.sender === "bot").map(msg => msg.text).join("\n");
-        navigator.clipboard.writeText(botMessages);
-        alert("Captions copied to clipboard!");
+    const handleCopy = (text) => {
+        navigator.clipboard.writeText(text);
     };
 
     return (
-        <div className="p-6 w-full max-w-md mx-auto mt-10 border rounded-lg shadow-lg bg-white">
-            <h2 className="text-xl font-bold mb-4 text-center">Social Manager Pro - Caption Generator</h2>
-            <div className="space-y-4">
-                <div className="h-64 overflow-y-auto border p-3 rounded bg-gray-100">
+        <div className="p-4 w-full max-w-md mx-auto mt-10 border rounded shadow-lg bg-white">
+            <div className="space-y-4 flex flex-col h-[500px]">
+                <div className="h-full overflow-y-auto border p-2 rounded bg-gray-100">
                     {messages.map((msg, index) => (
-                        <p key={index} className={`p-2 rounded ${msg.sender === "user" ? "text-right bg-blue-100" : "text-left bg-gray-200"}`}>
+                        <div key={index} className={`p-2 ${msg.sender === "user" ? "text-right" : "text-left"}`}>
                             <strong>{msg.sender === "user" ? "You: " : "Bot: "}</strong>
                             {msg.text}
-                        </p>
+                            {msg.sender === "bot" && (
+                                <button
+                                    className="ml-2 px-2 py-1 bg-blue-500 text-white text-sm rounded"
+                                    onClick={() => handleCopy(msg.text)}
+                                >
+                                    Copy
+                                </button>
+                            )}
+                        </div>
                     ))}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex justify-center">
                     <input
-                        className="border p-2 flex-1 rounded"
+                        className="border p-2 w-3/4 rounded shadow-sm"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type your post idea..."
                     />
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSend}>
-                        Generate
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded ml-2" onClick={handleSend}>
+                        Send
                     </button>
                 </div>
-                <button className="bg-green-500 text-white px-4 py-2 rounded w-full" onClick={handleCopy}>
-                    Copy Captions
-                </button>
             </div>
         </div>
     );
