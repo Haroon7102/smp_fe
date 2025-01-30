@@ -64,7 +64,7 @@ const Chatbot = () => {
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userInput: input }),
+                body: JSON.stringify({ userInput: `Generate a social media caption for: ${input}` }),
             });
 
             const data = await response.json();
@@ -79,10 +79,13 @@ const Chatbot = () => {
 
     const handleCopy = (text) => {
         navigator.clipboard.writeText(text);
+        alert("Captions copied to clipboard!");
     };
 
     return (
         <div className="p-4 w-full max-w-md mx-auto mt-10 border rounded shadow-lg bg-white">
+            <h2 className="text-xl font-bold mb-4 text-center">Social Manager Pro - Caption Generator</h2>
+
             <div className="space-y-4 flex flex-col h-[500px]">
                 <div className="h-full overflow-y-auto border p-2 rounded bg-gray-100">
                     {messages.map((msg, index) => (
@@ -117,3 +120,4 @@ const Chatbot = () => {
 };
 
 export default Chatbot;
+
