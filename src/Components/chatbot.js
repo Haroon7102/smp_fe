@@ -60,7 +60,7 @@ const Chatbot = () => {
         setInput("");
 
         try {
-            const response = await fetch("/generate-captions", {
+            const response = await fetch("https://smp-be-mysql.vercel.app/open-ai/generate-captions", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
