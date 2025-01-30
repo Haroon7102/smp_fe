@@ -21,6 +21,11 @@ const Settings = () => {
         } catch (error) {
             console.error('Error updating password:', error.response?.data || error.message);
             alert(error.response?.data?.msg || 'Failed to update password.');
+
+            if (error.response?.data?.msg.includes("Google")) {
+                setPassword("Google Account");
+                setNewPassword("");
+            }
         }
     };
 
