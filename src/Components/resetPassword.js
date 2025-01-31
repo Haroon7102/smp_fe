@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const ResetPassword = () => {
@@ -7,6 +7,16 @@ const ResetPassword = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+    const [token, setToken] = useState(""); // To store the token
+
+    useEffect(() => {
+        // Extract the token from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenFromUrl = urlParams.get("token");
+        if (tokenFromUrl) {
+            setToken(tokenFromUrl); // Store the token
+        }
+    }, []);
 
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
@@ -16,10 +26,16 @@ const ResetPassword = () => {
             return;
         }
 
+        if (!token) {
+            setError("Token is missing.");
+            return;
+        }
+
         try {
             const response = await axios.put("https://smp-be-mysql.vercel.app/auth/update-password", {
                 email,
                 newPassword,
+                token, // Include the token in the request
             });
 
             setMessage(response.data.msg);
@@ -75,3 +91,4 @@ const ResetPassword = () => {
 };
 
 export default ResetPassword;
+
