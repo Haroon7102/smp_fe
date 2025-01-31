@@ -17,7 +17,7 @@ const ResetPassword = () => {
         }
 
         try {
-            const response = await axios.put("https://smp-be-mysql.vercel.app/auth/reset-password", {
+            const response = await axios.put("https://smp-be-mysql.vercel.app/auth/update-password", {
                 email,
                 newPassword,
             });
