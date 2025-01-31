@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const Settings = () => {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+    const [newPassword, setNewPassword] = useState('');
 
     const baseURL = 'https://smp-be-mysql.vercel.app'; // Replace with your backend's base URL
 
 
-    const handleUpdatePassword = async ({ email }) => {
-        console.log("email is here", email)
+    const handleUpdatePassword = async () => {
         try {
             const response = await axios.put(`${baseURL}/auth/update-password`, { email, password, newPassword }, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
@@ -51,22 +50,23 @@ const Settings = () => {
             <h2>Settings</h2>
             <div>
                 <h3>Update Password</h3>
-
                 <input
-                    type="password"
-                    placeholder="New Password"
-                    className="w-full px-3 py-2 border rounded"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    required
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="email"
                 />
                 <input
                     type="password"
-                    placeholder="Confirm New Password"
-                    className="w-full px-3 py-2 border rounded"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Current password"
+                />
+                <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="New password"
                 />
                 <button onClick={handleUpdatePassword}>Update Password</button>
             </div>
