@@ -13,6 +13,7 @@ import PrivacyPolicy from './Components/PrivacyPolicy';
 import TotalPosts from './Components/TotalPosts';
 import ScheduledPosts from './Components/ScheduledPosts';
 import Chatbot from './Components/chatbot';
+import ResetPassword from './Components/resetPassword';
 
 function App() {
   return (
@@ -30,6 +31,8 @@ function App() {
             <Route path="/posts" element={<TotalPosts />} />
             <Route path="/sch-posts" element={<ScheduledPosts />} />
             <Route path="/chatbot" element={<Chatbot />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+
 
           </Routes>
         </div>
