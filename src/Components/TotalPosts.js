@@ -48,7 +48,8 @@ const Media = ({ mediaUrl, index }) => {
     );
 };
 
-const TotalPosts = () => {
+const TotalPosts = ({ email }) => {
+    console.log("email is arrived to TotalPosts.js", email);
     const [posts, setPosts] = useState([]);
     const [isUpdating, setIsUpdating] = useState(false);
     const [postToUpdate, setPostToUpdate] = useState(null);
