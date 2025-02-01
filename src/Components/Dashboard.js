@@ -3,21 +3,19 @@ import { Link } from 'react-router-dom';
 import './Dashboard.css';
 import FacebookLoginCheck from './FacebookLoginCheck';
 import TotalPosts from './TotalPosts';
-// import TotalPosts from './TotalPosts'; // Import the TotalPosts component
 
 const Dashboard = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-    const [userInfo, setUserInfo] = useState(null);
-
-    // const [showTotalPosts, setShowTotalPosts] = useState(false); // State to toggle TotalPosts component
+    const [userInfo, setUserInfo] = useState(false);
+    const [showPosts, setShowPosts] = useState(false); // State to toggle the TotalPosts visibility
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
     };
 
-    // const handleTotalPostsClick = () => {
-    //     setShowTotalPosts((prevState) => !prevState); // Toggle TotalPosts component visibility
-    // };
+    const handleShowPostsClick = () => {
+        setShowPosts(true); // Show TotalPosts when button is clicked
+    };
 
     useEffect(() => {
         // Fetch user information from your API
@@ -33,7 +31,6 @@ const Dashboard = () => {
 
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('User data:', data); // Add this line
                     setUserInfo(data);
                 } else {
                     console.error('Failed to fetch user data:', response.statusText);
@@ -57,9 +54,6 @@ const Dashboard = () => {
                     <>
                         <p>{userInfo.name}</p>
                         <p>{userInfo.email}</p>
-
-                        <Link to="/posts" state={{ email: userInfo.email }}>
-                        </Link>
                     </>
                 ) : (
                     <p>Loading...</p>
@@ -68,11 +62,9 @@ const Dashboard = () => {
                 <Link to="/settings" className="sidebar-link">
                     <button className="sidebar-btn">Settings</button>
                 </Link>
-                <Link to="/posts" className="sidebar-link">
-                    <button className="sidebar-btn">
-                        Total Posts
-                    </button>
-                </Link>
+                <button onClick={handleShowPostsClick} className="sidebar-btn">
+                    Total Posts
+                </button>
                 <Link to="/sch-posts" className="sidebar-link">
                     <button className="sidebar-btn">
                         Scheduled Posts
@@ -83,24 +75,22 @@ const Dashboard = () => {
                         Chatbot
                     </button>
                 </Link>
-                {/* <button className="sidebar-btn" onClick={handleTotalPostsClick}>
-                    {showTotalPosts ? 'Hide Total Posts' : 'Total Posts'}
-                </button> */}
             </div>
             <div className={`content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
                 <h2>Welcome to your Dashboard</h2>
 
                 {/* Pass the email to FacebookLoginCheck */}
                 {userInfo && <FacebookLoginCheck email={userInfo.email} />}
-                {userInfo && <TotalPosts email={userInfo.email} />}
+
                 {/* Show TotalPosts when the button is clicked */}
-                {/* {showTotalPosts && <TotalPosts />} */}
+                {showPosts && userInfo && <TotalPosts email={userInfo.email} />}
             </div>
         </div>
     );
 };
 
 export default Dashboard;
+
 
 
 
