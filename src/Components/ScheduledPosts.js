@@ -240,11 +240,15 @@
 
 // export default ScheduledPosts;
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+
 import axios from 'axios';
 import './ScheduledPosts.css';
 
 
 const ScheduledPosts = () => {
+    const location = useLocation();
+    const email = location.state?.email;  // Retrieve the passed email
     const [posts, setPosts] = useState([]);
     const [postData, setPostData] = useState({
         id: null,
@@ -254,17 +258,25 @@ const ScheduledPosts = () => {
         scheduledDate: '',
     });
     const [showUpdateModal, setShowUpdateModal] = useState(false);
-
+    console.log("ScheduledPosts email is:", email);
     // Fetch scheduled posts
     useEffect(() => {
-        axios.get('https://smp-be-mysql.vercel.app/scheduled/fetch-scheduled-posts')
-            .then(response => {
-                setPosts(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching posts:', error);
-            });
-    }, []);
+        const fetchScheduledPosts = async () => {
+            if (email) {
+                try {
+                    const response = await axios.post('https://smp-be-mysql.vercel.app/fetch-scheduled-posts', {
+                        params: { email }, // Passing email as a query parameter
+                    });
+                    setPosts(response.data);
+                } catch (error) {
+                    console.error('Error fetching scheduled posts:', error);
+                }
+            }
+        };
+
+        fetchScheduledPosts();
+    }, [email]); // Dependency array with 'email'
+
 
 
     // Calculate time left until the post is due

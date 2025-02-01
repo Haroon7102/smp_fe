@@ -20,6 +20,9 @@ const Dashboard = () => {
             navigate('/posts', { state: { email: userInfo.email } });
         }
     };
+    const handleScheduledPostsClick = () => {
+        navigate('/scheduled-posts', { state: { email: userInfo.email } }); // Passing email as state
+    };
 
     useEffect(() => {
         // Fetch user information from your API
@@ -72,11 +75,10 @@ const Dashboard = () => {
                     Total Posts
                 </button>
 
-                <Link to="/sch-posts" className="sidebar-link">
-                    <button className="sidebar-btn">
-                        Scheduled Posts
-                    </button>
-                </Link>
+                <button onClick={handleScheduledPostsClick} className="sidebar-btn">
+                    Scheduled Posts
+                </button>
+
                 <Link to="/chatbot" className="sidebar-link">
                     <button className="sidebar-btn">
                         Chatbot
