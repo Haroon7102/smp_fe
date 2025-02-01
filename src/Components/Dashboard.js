@@ -97,7 +97,7 @@ const Dashboard = () => {
                 {userInfo && <FacebookLoginCheck email={userInfo.email} />}
                 {/* {userInfo && <TotalPosts email={userInfo.email} />} */}
                 {/* Render the TotalPosts component only when the button is clicked */}
-                {showPosts && userInfo && <TotalPosts email={userInfo.email} />}
+                {showPosts && <TotalPosts email={userInfo.email} />}
             </div>
         </div>
     );
