@@ -55,6 +55,9 @@ const Dashboard = () => {
                     <>
                         <p>{userInfo.name}</p>
                         <p>{userInfo.email}</p>
+
+                        <Link to="/posts" state={{ email: userInfo.email }}>
+                        </Link>
                     </>
                 ) : (
                     <p>Loading...</p>

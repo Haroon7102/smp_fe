@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import { useLocation } from 'react-router-dom';
 // New Media component for handling image and video rendering
 const Media = ({ mediaUrl, index }) => {
     const [isVideo, setIsVideo] = useState(false);
@@ -49,6 +49,8 @@ const Media = ({ mediaUrl, index }) => {
 };
 
 const TotalPosts = () => {
+    const location = useLocation();
+    const email = location.state?.email; // Accessing the passed email
     const [posts, setPosts] = useState([]);
     const [isUpdating, setIsUpdating] = useState(false);
     const [postToUpdate, setPostToUpdate] = useState(null);
@@ -59,10 +61,14 @@ const TotalPosts = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await fetch(
-                    "https://smp-be-mysql.vercel.app/facebook-upload/posts"
-                );
+                // Use URLSearchParams to build the query string correctly
+                const url = new URL("https://smp-be-mysql.vercel.app/facebook-upload/posts");
+                const params = { email };
+                Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+
+                const response = await fetch(url);
                 const data = await response.json();
+
                 if (Array.isArray(data)) {
                     console.log("Fetched Posts:", data);
                     setPosts(data);
@@ -74,8 +80,11 @@ const TotalPosts = () => {
             }
         };
 
-        fetchPosts();
-    }, []);
+        if (email) {
+            fetchPosts();
+        }
+    }, [email]);
+
 
     const handleDelete = async (post) => {
         const { postId, pageId, accessToken, email } = post;
