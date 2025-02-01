@@ -275,7 +275,7 @@ const ScheduledPosts = () => {
             }
         };
 
-        fetchScheduledPosts();  // Call the function
+        fetchScheduledPosts(email);  // Call the function
     }, [email]);  // Re-run when email changes
 
 
