@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Use useNavigate for React Router v6
+import { Link } from 'react-router-dom';
+
 import './Dashboard.css';
 import FacebookLoginCheck from './FacebookLoginCheck';
 
