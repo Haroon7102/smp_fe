@@ -61,31 +61,31 @@ const TotalPosts = ({ email }) => {
             console.log("email is arrived to TotalPosts.js", email);
 
         }
-        const fetchPosts = async (email) => {
-            try {
-                const response = await fetch("https://smp-be-mysql.vercel.app/facebook-upload/posts", {
-                    method: "POST", // Using POST to send email
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ email }), // Sending the user's email
-                });
-
-                const data = await response.json();
-                if (Array.isArray(data)) {
-                    console.log("Fetched Posts:", data);
-                    setPosts(data); // Set posts to display in the UI
-                } else {
-                    console.error("Invalid response format:", data);
-                }
-            } catch (error) {
-                console.error("Error fetching posts:", error);
-            }
-        };
-
-
         fetchPosts();
     }, [email]);
+    const fetchPosts = async (email) => {
+        try {
+            const response = await fetch("https://smp-be-mysql.vercel.app/facebook-upload/posts", {
+                method: "POST", // Using POST to send email
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email }), // Sending the user's email
+            });
+
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                console.log("Fetched Posts:", data);
+                setPosts(data); // Set posts to display in the UI
+            } else {
+                console.error("Invalid response format:", data);
+            }
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+        }
+    };
+
+
 
     const handleDelete = async (post) => {
         const { postId, pageId, accessToken, email } = post;
