@@ -49,6 +49,8 @@ const Media = ({ mediaUrl, index }) => {
 };
 
 const TotalPosts = ({ email }) => {
+    console.log("email is arrived", email);
+
     const [posts, setPosts] = useState([]);
     const [isUpdating, setIsUpdating] = useState(false);
     const [postToUpdate, setPostToUpdate] = useState(null);
@@ -83,7 +85,7 @@ const TotalPosts = ({ email }) => {
             }
         };
 
-        fetchPosts();
+        fetchPosts(email);
     }, [email]);
 
 
