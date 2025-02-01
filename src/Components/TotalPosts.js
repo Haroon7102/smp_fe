@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from 'react-router-dom'; // For accessing location state
 
 // New Media component for handling image and video rendering
 const Media = ({ mediaUrl, index }) => {
@@ -48,14 +49,17 @@ const Media = ({ mediaUrl, index }) => {
     );
 };
 
-const TotalPosts = ({ email }) => {
-    console.log("email is arrived", email);
+const TotalPosts = () => {
 
     const [posts, setPosts] = useState([]);
+    const location = useLocation();
+    const email = location?.state?.email;  // Get email from state passed via navigate
     const [isUpdating, setIsUpdating] = useState(false);
     const [postToUpdate, setPostToUpdate] = useState(null);
     const [updatedCaption, setUpdatedCaption] = useState("");
     const [updatedMedia, setUpdatedMedia] = useState([]);
+
+    console.log("email is arrived", email);
 
     // Fetch posts on component mount
     useEffect(() => {
