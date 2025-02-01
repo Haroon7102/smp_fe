@@ -22,7 +22,7 @@ const Dashboard = () => {
     };
     const handleScheduledPostsClick = () => {
         if (userInfo) {
-            navigate('/scheduled-posts', { state: { email: userInfo.email } }); // Passing email as state
+            navigate('/sch-posts', { state: { email: userInfo.email } }); // Passing email as state
         }
     };
 
