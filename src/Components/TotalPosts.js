@@ -63,13 +63,18 @@ const TotalPosts = ({ email }) => {
         }
         const fetchPosts = async () => {
             try {
-                const response = await fetch(
-                    "https://smp-be-mysql.vercel.app/facebook-upload/posts"
-                );
+                const response = await fetch("https://smp-be-mysql.vercel.app/facebook-upload/posts", {
+                    method: "POST", // Using POST to send email
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email }), // Sending the user's email
+                });
+
                 const data = await response.json();
                 if (Array.isArray(data)) {
                     console.log("Fetched Posts:", data);
-                    setPosts(data);
+                    setPosts(data); // Set posts to display in the UI
                 } else {
                     console.error("Invalid response format:", data);
                 }
@@ -77,6 +82,7 @@ const TotalPosts = ({ email }) => {
                 console.error("Error fetching posts:", error);
             }
         };
+
 
         fetchPosts();
     }, [email]);
