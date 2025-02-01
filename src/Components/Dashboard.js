@@ -95,9 +95,10 @@ const Dashboard = () => {
 
                 {/* Pass the email to FacebookLoginCheck */}
                 {userInfo && <FacebookLoginCheck email={userInfo.email} />}
-                {/* {userInfo && <TotalPosts email={userInfo.email} />} */}
-                {/* Render the TotalPosts component only when the button is clicked */}
-                {showPosts && <TotalPosts email={userInfo.email} />}
+                {userInfo && <TotalPosts email={userInfo.email} />}
+                {/* Show TotalPosts when the button is clicked */}
+                {/* {showTotalPosts && <TotalPosts />} */}
+                {showPosts}
             </div>
         </div>
     );
