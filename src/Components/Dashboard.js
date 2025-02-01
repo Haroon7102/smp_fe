@@ -62,9 +62,11 @@ const Dashboard = () => {
                 <Link to="/settings" className="sidebar-link">
                     <button className="sidebar-btn">Settings</button>
                 </Link>
-                <button onClick={handleShowPostsClick} className="sidebar-btn">
-                    Total Posts
-                </button>
+                <Link to="/posts" className="sidebar-link">
+                    <button onClick={handleShowPostsClick} className="sidebar-btn">
+                        Total Posts
+                    </button>
+                </Link>
                 <Link to="/sch-posts" className="sidebar-link">
                     <button className="sidebar-btn">
                         Scheduled Posts
