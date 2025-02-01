@@ -49,7 +49,6 @@ const Media = ({ mediaUrl, index }) => {
 };
 
 const TotalPosts = ({ email }) => {
-    console.log("email is arrived to TotalPosts.js", email);
     const [posts, setPosts] = useState([]);
     const [isUpdating, setIsUpdating] = useState(false);
     const [postToUpdate, setPostToUpdate] = useState(null);
@@ -58,6 +57,10 @@ const TotalPosts = ({ email }) => {
 
     // Fetch posts on component mount
     useEffect(() => {
+        if (email) {
+            console.log("email is arrived to TotalPosts.js", email);
+
+        }
         const fetchPosts = async () => {
             try {
                 const response = await fetch(
@@ -76,7 +79,7 @@ const TotalPosts = ({ email }) => {
         };
 
         fetchPosts();
-    }, []);
+    }, [email]);
 
     const handleDelete = async (post) => {
         const { postId, pageId, accessToken, email } = post;
