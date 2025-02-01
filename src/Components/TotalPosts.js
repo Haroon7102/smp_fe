@@ -57,10 +57,6 @@ const TotalPosts = ({ email }) => {
 
     // Fetch posts on component mount
     useEffect(() => {
-        if (email) {
-            console.log("email is arrived to TotalPosts.js", email);
-
-        }
         const fetchPosts = async (email) => {
             if (email) {
                 console.log("email is arrived to fetch", email);
@@ -89,6 +85,9 @@ const TotalPosts = ({ email }) => {
 
         fetchPosts(email);
     }, [email]);
+
+
+
 
 
     const handleDelete = async (post) => {
