@@ -7,8 +7,7 @@ import TotalPosts from './TotalPosts';
 
 const Dashboard = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
-    const [userInfo, setUserInfo] = useState(null);
-    const [showPosts, setShowPosts] = useState(false); // State to show/hide posts
+    const [userInfo, setUserInfo] = useState(false);
 
     // const [showTotalPosts, setShowTotalPosts] = useState(false); // State to toggle TotalPosts component
 
@@ -20,7 +19,7 @@ const Dashboard = () => {
     //     setShowTotalPosts((prevState) => !prevState); // Toggle TotalPosts component visibility
     // };
     const handleShowPostsClick = () => {
-        setShowPosts(true); // Set to true when the button is clicked
+        setUserInfo(true); // Set to true when the button is clicked
     };
     useEffect(() => {
         // Fetch user information from your API
@@ -98,7 +97,6 @@ const Dashboard = () => {
                 {userInfo && <TotalPosts email={userInfo.email} />}
                 {/* Show TotalPosts when the button is clicked */}
                 {/* {showTotalPosts && <TotalPosts />} */}
-                {showPosts}
             </div>
         </div>
     );
