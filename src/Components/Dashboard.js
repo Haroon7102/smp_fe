@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Use useNavigate for React Router v6
 import './Dashboard.css';
 import FacebookLoginCheck from './FacebookLoginCheck';
-import TotalPosts from './TotalPosts';
 
 const Dashboard = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [userInfo, setUserInfo] = useState(false);
-    const [showPosts, setShowPosts] = useState(false); // State to toggle the TotalPosts visibility
+    const navigate = useNavigate(); // Initialize useNavigate hook
 
     const toggleSidebar = () => {
         setSidebarOpen(!isSidebarOpen);
     };
 
     const handleShowPostsClick = () => {
-        setShowPosts(true); // Show TotalPosts when button is clicked
+        if (userInfo) {
+            // Navigate to /posts page and pass email as state
+            navigate('/posts', { state: { email: userInfo.email } });
+        }
     };
 
     useEffect(() => {
@@ -62,11 +64,12 @@ const Dashboard = () => {
                 <Link to="/settings" className="sidebar-link">
                     <button className="sidebar-btn">Settings</button>
                 </Link>
-                <Link to="/posts" className="sidebar-link">
-                    <button onClick={handleShowPostsClick} className="sidebar-btn">
-                        Total Posts
-                    </button>
-                </Link>
+
+                {/* Use handleShowPostsClick to navigate to /posts page */}
+                <button onClick={handleShowPostsClick} className="sidebar-btn">
+                    Total Posts
+                </button>
+
                 <Link to="/sch-posts" className="sidebar-link">
                     <button className="sidebar-btn">
                         Scheduled Posts
@@ -83,15 +86,13 @@ const Dashboard = () => {
 
                 {/* Pass the email to FacebookLoginCheck */}
                 {userInfo && <FacebookLoginCheck email={userInfo.email} />}
-
-                {/* Show TotalPosts when the button is clicked */}
-                {showPosts && userInfo && <TotalPosts email={userInfo.email} />}
             </div>
         </div>
     );
 };
 
 export default Dashboard;
+
 
 
 
