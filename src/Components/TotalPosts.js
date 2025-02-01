@@ -83,7 +83,7 @@ const TotalPosts = ({ email }) => {
             }
         };
 
-        fetchPosts(email);
+        fetchPosts();
     }, [email]);
 
 

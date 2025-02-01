@@ -75,8 +75,6 @@ const Dashboard = () => {
                     <button onClick={handleShowPostsClick} className="sidebar-btn">
                         Total Posts
                     </button>
-                    {showPosts}
-
                 </Link>
                 <Link to="/sch-posts" className="sidebar-link">
                     <button className="sidebar-btn">
@@ -97,8 +95,8 @@ const Dashboard = () => {
 
                 {/* Pass the email to FacebookLoginCheck */}
                 {userInfo && <FacebookLoginCheck email={userInfo.email} />}
-                {userInfo && <TotalPosts email={userInfo.email} />}
-
+                {/* {userInfo && <TotalPosts email={userInfo.email} />} */}
+                {showPosts && <TotalPosts email={userInfo.email} />}
                 {/* Show TotalPosts when the button is clicked */}
                 {/* {showTotalPosts && <TotalPosts />} */}
             </div>
