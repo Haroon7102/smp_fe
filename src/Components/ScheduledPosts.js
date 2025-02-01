@@ -264,8 +264,8 @@ const ScheduledPosts = () => {
         const fetchScheduledPosts = async () => {
             if (email) {
                 try {
-                    const response = await axios.post('https://smp-be-mysql.vercel.app/fetch-scheduled-posts', {
-                        params: { email }, // Passing email as a query parameter
+                    const response = await axios.post('https://smp-be-mysql.vercel.app/scheduled/fetch-scheduled-posts', {
+                        email: email, // Send email in the request body
                     });
                     setPosts(response.data);
                 } catch (error) {
