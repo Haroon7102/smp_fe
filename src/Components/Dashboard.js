@@ -21,7 +21,9 @@ const Dashboard = () => {
         }
     };
     const handleScheduledPostsClick = () => {
-        navigate('/scheduled-posts', { state: { email: userInfo.email } }); // Passing email as state
+        if (userInfo) {
+            navigate('/scheduled-posts', { state: { email: userInfo.email } }); // Passing email as state
+        }
     };
 
     useEffect(() => {

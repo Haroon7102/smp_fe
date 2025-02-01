@@ -247,6 +247,7 @@ import './ScheduledPosts.css';
 
 
 const ScheduledPosts = () => {
+    console.log("Scheduled post hits");
     const location = useLocation();
     const email = location.state?.email;  // Retrieve the passed email
     const [posts, setPosts] = useState([]);
@@ -262,20 +263,20 @@ const ScheduledPosts = () => {
     // Fetch scheduled posts
     useEffect(() => {
         const fetchScheduledPosts = async () => {
-            if (email) {
-                try {
-                    const response = await axios.post('https://smp-be-mysql.vercel.app/scheduled/fetch-scheduled-posts', {
-                        email: email, // Send email in the request body
-                    });
-                    setPosts(response.data);
-                } catch (error) {
-                    console.error('Error fetching scheduled posts:', error);
-                }
+            if (!email) return;  // Ensure email exists before making the request
+
+            try {
+                const response = await axios.post('https://smp-be-mysql.vercel.app/scheduled/fetch-scheduled-posts', {
+                    email: email,
+                });
+                setPosts(response.data);
+            } catch (error) {
+                console.error('Error fetching scheduled posts:', error);
             }
         };
 
-        fetchScheduledPosts();
-    }, [email]); // Dependency array with 'email'
+        fetchScheduledPosts();  // Call the function
+    }, [email]);  // Re-run when email changes
 
 
 
