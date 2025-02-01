@@ -61,7 +61,7 @@ const TotalPosts = ({ email }) => {
             console.log("email is arrived to TotalPosts.js", email);
 
         }
-        const fetchPosts = async () => {
+        const fetchPosts = async (email) => {
             try {
                 const response = await fetch("https://smp-be-mysql.vercel.app/facebook-upload/posts", {
                     method: "POST", // Using POST to send email
