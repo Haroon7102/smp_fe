@@ -61,7 +61,7 @@ const TotalPosts = ({ email }) => {
             console.log("email is arrived to TotalPosts.js", email);
 
         }
-        fetchPosts();
+        fetchPosts(email);
     }, [email]);
     const fetchPosts = async (email) => {
         if (email) {
