@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // Assuming you're using React Router
+
 import axios from "axios";
 
 const ResetPassword = () => {
@@ -8,6 +10,8 @@ const ResetPassword = () => {
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
     const [token, setToken] = useState(""); // To store the token
+    const location = useLocation();
+
 
     useEffect(() => {
         // Extract the token from the URL
@@ -16,7 +20,7 @@ const ResetPassword = () => {
         if (tokenFromUrl) {
             setToken(tokenFromUrl); // Store the token
         }
-    }, []);
+    }, [location]);
 
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
